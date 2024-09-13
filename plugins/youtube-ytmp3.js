@@ -1,13 +1,13 @@
 //Colocar en Package.json: 
 //"ytdl-core": "github:HanSamu-27/ytdl-core#main"
 
-import ytdl from 'ytdl-core' 
+/*import ytdl from 'ytdl-core' 
 import axios from 'axios'
 import fetch from 'node-fetch' 
 import sharp from 'sharp'
 
 let handler = async (m, { conn: star, args, text, isPrems, isOwner, usedPrefix, command }) => {
-if (!args || !args[0]) return star.reply(m.chat, '🚩 Ingresa el enlace del vídeo de YouTube junto al comando.\n\n`Ejemplo:`\n' + `> *${usedPrefix + command}* https://music.youtube.com/watch?v=Z-EAVUGEqQw&si=FRirpjd2h8BZm0Sl`, m, rcanal)
+if (!args || !args[0]) return star.reply(m.chat, ' Ingresa el enlace del vídeo de YouTube junto al comando.\n\n`Ejemplo:`\n' + `> *${usedPrefix + command}* https://music.youtube.com/watch?v=Z-EAVUGEqQw&si=FRirpjd2h8BZm0Sl`, m, rcanal)
 if (!args[0].match(/youtu/gi)) return star.reply(m.chat, `Verifica que el enlace sea de YouTube.`, m, rcanal).then(_ => m.react('✖️'))
 await m.react('🕓')
 try {
@@ -29,7 +29,7 @@ let txt = '`乂  Y O U T U B E  -  M P 3`\n\n'
 txt += `	✩   *Titulo* : ${title}\n`
 txt += `	✩   *Calidad* : 128kbps\n`
 txt += `	✩   *Tamaño* : ${size}\n\n`
-txt += `> *- ↻ El audio se esta enviando espera un momento, soy lenta. . .*`
+txt += `> *- ↻ El audio se esta enviando espera un momento, soy lento. . .*`
 await star.sendFile(m.chat, jpg, 'thumb.jpg', txt, m, null, rcanal)
 await star.sendMessage(m.chat, { audio: { url: mpeg }, fileName: title + '.mp3', mimetype: 'audio/mp4' }, { quoted: m })
 await m.react('✅')
@@ -50,7 +50,7 @@ let dm = decimals < 0 ? 0 : decimals
 let sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
 let i = Math.floor(Math.log(bytes) / Math.log(k))
 return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i]
-}
+}*/
 
 
 
@@ -58,14 +58,14 @@ return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i]
 
 
 
-/*import fg from 'api-dylux'
+import fg from 'api-dylux'
 import yts from 'yt-search'
 import { youtubedl, youtubedlv2 } from '@bochilteam/scraper'
 import fetch from 'node-fetch' 
 let limit = 100
 
 let handler = async (m, { conn: star, args, text, isPrems, isOwner, usedPrefix, command }) => {
-if (!args || !args[0]) return star.reply(m.chat, '🚩 Ingresa el enlace del vídeo de YouTube junto al comando.\n\n`Ejemplo:`\n' + `> *${usedPrefix + command}* https://youtu.be/QSvaCSt8ixs`, m, rcanal)
+if (!args || !args[0]) return star.reply(m.chat, ' Ingresa el enlace del vídeo de YouTube junto al comando.\n\n`Ejemplo:`\n' + `> *${usedPrefix + command}* https://youtu.be/QSvaCSt8ixs`, m, rcanal)
 if (!args[0].match(/youtu/gi)) return star.reply(m.chat, `Verifica que el enlace sea de YouTube.`, m, rcanal).then(_ => m.react('✖️'))
 let q = '128kbps'
 
@@ -84,7 +84,7 @@ if (size.split('MB')[0] >= limit) return star.reply(m.chat, `El archivo pesa mas
        txt += `	✩   *Titulo* : ${title}\n`
        txt += `	✩   *Calidad* : ${q}\n`
        txt += `	✩   *Tamaño* : ${size}\n\n`
-       txt += `> *- ↻ El audio se esta enviando espera un momento, soy lenta. . .*`
+       txt += `> *- ↻ El audio se esta enviando espera un momento, soy lento. . .*`
 await star.sendFile(m.chat, img, 'thumbnail.jpg', txt, m, null, rcanal)
 await star.sendMessage(m.chat, { audio: { url: dl_url }, fileName: title + '.mp3', mimetype: 'audio/mp4' }, { quoted: m })
 await m.react('✅')
@@ -101,7 +101,7 @@ if (size.split('MB')[0] >= limit) return star.reply(m.chat, `El archivo pesa mas
        txt += `	✩   *Titulo* : ${title}\n`
        txt += `	✩   *Calidad* : ${q}\n`
        txt += `	✩   *Tamaño* : ${size}\n\n`
-       txt += `> *- ↻ El audio se esta enviando espera un momento, soy lenta. . .*`
+       txt += `> *- ↻ El audio se esta enviando espera un momento, soy lento. . .*`
 await star.sendFile(m.chat, img, 'thumbnail.jpg', txt, m, null, rcanal)
 await star.sendMessage(m.chat, { audio: { url: dl_url }, fileName: title + '.mp3', mimetype: 'audio/mp4' }, { quoted: m })
 await m.react('✅')
@@ -116,7 +116,7 @@ if (size.split('MB')[0] >= limit) return star.reply(m.chat, `El archivo pesa mas
        txt += `	✩   *Titulo* : ${title}\n`
        txt += `	✩   *Calidad* : ${q}\n`
        txt += `	✩   *Tamaño* : ${size}\n\n`
-       txt += `> *- ↻ El audio se esta enviando espera un momento, soy lenta. . .*`
+       txt += `> *- ↻ El audio se esta enviando espera un momento, soy lento. . .*`
 await star.sendFile(m.chat, img, 'thumbnail.jpg', txt, m, null, rcanal)
 await star.sendMessage(m.chat, { audio: { url: dl_url }, fileName: title + '.mp3', mimetype: 'audio/mp4' }, { quoted: m })
 await m.react('✅')
@@ -129,4 +129,4 @@ handler.command = ['ytmp3', 'yta', 'fgmp3']
 //handler.limit = 1
 handler.register = true 
 
-export default handler*/
+export default handler
