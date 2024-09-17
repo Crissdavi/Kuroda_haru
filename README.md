@@ -86,7 +86,7 @@ npm start
 
 ## <img src="https://i.pinimg.com/originals/19/80/6e/19806e91932e6054965fc83b85241270.gif" alt="Contacto" width="42" height="42"> Contacto
 
-- Si el Bot tiene algún contactame ฅ^•ﻌ•^ฅ
+- Si el Bot tiene algún contactame 
 
 * <a href="https://wa.me/51913776697"><img alt="WhatsApp" src="https://img.shields.io/badge/WhatsApp-25D366?style=for-the-badge&logo=whatsapp&logoColor=white"/></a>
 
@@ -118,4 +118,5 @@ npm start
 
 <a href="https://github.com/StarlightsTeam"><img src="https://i.ibb.co/MDHkhRZ/file.jpg" width="300" height="300" alt="おDaniel"/></a>
 
-` koruda - OFC / TEAM KORUDA OFC _ …⁠ᘛDaniel`
+` koruda - OFC / TEAM KORUDA OFC _ …⁠ᘛCriss
+`
