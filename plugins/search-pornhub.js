@@ -19,7 +19,7 @@ teks = '*Sin resultados*';
 m.reply(teks);
 } catch (e) {
 }};
-handler.tags = ['+18'] 
+handler.tags = ['nsfw'] 
 handler.help = ['pornhubsearch'] 
 handler.command = /^(phsearch|pornhubsearch)$/i;
 export default handler;
