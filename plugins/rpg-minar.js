@@ -13,7 +13,7 @@ let handler = async (m, { conn }) => {
   }
   
   global.db.data.users[m.sender].exp += hasil
-  let txt = `🚩 Genial! minaste *${hasil} 💫 XP.*`
+  let txt = `🚩 Genial! minaste *${hasil} 💴 Zenis.*`
   await m.react('⛏')
   await conn.reply(m.chat, txt, m, rcanal)
   
