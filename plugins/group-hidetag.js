@@ -8,9 +8,7 @@ const handler = async (m, {conn, text, participants, isOwner, isAdmin}) => {
     const msg = conn.cMod(m.chat, generateWAMessageFromContent(m.chat, {[m.quoted ? q.mtype : 'extendedTextMessage']: m.quoted ? c.message[q.mtype] : {text: '' || c}}, {quoted: m, userJid: conn.user.id}), text || q.text, conn.user.jid, {mentions: users});
     await conn.relayMessage(m.chat, msg.message, {messageId: msg.key.id});
   } catch {
-    /**
-[ By @NeKosmic || https://github.com/NeKosmic/ ]
-**/
+    
 
     const users = participants.map((u) => conn.decodeJid(u.id));
     const quoted = m.quoted ? m.quoted : m;
