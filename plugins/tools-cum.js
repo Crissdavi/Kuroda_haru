@@ -11,7 +11,7 @@ let handler = async (m, { conn, usedPrefix }) => {
     let name = conn.getName(who);
     let name2 = conn.getName(m.sender);
     m.react('🥵');
-    let str = `${name2} se corrio dentro de ${name}`.trim();
+    let str = `*${name2}* se corrio dentro de *${name}*`.trim();
     if (m.isGroup){
     
     let pp = 'https://files.catbox.moe/ps4qif.mp4' 
