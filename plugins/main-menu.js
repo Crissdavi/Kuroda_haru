@@ -218,12 +218,12 @@ switch(hour){
   case 10: hour = 'un lindo dia 🌞'; break;
   case 11: hour = 'un lindo dia 🌨'; break;
   case 12: hour = 'un lindo dia ❄'; break;
-  case 13: hour = 'un lindo dia 🌤'; break;
+  case 13: hour = 'una linda tarde 🌄'; break;
   case 14: hour = 'una linda tarde 🌇'; break;
   case 15: hour = 'una linda tarde 🥀'; break;
   case 16: hour = 'una linda tarde 🌹'; break;
   case 17: hour = 'una linda tarde 🌆'; break;
-  case 18: hour = 'una linda noche 🌙'; break;
+  case 18: hour = 'una linda tarde ☀️'; break;
   case 19: hour = 'una linda noche 🌃'; break;
   case 20: hour = 'una linda noche 🌌'; break;
   case 21: hour = 'una linda noche 🌃'; break;
