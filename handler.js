@@ -95,8 +95,6 @@ export async function handler(chatUpdate) {
                     chat.nsfw = false
                 if (!isNumber(chat.expired))
                     chat.expired = 0
-                if (!('modoadmin' in chat)) 
-                    chat.modoadmin = false;
             } else
                 global.db.data.chats[m.chat] = {
                     isBanned: false,
@@ -105,7 +103,6 @@ export async function handler(chatUpdate) {
                     onlyLatinos: false,
                     nsfw: false, 
                     expired: 0, 
-                   modoadmin:true,
                 }
             var settings = global.db.data.settings[this.user.jid]
             if (typeof settings !== 'object') global.db.data.settings[this.user.jid] = {}
