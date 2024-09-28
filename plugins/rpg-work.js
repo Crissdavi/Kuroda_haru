@@ -10,7 +10,7 @@ let user = global.db.data.users[m.sender]
   }
   let resultado = Math.floor(Math.random() * 5000)
   cooldowns[m.sender] = Date.now()
-  await conn.reply(m.chat, `🚩 ${pickRandom(works)} *${toNum(resultado)}* ( *${resultado}* ) XP 💫.`, m, rcanal)
+  await conn.reply(m.chat, `🚩 ${pickRandom(works)} *${toNum(resultado)}* ( *${resultado}* ) Zenis 💴.`, m, rcanal)
   user.exp += resultado
 }
 
