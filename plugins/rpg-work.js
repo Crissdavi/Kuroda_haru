@@ -4,7 +4,7 @@ let handler = async (m, { conn, isPrems }) => {
 let user = global.db.data.users[m.sender]
   let tiempoEspera = 1 * 00
   if (cooldowns[m.sender] && Date.now() - cooldowns[m.sender] < tiempoEspera * 1000) {
-    const tiempoRestante = segundosAHMS(Math.ceil((cooldowns[m.sender] + tiempoEspera * 1000 - Date.now()) / 1000))
+    const tiempoRestante = segundosAHMS(Math.ceil((cooldowns[m.sender] + tiempoEspera * 1000 - Date.now()) / 100))
     conn.reply(m.chat, `🚩 Espera ⏱ *${tiempoRestante}* para volver a Trabajar.`, m, rcanal)
     return
   }
@@ -35,7 +35,7 @@ function toNum(number) {
 }
 
 function segundosAHMS(segundos) {
-  let minutos = Math.floor((segundos % 3600) / 60)
+  let minutos = Math.floor((segundos % 1200) / 60)
   let segundosRestantes = segundos % 60
   return `${minutos} minutos y ${segundosRestantes} segundos`
 }
@@ -44,7 +44,7 @@ function pickRandom(list) {
   return list[Math.floor(list.length * Math.random())];
 }
 
-// Thanks to FG98
+
 const works = [
    "Trabajas como cortador de galletas y ganas",
    "Trabaja para una empresa militar privada, ganando",
