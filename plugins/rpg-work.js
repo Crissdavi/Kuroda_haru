@@ -2,13 +2,13 @@ let cooldowns = {}
 
 let handler = async (m, { conn, isPrems }) => {
 let user = global.db.data.users[m.sender]
-  let tiempoEspera = 5 * 60
+  let tiempoEspera = 1 * 00
   if (cooldowns[m.sender] && Date.now() - cooldowns[m.sender] < tiempoEspera * 1000) {
     const tiempoRestante = segundosAHMS(Math.ceil((cooldowns[m.sender] + tiempoEspera * 1000 - Date.now()) / 1000))
     conn.reply(m.chat, `🚩 Espera ⏱ *${tiempoRestante}* para volver a Trabajar.`, m, rcanal)
     return
   }
-  let resultado = Math.floor(Math.random() * 2500)
+  let resultado = Math.floor(Math.random() * 100)
   cooldowns[m.sender] = Date.now()
   await conn.reply(m.chat, `🚩 ${pickRandom(works)} *${toNum(resultado)}* ( *${resultado}* ) Zenis 💴.`, m, rcanal)
   user.limit += resultado
