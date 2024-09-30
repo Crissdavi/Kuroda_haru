@@ -16,9 +16,9 @@ let handler = async (m, {conn, usedPrefix}) => {
         
 await conn.sendFile(m.chat, img, 'thumbnail.jpg', txt, m, null, rcanal)
 }
-handler.help = ['Zenis']
+handler.help = ['zenis']
 handler.tags = ['rpg']
-handler.command = ['coins', 'wallet', 'cartera', 'Zenis', 'stars', 'bal', 'balance']
+handler.command = ['wallet', 'cartera', 'zenis', 'bal', 'balance']
 handler.register = true 
 export default handler
 
