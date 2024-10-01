@@ -2,6 +2,7 @@
 import fg from 'api-dylux'
 
 let handler = async (m, { conn, command, args, text, usedPrefix }) => {
+if (!global.db.data.chats[m.chat].nsfw) return conn.reply(m.chat, `🚩 El grupo no admite contenido *Nsfw.*\n\n> Para activarlo un *Administrador* debe usar el comando *on nsfw*`, m, rcanal)
 if (!text) return conn.reply(m.chat, 'ingresa el texto de lo que quieres buscar', m)
 
 try {
