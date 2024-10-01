@@ -20,6 +20,7 @@ await conn.sendFile(m.chat, img, 'thumbnail.jpg', txt, m)
 console.log(error)
 }}
 
-handler.command = ['xvideossearch']
-handler.tags = ['nsfw'] 
+handler.help = ['xvideoss *busqueda*']
+handler.tags = ['nsfw']
+handler.command = ['xvideosearch','xvideoss']
 export default handler
