@@ -51,5 +51,6 @@ const works = [
    "Te vistieron de maid en publico y te dieron",
    "Le sobaste el pito a un cliente habitual y ganaste",
    "Te vistieron de colegiala en publico y te dieron",
-   "Le diste los sentones de su vida a un hombre que encontraste por ahi y ganaste",
+   "Le diste los sentones de su vida a un hombre que encontraste por ahi y ganaste", 
+  ]
  
