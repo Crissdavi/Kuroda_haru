@@ -27,7 +27,7 @@ let handler = async (m, { conn, usedPrefix }) => {
 }
 
 handler.help = ['bleh @tag'];
-handler.tags = ['nakano react'];
+handler.tags = ['fun'];
 handler.command = ['bleh'];
 handler.group = true;
 
