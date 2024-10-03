@@ -102,6 +102,8 @@ let handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, isR
 *Tipo :* document 
 *Descripción :* Des/Activa la *Descarga En Documentos* para el Usuario
 
+*Tipo :* antibot
+*Descripción :* Des/activa el *Antibot* para el grupo 
 *• Ejemplo:*
 *- ${usedPrefix + command}* welcome
 `.trim())
