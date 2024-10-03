@@ -32,7 +32,7 @@ let handler = async (m, { conn, usedPrefix }) => {
 }
 
 handler.help = ['matar @tag'];
-handler.tags = ['nakano react'];
+handler.tags = ['fun'];
 handler.command = ['matar', 'kill'];
 handler.register = true;
 handler.group = true;
