@@ -20,9 +20,9 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
       }
     }
     
-    conn.sendMessage(m.chat, { text: 'Hola soy Ai Hoshino, ¿Cómo puedo ayudarte?' }, { quoted: anu })
+    conn.sendMessage(m.chat, { text: 'Hola soy Kuroda, ¿Cómo puedo ayudarte?' }, { quoted: anu })
   } catch (error) {
-    conn.sendMessage(m.chat, 'Hola soy Ai Hoshino, ¿Cómo puedo ayudarte?', 'conversation', { quoted: m })
+    conn.sendMessage(m.chat, 'Hola soy kuroda para registrarse esribe *.reg* ejemplo: *.reg kuroda.21*, para usar el menu escriba *.menu .help o kuroda* ', 'conversation', { quoted: m })
   }
 }
 
