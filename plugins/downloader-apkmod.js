@@ -6,10 +6,10 @@ let { name, size, lastUpdate, icon } = result;
 let URL = result.dllink
 let packe = result.package
 let texto = `  ❯───「 𝗔𝗣𝗞 𝗗𝗢𝗪𝗡𝗟𝗢𝗔𝗗 」───❮
-    🇦🇱 𝐍𝐨𝐦𝐛𝐫𝐞 : ⇢ ${name} 📩
-    🇦🇱 𝐓𝐚𝐦𝐚𝐧̃𝐨 : ⇢ ${size} ⚖️
-    🇦🇱 𝐏𝐚𝐜𝐤𝐚𝐠𝐞 : ⇢ ${packe} 📦
-    🇦🇱 𝐀𝐜𝐭𝐮𝐚𝐥𝐢𝐳𝐚𝐝𝐨 : ⇢ ${lastUpdate} 🗓️
+    🇷🇺 𝐍𝐨𝐦𝐛𝐫𝐞 : ⇢ ${name} 📩
+    🇷🇺 𝐓𝐚𝐦𝐚𝐧̃𝐨 : ⇢ ${size} ⚖️
+    🇷🇺 𝐏𝐚𝐜𝐤𝐚𝐠𝐞 : ⇢ ${packe} 📦
+    🇷🇺 𝐀𝐜𝐭𝐮𝐚𝐥𝐢𝐳𝐚𝐝𝐨 : ⇢ ${lastUpdate} 🗓️
     
 ## Su aplicación se enviará en un momento POR FAVOR ESPERE . . .`
 await conn.sendFile(m.chat, icon, name + '.jpg', texto, m)
