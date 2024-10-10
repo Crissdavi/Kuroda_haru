@@ -25,7 +25,7 @@ Impuesto 2% : *${-imt}* 💴 Zenis
 Total gastado: *${-limit}* 💴 Zenis`)
     conn.fakeReply(m.chat, `*+${poin}* *💴 Zenis.*`, who, m.text)
 }
-handler.help = ['darstars *@user <cantidad>*']
+handler.help = ['darzenis *@user <cantidad>*']
 handler.tags = ['rpg']
 handler.command = ['darcoins', 'darzenis']
 handler.register = true 
