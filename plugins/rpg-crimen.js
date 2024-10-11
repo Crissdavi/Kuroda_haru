@@ -5,7 +5,7 @@ let handler = async (m, { conn, text, command, usedPrefix }) => {
   let senderId = m.sender
   let senderName = conn.getName(senderId)
   
-  let tiempoEspera = 5 * 60
+  let tiempoEspera = 2 * 60
   if (cooldowns[m.sender] && Date.now() - cooldowns[m.sender] < tiempoEspera * 1000) {
     let tiempoRestante = segundosAHMS(Math.ceil((cooldowns[m.sender] + tiempoEspera * 1000 - Date.now()) / 1000))
     m.reply(`🚩 Ya has cometido un Crimen recientemente, espera *⏱ ${tiempoRestante}* para cometer tu próximo Crimen y evitar ser atrapado.`)
@@ -25,7 +25,7 @@ let handler = async (m, { conn, text, command, usedPrefix }) => {
   let randomUserLimit = users[randomUserId].limit || 0
 
   let minAmount = 100
-  let maxAmount = 10000
+  let maxAmount = 1000
 
   let amountTaken = Math.floor(Math.random() * (maxAmount - minAmount + 1)) + minAmount
 
