@@ -14,7 +14,7 @@ let user = global.db.data.users[m.sender]
   user.limit += resultado
 }
 
-handler.help = ['slut']
+handler.help = ['slut'; 'prostituirse']
 handler.tags = ['rpg']
 handler.command = ['slut']
 handler.register = true 
