@@ -24,8 +24,8 @@ let handler = async (m, { conn, text, command, usedPrefix }) => {
 
   let randomUserLimit = users[randomUserId].limit || 0
 
-  let minAmount = 15
-  let maxAmount = 50
+  let minAmount = 100
+  let maxAmount = 10000
 
   let amountTaken = Math.floor(Math.random() * (maxAmount - minAmount + 1)) + minAmount
 
