@@ -1,5 +1,5 @@
 const free = 5000
-const prem = 999999999
+const prem = 100000
 const cooldowns = {}
 
 let handler = async (m, { conn, isPrems }) => {
