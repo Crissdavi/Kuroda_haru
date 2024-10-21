@@ -14,7 +14,7 @@ const yt = await fg.ytv(args[0], q)
 let { title, dl_url, size } = yt 
 let vid = (await yts(text)).all[0]
 
-if (size.split('MB')[0] >= limit) return conn.reply(m.chat, `El archivo pesa mas de ${limit} MB, se canceló la Descarga.`, m).then(_ => m.react('✖️'))
+if (size.split('MB')[500] >= limit) return conn.reply(m.chat, `El archivo pesa mas de ${limit} MB, se canceló la Descarga.`, m).then(_ => m.react('✖️'))
 
 await conn.sendMessage(m.chat, {
         text: ` *Título ∙* ${title}\n⚖️ *Tamaño ∙* ${size}\n\n*↻ Espera @${m.sender.split`@`[0]}, se está enviando su video en 720P. . .*`,
@@ -31,7 +31,7 @@ let yt = await fg.ytmp4(args[0], q)
 let { title, size, dl_url } = yt
 let vid = (await yts(text)).all[0]
 
-if (size.split('MB')[0] >= limit) return conn.reply(m.chat, `El archivo pesa mas de ${limit} MB, se canceló la Descarga.`, m).then(_ => m.react('✖️'))
+if (size.split('MB')[500] >= limit) return conn.reply(m.chat, `El archivo pesa mas de ${limit} MB, se canceló la Descarga.`, m).then(_ => m.react('✖️'))
 
 await conn.sendMessage(m.chat, {
         text: ` *Título ∙* ${title}\n⚖️ *Tamaño ∙* ${size}\n\n*↻ Espera @${m.sender.split`@`[0]},se  está enviando su video . . .*`,
