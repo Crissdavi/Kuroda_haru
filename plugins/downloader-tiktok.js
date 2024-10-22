@@ -1,81 +1,30 @@
-import Scraper from '@SumiFX/Scraper'
-import axios from 'axios'
-import fetch from 'node-fetch'
+import Starlights from '@StarlightsTeam/Scraper'
 
 let handler = async (m, { conn, args, usedPrefix, command }) => {
-    if (!args[0])  m.reply(`🔍 Ingresa un enlace del vídeo de TikTok junto al comando.\n\nEjemplo:\n${usedPrefix + command} https://vm.tiktok.com/ZMMCYHnxf/`)
-
-    try {
-        let { title, published, quality, likes, commentCount, shareCount, views, dl_url } = await Scraper.tiktokdl(args[0])
-            let txt = `╭─⬣「 *TikTok Download* 」⬣\n`
-                txt += `│  ≡◦ *🔍 Título* : ${title}\n`
-                txt += `│  ≡◦ *📅 Publicado* : ${published}\n`
-                txt += `│  ≡◦ *🪴 Calidad* : ${quality}\n`
-                txt += `│  ≡◦ *👍 Likes* : ${likes}\n`
-                txt += `│  ≡◦ *🗣 Comentarios* : ${commentCount}\n`
-                txt += `│  ≡◦ *💫 Share* : ${shareCount}\n`
-                txt += `│  ≡◦ *📹 Visitas* : ${views}\n`
-                txt += `╰─⬣`
-
-        await conn.sendMessage(m.chat, { video: { url: dl_url }, caption: txt }, { quoted: m })
-    } catch {
-    try {
-        const api = await fetch(`https://api-starlights-team.koyeb.app/api/tiktok?url=${args[0]}`)
-        const data = await api.json()
-
-        if (data.status) {
-            const { author, view, comment, play, share, download, duration, title, video } = data.data;
-            let txt = `╭─⬣「 *TikTok Download* 」⬣\n`
-                txt += `│  ≡◦ *🔍 Título* : ${title}\n`
-                txt += `│  ≡◦ *📚 Autor* : ${author.nickname}\n`
-                txt += `│  ≡◦ *🕜 Duración* : ${duration} Segundos\n`
-                txt += `│  ≡◦ *🌵 Descargas* : ${download}\n`
-                txt += `│  ≡◦ *🗣 Comentarios* : ${comment}\n`
-                txt += `│  ≡◦ *💫 Share* : ${share}\n`
-                txt += `│  ≡◦ *🌀 Visitas* : ${play}\n`
-                txt += `╰─⬣`
-
-            await conn.sendMessage(m.chat, { video: { url: video }, caption: txt }, { quoted: m })
-        }
-    } catch {
-    try {
-        const api1 = await fetch(`https://delirius-api-oficial.vercel.app/api/tiktok?url=${args[0]}`)
-        const data1 = await api1.json()
-
-        if (data1.status) {
-            const { author, repro, like, share, comment, download, duration, title, meta, published } = data1.data
-            const publishedDate = formatDate(published)
-            const fileSize = convertBytesToMB(meta.media[0].size_org)
-
-            let txt = `╭─⬣「 *TikTok Download* 」⬣\n`
-                txt += `│  ≡◦ *🔍 Título* : ${title}\n`
-                txt += `│  ≡◦ *👥 Autor* : ${author.nickname}\n`
-                txt += `│  ≡◦ *🕜 Duración* : ${duration} Segundos\n`
-                txt += `│  ≡◦ *📹 Reproducciones* : ${repro}\n`
-                txt += `│  ≡◦ *👍 Likes* : ${like}\n`;
-                txt += `│  ≡◦ *🗣 Comentarios* : ${comment}\n`
-                txt += `│  ≡◦ *📦 Descargas* : ${download}\n`
-                txt += `│  ≡◦ *💫 Share* : ${share}\n`
-                txt += `│  ≡◦ *📅 Publicado* : ${publishedDate}\n`
-                txt += `│  ≡◦ *🌵 Tamaño* : ${fileSize}\n`
-                txt += `╰─⬣`
-
-            await conn.sendMessage(m.chat, { video: { url: meta.media[0].org }, caption: txt }, { quoted: m })
-        }
-    } catch {
-}}}}
-handler.help = ['tiktok <url tt>']
+if (!args || !args[0]) return conn.reply(m.chat, '🚩 Ingresa un enlace del vídeo de TikTok junto al comando.\n\n`Ejemplo:`\n' + `> *${usedPrefix + command}* https://vm.tiktok.com/ZMrFCX5jf/`, m, rcanal)
+    if (!args[0].match(/tiktok/gi)) return conn.reply(m.chat, `Verifica que el link sea de TikTok`, m, rcanal).then(_ => m.react('✖️'))
+  await m.react('🕓')
+try {
+let { title, author, duration, views, likes, comment, share, published, downloads, dl_url } = await Starlights.tiktokdl(args[0])
+let txt = '`乂  T I K T O K  -  D O W N L O A D`\n\n'
+    txt += `        ✩  *Título* : ${title}\n`
+    txt += `        ✩  *Autor* : ${author}\n`
+    txt += `        ✩  *Duración* : ${duration} segundos\n`
+    txt += `        ✩  *Vistas* : ${views}\n`
+    txt += `        ✩  *Likes* : ${likes}\n`
+    txt += `        ✩  *Comentarios* : ${comment}\n`
+    txt += `        ✩  *Compartidos* : ${share}\n`
+    txt += `        ✩  *Publicado* : ${published}\n`
+    txt += `        ✩  *Descargas* : ${downloads}\n\n`
+    txt += `> 🚩 *${textbot}*`
+await conn.sendFile(m.chat, dl_url, 'tiktok.mp4', txt, m, null, rcanal)
+await m.react('✅')
+} catch {
+await m.react('✖️')
+}}
+handler.help = ['tiktok *<url tt>*']
 handler.tags = ['downloader']
-handler.command = ['tiktok', 'ttdl', 'tiktokdl', 'tiktoknowm', 'tt']
+handler.command = /^(tiktok|ttdl|tiktokdl|tiktoknowm)$/i
 handler.register = true
 
 export default handler
-
-function convertBytesToMB(bytes) {
-    return (bytes / (1024 * 1024)).toFixed(2) + ' MB'
-}
-
-function formatDate(unixTimestamp) {
-    const date = new Date(unixTimestamp * 1000)
-    return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
-}
