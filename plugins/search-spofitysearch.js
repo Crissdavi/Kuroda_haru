@@ -4,7 +4,6 @@ const { generateWAMessageContent, generateWAMessageFromContent, proto } = (await
 
 let handler = async (m, { conn, text, usedPrefix, command }) => {
 if (!text) return m.reply('Ingresa el texto de lo que quieres buscar en Spotify');
-  await m.react('🕓')
 
 try {
 async function createImage(url) {
