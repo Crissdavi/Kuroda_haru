@@ -20,7 +20,7 @@ let txt = `*乂  S P O T I F Y  -  D O W N L O A D*\n\n`
     txt += `	✩   *Artista* :${album.metadata.artists}\n`
     txt += `	✩   *Publicado* : ${album.metadata.releaseDate}\n`   
     txt += `	✩   *Tracks totales* : ${album.trackList.length}\n\n`   
-    txt += `*- ↻ Los audios se estan enviando espera un momento, soy lenta. . .*`
+    txt += `*- ↻ Los audios se estan enviando espera un momento, soy lento. . .*`
 await conn.sendFile(m.chat, img, 'thumbnail.jpg', txt, m)
 for (let i = 0; i < album.trackList.length; i++) {
 await conn.sendFile(m.chat, album.trackList[i].audioBuffer, album.trackList[i].metadata.name + '.mp3', null, m, false, { mimetype: 'audio/mpeg', asDocument: user.useDocument })
@@ -36,7 +36,7 @@ let txt = `*乂  S P O T I F Y  -  D O W N L O A D*\n\n`
     txt += `	✩   *Duración* : ${track.duration}\n`
     txt += `	✩   *Album* : ${track.album.name}\n`                 
     txt += `	✩   *Publicado* : ${track.album.releasedDate}\n\n`   
-    txt += `*- ↻ El audio se esta enviando espera un momento, soy lenta. . .*`
+    txt += `*- ↻ El audio se esta enviando espera un momento, soy lento. . .*`
 await conn.sendFile(m.chat, img, 'thumbnail.jpg', txt, m)
 await conn.sendFile(m.chat, dlspoty, track.title + '.mp3', null, m, false, { mimetype: 'audio/mpeg', asDocument: user.useDocument })
 await m.react('✅')
@@ -52,7 +52,7 @@ let img = await (await fetch(`${playlistInfoByID.images[0].url}`)).buffer()
 let txt = `*乂  S P O T I F Y  -  D O W N L O A D*\n\n`
     txt += `	✩   *Playlist* : ${playlistInfoByID.name}\n`
     txt += `	✩   *Tracks totales* : ${tracks.length}\n\n`
-    txt += `*- ↻ Los audios se estan enviando espera un momento, soy lenta. . .*`
+    txt += `*- ↻ Los audios se estan enviando espera un momento, soy lento. . .*`
 await conn.sendFile(m.chat, img, 'thumbnail.jpg', txt, m)
 let target = m.chat
 if (m.isGroup && tracks.length > 20) {
