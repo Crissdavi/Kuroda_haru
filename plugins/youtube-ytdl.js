@@ -59,5 +59,5 @@ await m.react('✖️')
 handler.help = ['ytdl *<link yt>*']
 handler.tags = ['downloader', 'premium']
 handler.command = /^ytdl|dlyt|youtubedl$/i
-handler.premium = true 
+handler.premium = false
 export default handler
