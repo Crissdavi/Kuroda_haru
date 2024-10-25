@@ -10,7 +10,7 @@
         <a href="https://github.com/Crissdavi"><img title="Author"    src="https://img.shields.io/badge/Author-おCriss-purple.svg?style=for-the-badge&logo=github"></a>
     </p>
     <p>
-        <a href="https://github.com/StarlightsTeamollowers"><img title="Followers" src="https://img.shields.io/github/followers/StarlightsTeam?color=blue&style=flat-square"></a>
+        <a href="https://github.com/Crissdaviollowers"><img title="Followers" src="https://img.shields.io/github/followers/Crissdavi?color=blue&style=flat-square"></a>
         <a href="https://github.com/Crissdavi/Kuroda_haru/stargazers/"><img title="Stars" src="https://img.shields.io/github/stars/Crissdavi/Kuroda_haru?color=red&style=flat-square"></a>
         <a href="https://github.com/Crissdavi/Kurodaharu/network/members"><img title="Forks" src="http://img.shields.io/github/forks/Crissdavi/Kuroda_haru?color=red&style=flat-square"></a>
         <a href="#"><img src="https://img.shields.io/badge/MANTENIMIENTO-SI-blue.svg"</a>
