@@ -42,7 +42,7 @@ await conn.sendMessage(m.chat, {
     await m.react('✅')
 } catch {
 await m.react('✖️')
-}}});
+}
 handler.help = ['ytmp3 <yt url>']
 handler.tags = ['downloader']
 handler.command = ['ytmp3', 'yta']
