@@ -21,15 +21,7 @@
 
 ---------
 
-### 🌱 Usa: Sky Plus el Ultra Plus que necesitas!! 🌱
 
-<a href="https://dash.skyultraplus.com"><img src="https://i.ibb.co/SynCj3P/file.jpg" width="400" height="400" alt="CorinPlus"/></a>
-
-- Dash: [Dash Sky Plus](https://dash.skyultraplus.com/)
-- Panel: [Panel Sky Plus](https://panel.skyultraplus.com/)
-- Canal de WhatsApp: [【 🌱 Sky Plus channel 🌱 】](https://whatsapp.com/channel/0029VamOVm08fewr5jix2Z3t)
-- Grupo de WhatsApp: [🌱Group Sky Plus 🌱](https://chat.whatsapp.com/K235lkvaGvlGRQKYm26xZP)
----------
 ---------
 
 ## <img src="https://i.giphy.com/media/nWGRHBnAl5Kmc/giphy.gif" alt="Instalacion" width="40" height="40"> Instalación en [termux](https://f-droid.org/repo/com.termux_118.apk)
