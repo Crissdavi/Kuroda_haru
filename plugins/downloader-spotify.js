@@ -73,7 +73,7 @@ let txt = `*乂  S P O T I F Y  -  D O W N L O A D*\n\n`
     txt += `	✩   *Duración* : ${searchTrack.duration}\n`
     txt += `	✩   *Album* : ${searchTrack.album.name}\n`                 
     txt += `	✩   *Publicado* : ${searchTrack.album.releasedDate}\n\n`   
-    txt += `*- ↻ El audio se esta enviando espera un momento, soy lenta. . .*`
+    txt += `*- ↻ El audio se esta enviando espera un momento, soy lentalo. . .*`
 await conn.sendFile(m.chat, img, 'thumbnail.jpg', txt, m)
 await conn.sendFile(m.chat, dlspoty, searchTrack.title + '.mp3', null, m, false, { mimetype: 'audio/mpeg', asDocument: user.useDocument })
 await m.react('✅')
