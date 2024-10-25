@@ -39,6 +39,10 @@ await conn.sendMessage(m.chat, {
         audio: { url: data_play.data.mp3 }), 
         mimetype: 'audio/mp4',
       }, { quoted: m });
+    await m.react('✅')
+} catch {
+await m.react('✖️')
+}}}
 handler.help = ['ytmp3 <yt url>']
 handler.tags = ['downloader']
 handler.command = ['ytmp3', 'yta']
