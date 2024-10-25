@@ -14,5 +14,5 @@ handler.help = ['fb *<link fb>*']
 handler.tags = ['downloader'] 
 handler.command = /^(facebook|fb|facebookdl|fbdl)$/i
 //handler.limit = 1
-handler.register = true
+handler.register = false
 export default handler
