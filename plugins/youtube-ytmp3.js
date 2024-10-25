@@ -37,11 +37,12 @@ let data_play = await ytdl(videos.url)
 console.log(data_play)
 await conn.sendMessage(m.chat, { 
         audio: { url: data_play.data.mp3 }), 
-    await m.react('✅')
         mimetype: 'audio/mp4',
       }, { quoted: m });
 await m.react('✅')
-}
+} catch {
+await m.react('✖️')
+}}}
 handler.help = ['ytmp3 <yt url>']
 handler.tags = ['downloader']
 handler.command = ['ytmp3', 'yta']
