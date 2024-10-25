@@ -8,5 +8,5 @@ conn.reply(m.chat, `*» Total de Funciones* : ${totalf}`,m)
 handler.help = ['totalfunciones']
 handler.tags = ['main']
 handler.command = ['totalfunciones']
-handler.register = true
+handler.register = false
 export default handler 
