@@ -6,7 +6,6 @@ const handler = async (m, { text, usedPrefix, command, conn }) => {
     if (!text) {
       throw m.reply("✧ Ingresa una consulta de *YouTube*");
     }
-    await m.react('🕓
     let res = await yts(text);
     let videoList = res.all;
     let videos = videoList[0];
