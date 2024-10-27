@@ -83,6 +83,6 @@ let handler = async (message, { conn, text }) => {
 };
 handler.help = ['pinterest <text>'];
 handler.tags = ['search'];
-handler.command = ['pinterest', 'imagen', 'pins'];
+handler.command = ['pinterest', 'pins'];
 
 export default handler;
