@@ -22,7 +22,7 @@ let imgs = JT.slice(0, 7)
 
 for (let result of imgs) {
 HasumiBotFreeCodes.push({
-header: proto.Message.InteractiveMessage.Header.fromObject({ title: ``, hasMediaAttachment: true, imageMessage: await createImage(result) : ${text}`, m, null, rcanal}), 
+header: proto.Message.InteractiveMessage.Header.fromObject({ title: ``, hasMediaAttachment: true, imageMessage: await createImage(result): ${text}, m, null, rcanal }),
 await m.react('✅')
 } catch {
 await m.react('✖️')
@@ -54,7 +54,7 @@ console.error(error)
 }}
 handler.help = ['imagen *<búsqueda>*']
 handler.tags = ['img']
-handler.command = ['imagen']
+handler.command = ['imagen', 'img']
 handler.register = true 
 //handler.limit = 1
 export default handler
