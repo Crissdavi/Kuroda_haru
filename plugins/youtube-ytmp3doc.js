@@ -39,12 +39,12 @@ const handler = async (m, { text, usedPrefix, command, conn }) => {
     if (data_play && data_play.data && data_play.data.doc) {
         await conn.sendMessage(m.chat, { 
             audio: { url: data_play.data.doc }, 
-            mimetype: 'audio/doc',
+            mimetype: 'doc/mp4',
         }, { quoted: m });
         
         await m.react('✅'); 
     } else {
-        await m.reply("❌ No se pudo obtener el audio.");
+        await m.reply("❌ No se pudo obtener el doc.");
         await m.react('❌'); 
     }
 };
