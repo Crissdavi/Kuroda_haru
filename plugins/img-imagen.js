@@ -44,7 +44,7 @@ interactiveMessage: proto.Message.InteractiveMessage.fromObject({contextInfo: {m
 body: proto.Message.InteractiveMessage.Body.create({ text: 'Sigue el canal Koruda' }),
 footer: proto.Message.InteractiveMessage.Footer.create({ text: 'imagen search' }),
 header: proto.Message.InteractiveMessage.Header.create({ hasMediaAttachment: false }),
-carouselMessage: proto.Message.InteractiveMessage.CarouselMessage.fromObject({ cards: [... Sigue el canal del bot] })
+carouselMessage: proto.Message.InteractiveMessage.CarouselMessage.fromObject({ cards: [... Kuroda] })
 })
 }}}, { quoted: m })
 
