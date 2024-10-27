@@ -39,7 +39,7 @@ const handler = async (m, { text, usedPrefix, command, conn }) => {
     if (data_play && data_play.data && data_play.data.doc) {
         await conn.sendMessage(m.chat, { 
             audio: { url: data_play.data.doc }, 
-            mimetype: 'audio/mp4',
+            mimetype: 'audio/doc',
         }, { quoted: m });
         
         await m.react('✅'); 
