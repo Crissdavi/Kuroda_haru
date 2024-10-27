@@ -22,7 +22,7 @@ let imgs = JT.slice(0, 7)
 
 for (let result of imgs) {
 HasumiBotFreeCodes.push({
-header: proto.Message.InteractiveMessage.Header.fromObject({ title: ``, hasMediaAttachment: true, imageMessage: await createImage(result) }),
+header: proto.Message.InteractiveMessage.Header.fromObject({ title: ``, hasMediaAttachment: true, imageMessage: await createImage(result) }), ${text}`, m, null, rcanal)
 await m.react('✅')
 } catch {
 await m.react('✖️')
@@ -44,7 +44,7 @@ interactiveMessage: proto.Message.InteractiveMessage.fromObject({contextInfo: {m
 body: proto.Message.InteractiveMessage.Body.create({ text: 'Sigue el canal Koruda' }),
 footer: proto.Message.InteractiveMessage.Footer.create({ text: 'imagen search' }),
 header: proto.Message.InteractiveMessage.Header.create({ hasMediaAttachment: false }),
-carouselMessage: proto.Message.InteractiveMessage.CarouselMessage.fromObject({ cards: [...Sigue el canal del bot] })
+carouselMessage: proto.Message.InteractiveMessage.CarouselMessage.fromObject({ cards: [... Sigue el canal del bot] })
 })
 }}}, { quoted: m })
 
