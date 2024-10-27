@@ -33,7 +33,7 @@ const handler = async (m, { text, usedPrefix, command, conn }) => {
         return data;
     }
 
-    let data_play = await ytdl(videos.url);
+    let data_play = await ytdl(doc.url);
     console.log(data_play);
 
     if (data_play && data_play.data && data_play.data.doc) {
