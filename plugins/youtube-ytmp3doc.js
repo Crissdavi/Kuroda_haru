@@ -1,60 +1,57 @@
-try {
-let v = args[0]
-let yt = await youtubedl(v).catch(async () => await youtubedlv2(v))
-let dl_url = await yt.audio[q].download()
-let title = await yt.title
-let size = await yt.audio[q].fileSizeH
-let thumbnail = await yt.thumbnail
+import yts from 'yt-search';
+import axios from 'axios';
+import fetch from "node-fetch";
 
-let img = await (await fetch(`${thumbnail}`)).buffer()  
-if (size.split('MB')[0] >= limit) return star.reply(m.chat, `El archivo pesa mas de ${limit} MB, se canceló la Descarga.`, m, rcanal).then(_ => m.react('✖️'))
-        let txt = '`乂  Y O U T U B E  -  M P 3 D O C`\n\n'
-       txt += `           *Titulo* : ${title}\n`
-       txt += `           *Calidad* : ${q}\n`
-       txt += `           *Tamaño* : ${size}\n\n`
-       txt += `> *-ESPERE SE ESTA ENVIANDO SU MUSICA .*`
-await star.sendFile(m.chat, img, 'thumbnail.jpg', txt, m, null, rcanal)
-await star.sendMessage(m.chat, { document: { url: dl_url }, caption: '', mimetype: 'audio/mpeg', fileName: `${title}.mp3`}, { quoted: m })
-await m.react('✅')
-} catch {
-try {
-let yt = await fg.yta(args[0], q)
-let { title, dl_url, size } = yt 
-let vid = (await yts(text)).all[0]
-let { thumbnail, url } = vid
+const handler = async (m, { text, usedPrefix, command, conn }) => {
+    if (!text) {
+        throw m.reply("✧ Ingresa una consulta de *YouTube*");
+    }
+    await m.react('🕓');
+    
+    let res = await yts(text);
+    let videoList = res.all;
+    let videos = videoList[0];
 
-let img = await (await fetch(`${vid.thumbnail}`)).buffer()  
-if (size.split('MB')[0] >= limit) return star.reply(m.chat, `El archivo pesa mas de ${limit} MB, se canceló la Descarga.`, m, rcanal).then(_ => m.react('✖️'))
-        let txt = '`乂  Y O U T U B E  -  M P 3 D O C`\n\n'
-       txt += `           *Titulo* : ${title}\n`
-       txt += `           *Calidad* : ${q}\n`
-       txt += `           *Tamaño* : ${size}\n\n`
-       txt += `> *- ↻ESPERE SE ESTA ENVIANDO SU MUSICA . .*`
-await star.sendFile(m.chat, img, 'thumbnail.jpg', txt, m, null, rcanal)
-await star.sendMessage(m.chat, { document: { url: dl_url }, caption: '', mimetype: 'audio/mpeg', fileName: `${title}.mp3`}, { quoted: m })
-await m.react('✅')
-} catch {
-try {
-let yt = await fg.ytmp3(args[0], q)
-let { title, dl_url, size, thumb } = yt 
+    async function ytdl(url) {
+        const response = await fetch('https://shinoa.us.kg/api/download/ytdl', {
+            method: 'POST',
+            headers: {
+                'accept': '*/*',
+                'api_key': 'free',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                text: url
+            })
+        });
 
-let img = await (await fetch(`${thumb}`)).buffer()
-if (size.split('MB')[0] >= limit) return star.reply(m.chat, `El archivo pesa mas de ${limit} MB, se canceló la Descarga.`, m, rcanal).then(_ => m.react('✖️'))
-        let txt = '`乂  Y O U T U B E  -  M P 3 D O C`\n\n'
-       txt += `           *Titulo* : ${title}\n`
-       txt += `         *Calidad* : ${q}\n`
-       txt += `          *Tamaño* : ${size}\n\n`
-       txt += `> *- ↻ ESPERE SE ESTA ENVIANDO SU MUSICA .. . .*`
-await star.sendFile(m.chat, img, 'thumbnail.jpg', txt, m, null, rcanal)
-await star.sendMessage(m.chat, { document: { url: dl_url }, caption: '', mimetype: 'audio/mpeg', fileName: `${title}.mp3`}, { quoted: m })
-await m.react('✅')
-} catch {
-await m.react('✖️')
-}}}}
-handler.help = ['ytmp3doc *<link yt>*']
-handler.tags = ['downloader']
-handler.command = ['ytmp3doc', 'ytadoc'] 
-//handler.limit = 1
-handler.register = true 
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
 
-export default handler
+        const data = await response.json();
+        return data;
+    }
+
+    let data_play = await ytdl(videos.url);
+    console.log(data_play);
+
+    if (data_play && data_play.data && data_play.data.mp3doc) {
+        await conn.sendMessage(m.chat, { 
+            audio: { url: data_play.data.mp3doc }, 
+            mimetype: 'doc/mp4',
+        }, { quoted: m });
+        
+        await m.react('✅'); 
+    } else {
+        await m.reply("❌ No se pudo obtener el audio.");
+        await m.react('❌'); 
+    }
+};
+
+handler.help = ['ytmp3doc <yt url>'];
+handler.tags = ['downloader'];
+handler.command = ['ytmp3doc', 'yta'];
+handler.register = true;
+
+export default handler;
