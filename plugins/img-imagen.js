@@ -52,6 +52,9 @@ await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
 } catch (error) {
 console.error(error) 
 }}
-
+handler.help = ['imagen *<búsqueda>*']
+handler.tags = ['img']
 handler.command = ['imagen']
-
+handler.register = true 
+//handler.limit = 1
+export default handler
