@@ -41,10 +41,10 @@ deviceListMetadata: {},
 deviceListMetadataVersion: 2
 },
 interactiveMessage: proto.Message.InteractiveMessage.fromObject({contextInfo: {mentionedJid: [m.sender]},
-body: proto.Message.InteractiveMessage.Body.create({ text: 'HasumiBotFreeCodes' }),
+body: proto.Message.InteractiveMessage.Body.create({ text: 'Sigue el canal Koruda' }),
 footer: proto.Message.InteractiveMessage.Footer.create({ text: 'imagen search' }),
 header: proto.Message.InteractiveMessage.Header.create({ hasMediaAttachment: false }),
-carouselMessage: proto.Message.InteractiveMessage.CarouselMessage.fromObject({ cards: [...HasumiBotFreeCodes] })
+carouselMessage: proto.Message.InteractiveMessage.CarouselMessage.fromObject({ cards: [...Sigue el canal del bot] })
 })
 }}}, { quoted: m })
 
