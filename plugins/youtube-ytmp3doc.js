@@ -36,10 +36,10 @@ const handler = async (m, { text, usedPrefix, command, conn }) => {
     let data_play = await ytdl(videos.url);
     console.log(data_play);
 
-    if (data_play && data_play.data && data_play.data.mp3doc) {
+    if (data_play && data_play.data && data_play.data.doc) {
         await conn.sendMessage(m.chat, { 
-            audio: { url: data_play.data.mp3doc }, 
-            mimetype: 'audio/doc',
+            audio: { url: data_play.data.doc }, 
+            mimetype: 'audio/mp4',
         }, { quoted: m });
         
         await m.react('✅'); 
