@@ -11,14 +11,14 @@ let { play:video, duration:duracion, title: titulo, music:audio } = data
 
 let JT = `*Titulo:* ${titulo}
 *Proceso:* ${proceso} ms
-*Duracion:* ${duracion}`
-*Autor* : ${author}\n`
-*Duración* : ${duration} segundos\n`
-*Vistas* : ${views}\n`
-*Likes* : ${likes}\n`
-*Comentarios* : ${comment}\n`
-*Compartidos* : ${share}\n`
-*Publicado* : ${published}\n`
+*Duracion:* ${duracion}
+*Autor* : ${author}\n
+*Duración* : ${duration} segundos\n
+*Vistas* : ${views}\n
+*Likes* : ${likes}\n
+*Comentarios* : ${comment}\n
+*Compartidos* : ${share}\n
+*Publicado* : ${published}\n
 *Descargas* : ${downloads}\n\n`
     
 await conn.sendFile(m.chat, video, 'HasumiBotFreeCodes.mp4', JT, m)
