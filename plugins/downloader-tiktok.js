@@ -13,7 +13,6 @@ let JT = `*Titulo:* ${titulo}
 *Proceso:* ${proceso} ms
 *Duracion:* ${duracion}
 *Autor* : ${author}
-*Duración* : ${duration} segundos
 *Vistas* : ${views}
 *Likes* : ${likes}
 *Comentarios* : ${comment}
