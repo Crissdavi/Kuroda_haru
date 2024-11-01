@@ -1,4 +1,3 @@
-
 //*`[ TIKTOK - DL ]`*
 import axios from 'axios'
 
@@ -10,17 +9,18 @@ let json = api.data
 let { data, processed_time:proceso } = json
 let { play:video, duration:duracion, title: titulo, music:audio } = data
 
-let txt = '`乂  T I K T O K  -  D O W N L O A D`\n\n'
-    txt += `	✩  *Título* : ${title}\n`
-    txt += `	✩  *Autor* : ${author}\n`
-    txt += `	✩  *Duración* : ${duration} segundos\n`
-    txt += `	✩  *Vistas* : ${views}\n`
-    txt += `	✩  *Likes* : ${likes}\n`
-    txt += `	✩  *Comentarios* : ${comment}\n`
-    txt += `	✩  *Compartidos* : ${share}\n`
-    txt += `	✩  *Publicado* : ${published}\n`
-    txt += `	✩  *Descargas* : ${downloads}\n\n`
-    txt += `> 🚩 *${textbot}*`
+let JT = `*Titulo:* ${titulo}
+*Proceso:* ${proceso} ms
+*Duracion:* ${duracion}`
+*Autor* : ${author}\n`
+*Duración* : ${duration} segundos\n`
+*Vistas* : ${views}\n`
+*Likes* : ${likes}\n`
+*Comentarios* : ${comment}\n`
+*Compartidos* : ${share}\n`
+*Publicado* : ${published}\n`
+*Descargas* : ${downloads}\n\n`
+    
 await conn.sendFile(m.chat, video, 'HasumiBotFreeCodes.mp4', JT, m)
 await conn.sendFile(m.chat, audio, 'HasumiBotFreeCodes.mp3', null, m)
 } catch (error) {
