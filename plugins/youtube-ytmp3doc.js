@@ -1,13 +1,12 @@
 import yts from 'yt-search';
-import axios from 'axios';
 import fetch from "node-fetch";
 
 const handler = async (m, { text, usedPrefix, command, conn }) => {
     if (!text) {
-        throw m.reply("✧ Ingresa una consulta de *YouTube*");
+        throw await m.reply("✨ Ingresa una consulta o link de *YouTube*");
     }
     await m.react('🕓');
-    
+
     let res = await yts(text);
     let videoList = res.all;
     let videos = videoList[0];
@@ -33,25 +32,26 @@ const handler = async (m, { text, usedPrefix, command, conn }) => {
         return data;
     }
 
-    let data_play = await ytdl(doc.url);
+    let data_play = await ytdl(videos.url);
     console.log(data_play);
 
-    if (data_play && data_play.data && data_play.data.doc) {
+    if (data_play && data_play.data && data_play.data.mp3) {
         await conn.sendMessage(m.chat, { 
-            audio: { url: data_play.data.doc }, 
-            mimetype: 'doc/mp4',
+            document: { url: data_play.data.mp3 }, 
+            mimetype: 'audio/mp3', 
+            fileName: `${videos.title}.mp3`
         }, { quoted: m });
-        
+
         await m.react('✅'); 
     } else {
-        await m.reply("❌ No se pudo obtener el doc.");
+        //await m.reply("❌ No se pudo obtener el audio.");
         await m.react('❌'); 
     }
 };
 
 handler.help = ['ytmp3doc <yt url>'];
 handler.tags = ['downloader'];
-handler.command = ['ytmp3doc', 'yta'];
+handler.command = ['ytmp3doc'];
 handler.register = true;
 
 export default handler;
