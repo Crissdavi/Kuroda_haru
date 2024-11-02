@@ -6,7 +6,7 @@ if (!text) return conn.reply(m.chat, `🚩 Escribe el nonbre del scraper.\nEjemp
 
 try {
 
-await m.react(rwait)
+//await m.react(rwait)
 /*conn.reply(m.chat, '🚩 Buscando el scraper....', m, {
 contextInfo: { externalAdReply :{ mediaUrl: null, mediaType: 1, showAdAttribution: true,
 title: packname,
@@ -30,14 +30,14 @@ return `ゲ◜៹ Npm - Search៹◞ゲ
 }).join`\n\n`
 
 await conn.reply(m.chat, txt, m)
-await m.react(done)
+//await m.react(done)
 } catch {
 await conn.reply(m.chat, '🌱 Ocurrió un error', m, fake)
 await m.react(error)
 }}
 
 handler.help = ['npmjs']
-handler.tags = ['search']
+handler.tags = ['buscador']
 handler.command = ['npmjs']
 handler.register = true
 handler.cookies = 1
