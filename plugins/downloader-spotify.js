@@ -28,7 +28,7 @@ let audio = audioGet.data
 
 await conn.sendMessage(m.chat, {
 document: audio, 
-mimetype: 'audio/mpeg',
+mimetype: 'audio/mp3',
 fileName: `${title}.mp3`,
 caption: `
 *Title:* ${title}
@@ -51,7 +51,7 @@ let audio = audioGet.data
 
 await conn.sendMessage(m.chat, {
 document: audio,
-mimetype: 'audio/mpeg',
+mimetype: 'audio/mp3',
 fileName: `${title}.mp3`,
 caption: `
 *Title:* ${title}
