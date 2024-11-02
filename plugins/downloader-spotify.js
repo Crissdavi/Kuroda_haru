@@ -1,72 +1,25 @@
-//*`[ SPOTIFY - DL ]`*
-import axios from 'axios'
+//SPOTIFY  -  DL
+import fetch from 'node-fetch';
 
-let delay = ms => new Promise(resolve => setTimeout(resolve, ms))
-
-let handler = async (m, { conn, args }) => {
-if (!args[0]) return m.reply('Ingresa un enlace de spotify')
+let handler = async (m, { conn, usedPrefix, command, args }) => {
+if (!args[0]) return m.reply(`Ingresa un enlace de Spotify`)
+    
 try {
-let api = await axios.get(`https://api.ryzendesu.vip/api/downloader/spotify?url=${encodeURIComponent(args[0])}`)
-let json = api.data
+let api = await fetch(`https://deliriussapi-oficial.vercel.app/download/spotifydl?url=${args[0]}`)
+let json = await api.json()
+let { data } = json
+let { title, author, image, cover, url } = data
 
-if (json.success) {
-if (json.metadata.playlistName) {
-let playlistName = json.metadata.playlistName
-let cover = json.metadata.cover
-let tracks = json.tracks
-m.reply(`*Playlist:* ${playlistName}
-*Cover:* ${cover}
-*Total Tracks:* ${tracks.length}`)
+let JT = `*Titulo:* ${title}
+*autor:* ${author}`
 
-for (let i = 0; i < tracks.length; i++) {
-let track = tracks[i]
-if (track.success) {
-let { title, artists, album, cover, releaseDate } = track.metadata
-let link = track.link  
-let audioGet = await axios.get(link, { responseType: 'arraybuffer' })
-let audio = audioGet.data
 
-await conn.sendMessage(m.chat, {
-document: audio, 
-mimetype: 'audio/mp3',
-fileName: `${title}.mp3`,
-caption: `
-*Title:* ${title}
-*Artists:* ${artists}
-*Album:* ${album}
-*Release Date:* ${releaseDate}
-*Cover:* ${cover}
-`,
-}, { quoted: m })
+await conn.sendFile(m.chat, image, `HasumiBotFreeCodes.jpeg`, JT, m);
+await conn.sendFile(m.chat, url, 'hasumiBotFreeCodes.mp3', null, m)
 
-await delay(1500)
-} else {}
-}
-} else {
-let { title, artists, album, cover, releaseDate } = json.metadata
-let link = json.link  
-
-let audioGet = await axios.get(link, { responseType: 'arraybuffer' })
-let audio = audioGet.data
-
-await conn.sendMessage(m.chat, {
-document: audio,
-mimetype: 'audio/mp3',
-fileName: `${title}.mp3`,
-caption: `
-*Title:* ${title}
-*Artists:* ${artists}
-*Album:* ${album}
-*Release Date:* ${releaseDate}
-*Cover:* ${cover}
-`,
-}, { quoted: m })
-}
-} else {}
 } catch (error) {
 console.error(error)
 }}
-
 
 handler.command = /^(spotifydl)$/i
 
