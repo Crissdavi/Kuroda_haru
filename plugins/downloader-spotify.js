@@ -8,7 +8,7 @@ try {
 let api = await fetch(`https://deliriussapi-oficial.vercel.app/download/spotifydl?url=${args[0]}`)
 let json = await api.json()
 let { data } = json
-let { title, author, image, cover, url } = data
+let { title, author, album, image, cover, url } = data
 
 let JT = `*Titulo:* ${title}
 *autor:* ${author}
