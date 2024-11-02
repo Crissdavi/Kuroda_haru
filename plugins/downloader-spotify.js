@@ -11,7 +11,8 @@ let { data } = json
 let { title, author, image, cover, url } = data
 
 let JT = `*Titulo:* ${title}
-*autor:* ${author}`
+*autor:* ${author}
+*album:* ${album}`
 
 
 await conn.sendFile(m.chat, image, `HasumiBotFreeCodes.jpeg`, JT, m);
