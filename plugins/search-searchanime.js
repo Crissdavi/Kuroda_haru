@@ -1,93 +1,51 @@
-import axios from 'axios';
-const baileys = (await import("@whiskeysockets/baileys")).default;
-const { proto } = baileys;
-const { generateWAMessageFromContent } = baileys;
-const { generateWAMessageContent } = baileys;
+// *[ ANIME - SEARCH CARRUSEL ]*
+import axios from 'axios'
+const { proto, generateWAMessageFromContent, generateWAMessageContent } = (await import('@whiskeysockets/baileys')).default
 
-let handler = async (message, { conn, text }) => {
-    if (!text) {
-        return conn.reply(message.chat, ' *¿Qué anime estás buscando?*', message);
-    }
+let handler = async (m, { conn, text }) => {
+if (!text) return m.reply('Ingresa el texto de lo que quieres buscar')
 
-    async function createImageMessage(url) {
-        const { imageMessage } = await generateWAMessageContent(
-            { image: { url } },
-            { upload: conn.waUploadToServer }
-        );
-        return imageMessage;
-    }
+async function createImage(url) {
+const { imageMessage } = await generateWAMessageContent({ image: { url } }, { upload: conn.waUploadToServer })
+return imageMessage
+}
 
-    try {
-        const { data: response } = await axios.get(`https://animeflvapi.vercel.app/search?text=${encodeURIComponent(text)}`);
+try {
+let HasumiBotFreeCodes = [];
+let { data } = await axios.get(`https://deliriussapi-oficial.vercel.app/anime/animesearch?query=${encodeURIComponent(text)}`);
+let res = data.data
+let ult = res.sort(() => 0.5 - Math.random()).slice(0, 7)
+for (let result of ult) {
+HasumiBotFreeCodes.push({header: proto.Message.InteractiveMessage.Header.fromObject({title: `${result.name}`,
+hasMediaAttachment: true,imageMessage: await createImage(result.image_url)}),
+body: proto.Message.InteractiveMessage.Body.fromObject({text: `
+*Tipo:* ${result.payload.media_type}
+*Año de inicio:* ${result.payload.start_year}
+*Emitido:* ${result.payload.aired}
+*Puntuación:* ${result.payload.score}
+*Estado:* ${result.payload.status}
+*Vistas:* ${result.views}`}),
+footer: proto.Message.InteractiveMessage.Footer.fromObject({text: `${result.url}`}),
+nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.fromObject({buttons: []})
+})
+}
 
-        if (!response.results || response.results.length === 0) {
-            return conn.reply(message.chat, ' *No se encontraron animes.*', message);
-        }
+let msg = generateWAMessageFromContent(m.chat, {
+viewOnceMessage: {
+message: {
+messageContextInfo: { deviceListMetadata: {}, deviceListMetadataVersion: 2 },
+interactiveMessage: proto.Message.InteractiveMessage.fromObject({
+body: proto.Message.InteractiveMessage.Body.create({ text: '' }),
+footer: proto.Message.InteractiveMessage.Footer.create({ text: 'ANIME SLIDE' }),
+header: proto.Message.InteractiveMessage.Header.create({ hasMediaAttachment: false }),
+carouselMessage: proto.Message.InteractiveMessage.CarouselMessage.fromObject({cards: [...HasumiBotFreeCodes]})
+})
+}}}, { quoted: m })
+await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
+} catch (error) {
+console.error(error);
+}}
 
-        const animes = response.results;
+handler.command = ['anime']
 
-        const responseMessages = await Promise.all(animes.map(async (anime) => {
-            const imageMessage = await createImageMessage(anime.poster);
-            return {
-                body: proto.Message.InteractiveMessage.Body.fromObject({
-                    text: `𝙏𝙞𝙩𝙪𝙡𝙤: ${anime.title}\n\n${anime.synopsis}\n\n🔖 𝙄𝘿: ${anime.id}\n*Usa este ID para descargar el anime*`
-                }),
-                footer: proto.Message.InteractiveMessage.Footer.fromObject({
-                    text: `Rating: ${anime.rating}`
-                }),
-                header: proto.Message.InteractiveMessage.Header.fromObject({
-                    hasMediaAttachment: true,
-                    imageMessage
-                }),
-                nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.fromObject({
-                    buttons: []
-                })
-            };
-        }));
-
-        const carouselMessage = proto.Message.InteractiveMessage.CarouselMessage.fromObject({
-            cards: responseMessages
-        });
-
-        const responseMessage = generateWAMessageFromContent(
-            message.chat,
-            {
-                viewOnceMessage: {
-                    message: {
-                        messageContextInfo: {
-                            deviceListMetadata: {},
-                            deviceListMetadataVersion: 2
-                        },
-                        interactiveMessage: proto.Message.InteractiveMessage.fromObject({
-                            body: proto.Message.InteractiveMessage.Body.create({
-                                text: null
-                            }),
-                            footer: proto.Message.InteractiveMessage.Footer.create({
-                                text: ' `𝘼𝙣𝙞𝙢𝙚 𝙎𝙚𝙖𝙧𝙘𝙝`'
-                            }),
-                            header: proto.Message.InteractiveMessage.Header.create({
-                                title: null,
-                                hasMediaAttachment: false
-                            }),
-                            carouselMessage
-                        })
-                    }
-                }
-            },
-            { quoted: message }
-        );
-
-        await conn.relayMessage(message.chat, responseMessage.message, { messageId: responseMessage.key.id });
-
-    } catch (error) {
-        await conn.reply(message.chat, error.toString(), message);
-    }
-};
-
-handler.help = ['animesearch <nombre>'];
-handler.tags = ['downloader', 'search'];
-handler.command = ['animeflvsearch', 'animeflv', 'animesearch', 'buscaranime'];
-handler.group = true
-handler.limit = 1
-
-export default handler;
+export default handler
