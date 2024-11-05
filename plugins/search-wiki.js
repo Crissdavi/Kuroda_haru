@@ -35,7 +35,7 @@ const handler = async (m, { conn, text }) => {
       if (index >= 4) return false;
     });
 
-    const message = `     `Wikipedia`\n\n` +
+    const message = `     *…⁠ᘛWikipedia*\n\n` +
                     `✦ *Titulo*: ${articleTitle}\n` +
                     `✧ *Descripción*:\n${articleContent}\n` +
                     `✦ *Link*: (${articleUrl})`;
