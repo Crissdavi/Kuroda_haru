@@ -5,7 +5,7 @@ const handler = async (m, { conn, text }) => {
   if (!text) {
     return await conn.sendMessage(
       m.chat,
-      { text: " Ejemplo: .wikis Anime" },
+      { text: " Ejemplo: .wiki Anime" },
       { quoted: m }
     );
   }
@@ -35,7 +35,7 @@ const handler = async (m, { conn, text }) => {
       if (index >= 4) return false;
     });
 
-    const message = `     *…⁠ᘛWikipedia*\n\n` +
+    const message = `     *`…⁠ᘛWikipedia`*\n\n` +
                     `✦ *Titulo*: ${articleTitle}\n` +
                     `✧ *Descripción*:\n${articleContent}\n` +
                     `✦ *Link*: (${articleUrl})`;
