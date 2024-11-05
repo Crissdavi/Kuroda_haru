@@ -36,9 +36,9 @@ const handler = async (m, { conn, text }) => {
     });
 
     const message = `     *`…⁠ᘛWikipedia`*\n\n` +
-                    `✦ *Titulo*: ${articleTitle}\n` +
-                    `✧ *Descripción*:\n${articleContent}\n` +
-                    `✦ *Link*: (${articleUrl})`;
+                    `…⁠ᘛ *Titulo*: ${articleTitle}\n` +
+                    `…⁠ᘛ *Descripción*:\n${articleContent}\n` +
+                    `…⁠ᘛ *Link*: (${articleUrl})`;
 
     await conn.sendMessage(m.chat, { text: message }, { quoted: m });
 
