@@ -1,21 +1,16 @@
-import axios from 'axios'
+import fetch from 'node-fetch'
 
 let handler = async (m, { conn, text, usedPrefix, command }) => {
-try {
-if (!text) throw m.reply(`🔍Ingresa el enlace del *Vídeo* o *Imagen* de Pinterest que deseas descargar.`)
-let res = await axios.get(`https://api-starlights-team.koyeb.app/api/pindl?url=${text}`)
-let { type, url: sms } = res.data
-if (type === 'image') {
- await conn.sendMessage(m.chat, { image: { url: sms }, quoted: m })
-} else if (type === 'video') {
-await conn.sendMessage(m.chat, { video: { url: sms }, quoted: m })
-} else {
-throw m.reply(`Error`)
-}} catch (error) {
-}}
+if (!text) throw m.reply(`Ingresa un link de pinterest\n*✧ Ejemplo:* ${usedPrefix}${command} https://pin.it/7I5UODZJB`);
+conn.sendMessage(m.chat, { react: { text: "🕒", key: m.key } });
+	let ouh = await fetch(`https://api.agatz.xyz/api/pinterest?url=${text}`)
+  let gyh = await ouh.json()
+	await conn.sendFile(m.chat, gyh.data.result, `pinvideobykeni.mp4`, `*✧ Url:* ${gyh.data.url}`, m)
+	await conn.sendMessage(m.chat, { react: { text: '✅', key: m.key }})
+}
+handler.help = ['pinvid']
 handler.tags = ['downloader']
-handler.help = ['pindl <pin url>']
-handler.command = /^(pindl)$/i
-handler.register = true 
-handler.limit = 1
-export default handler
+handler.command = /^(pinvid|pinvideo)$/i
+handler.premium = false
+handler.register = true
+export default handler;
