@@ -54,5 +54,5 @@ const handler = async (m, { conn, text }) => {
 
 handler.help = ['wikis *<texto>*']
 handler.tags = ['search']
-handler.command = /^(wikis, wiki)$/i;
+handler.command = /^(wikis)$/i;
 export default handler;
