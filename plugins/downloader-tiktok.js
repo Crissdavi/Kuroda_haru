@@ -7,15 +7,15 @@ if (!args || !args[0]) return conn.reply(m.chat, '🚩 Ingresa un enlace del ví
 try {
 let { title, author, duration, views, likes, comment, share, published, downloads, dl_url } = await Starlights.tiktokdl(args[0])
 let txt = '`T I K T O K  -  D O W N L O A D`\n\n'
-    txt += `	✩  *Título* : ${title}\n`
-    txt += `	✩  *Autor* : ${author}\n`
-    txt += `	✩  *Duración* : ${duration} segundos\n`
-    txt += `	✩  *Vistas* : ${views}\n`
-    txt += `	✩  *Likes* : ${likes}\n`
-    txt += `	✩  *Comentarios* : ${comment}\n`
-    txt += `	✩  *Compartidos* : ${share}\n`
-    txt += `	✩  *Publicado* : ${published}\n`
-    txt += `	✩  *Descargas* : ${downloads}\n\n`
+    txt += `	ᘛ  *Título* : ${title}\n`
+    txt += `	ᘛ  *Autor* : ${author}\n`
+    txt += `	ᘛ  *Duración* : ${duration} segundos\n`
+    txt += `	ᘛ  *Vistas* : ${views}\n`
+    txt += `	ᘛ  *Likes* : ${likes}\n`
+    txt += `	ᘛ  *Comentarios* : ${comment}\n`
+    txt += `	ᘛ  *Compartidos* : ${share}\n`
+    txt += `	ᘛ  *Publicado* : ${published}\n`
+    txt += ` ᘛ  *Descargas* : ${downloads}\n\n`
     txt += `> 🚩 *${textbot}*`, m, rcanal)
 await conn.sendFile(m.chat, dl_url, 'tiktok.mp4', txt, m, null, rcanal)
 await m.react('✅')
