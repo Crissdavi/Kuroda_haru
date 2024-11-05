@@ -1,9 +1,3 @@
-/*
-
-- `PLUGIN WIKI SEARCH`
-- By Kenisawa 
-
-*/
 
 ```import axios from 'axios';
 import cheerio from 'cheerio';
