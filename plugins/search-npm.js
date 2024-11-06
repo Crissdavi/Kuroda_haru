@@ -37,7 +37,7 @@ await m.react(error)
 }}
 
 handler.help = ['npmjs']
-handler.tags = ['download']
+handler.tags = ['search']
 handler.command = ['npmjs', 'npm']
 handler.register = true
 handler.cookies = 1
