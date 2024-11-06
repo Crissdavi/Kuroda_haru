@@ -21,7 +21,7 @@ await conn.sendFile(m.chat, url, 'hasumiBotFreeCodes.mp3', null, m)
 } catch (error) {
 console.error(error)
 }}
-handler.tags = ['download']
+handler.tags = ['downloader']
 handler.help = ['spotifydl']
 handler.command = /^(spotifydl)$/i
 
