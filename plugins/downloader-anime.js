@@ -3,54 +3,63 @@ const fs = require('fs');
 
 async function downloadAnimesByLanguage(query, language) {
     try {
-        // Realiza la búsqueda de animes
-        let { data } = await axios.get(`https://deliriussapi-oficial.vercel.app/anime/animesearch?query=${encodeURIComponent(query)}`);
-        let animes = data.data;
+    // Realiza la búsqueda de animes
+    let { data } = await axios.get(`https://deliriussapi-oficial.vercel.app/anime/animesearch?query=${encodeURIComponent(text)}`);
+    let res = data.data;
 
-        // Filtra los animes por idioma
-        let filteredAnimes = animes.filter(anime => anime.payload.language === language);
+    // Filtrar resultados por idioma (aquí asumimos que tienes un campo 'language' en el payload)
+    // Cambia 'es' por el idioma que quieras usar
+    const language = 'es'; 
+    let filteredAnimes = res.filter(anime => anime.payload.language === language);
 
-        // Si no hay animes en el idioma especificado
-        if (filteredAnimes.length === 0) {
-            console.log(`No se encontraron animes en el idioma: ${language}`);
-            return;
-        }
-
-        // Crear un archivo para guardar la información
-        const fileName = `${query.replace(/\s+/g, '_')}_animes_${language}.txt`;
-        let content = 'Lista de Animes:\n\n';
-
-        filteredAnimes.forEach(anime => {
-            content += `Título: ${anime.name}\n`;
-            content += `Tipo: ${anime.payload.media_type}\n`;
-            content += `Año de inicio: ${anime.payload.start_year}\n`;
-            content += `Emitido: ${anime.payload.aired}\n`;
-            content += `Puntuación: ${anime.payload.score}\n`;
-            content += `Estado: ${anime.payload.status}\n`;
-            content += `Vistas: ${anime.views}\n`;
-            content += `URL: ${anime.url}\n`;
-            content += '--------------------------\n';
+    // Selecciona un subconjunto aleatorio de animes filtrados
+    let ult = filteredAnimes.sort(() => 0.5 - Math.random()).slice(0, 7);
+    
+    // Preparar los mensajes interactivos
+    for (let result of ult) {
+        HasumiBotFreeCodes.push({
+            header: proto.Message.InteractiveMessage.Header.fromObject({
+                title: `${result.name}`,
+                hasMediaAttachment: true,
+                imageMessage: await createImage(result.image_url)
+            }),
+            body: proto.Message.InteractiveMessage.Body.fromObject({
+                text: `
+*Tipo:* ${result.payload.media_type}
+*Año de inicio:* ${result.payload.start_year}
+*Emitido:* ${result.payload.aired}
+*Puntuación:* ${result.payload.score}
+*Estado:* ${result.payload.status}
+*Vistas:* ${result.views}`
+            }),
+            footer: proto.Message.InteractiveMessage.Footer.fromObject({ text: `${result.url}` }),
+            nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.fromObject({ buttons: [] })
         });
-
-        // Escribir el contenido en un archivo
-        fs.writeFileSync(fileName, content, 'utf8');
-        console.log(`Información de animes guardada en ${fileName}`);
-        
-    } catch (error) {
-        console.error('Error al buscar o guardar los animes:', error);
     }
+
+    // Generar el mensaje de respuesta
+    let msg = generateWAMessageFromContent(m.chat, {
+        viewOnceMessage: {
+            message: {
+                messageContextInfo: { deviceListMetadata: {}, deviceListMetadataVersion: 2 },
+                interactiveMessage: proto.Message.InteractiveMessage.fromObject({
+                    body: proto.Message.InteractiveMessage.Body.create({ text: '' }),
+                    footer: proto.Message.InteractiveMessage.Footer.create({ text: 'ANIME SLIDE' }),
+                    header: proto.Message.InteractiveMessage.Header.create({ hasMediaAttachment: false }),
+                    carouselMessage: proto.Message.InteractiveMessage.CarouselMessage.fromObject({ cards: [...HasumiBotFreeCodes] })
+                })
+            }
+        }
+    }, { quoted: m });
+
+    // Enviar el mensaje
+    await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id });
+} catch (error) {
+    console.error(error);
 }
 
-// Definición del handler
-const handler = {
-    command: ['animedl'], 
-    async handlerFunction(m, args) {
-        const query = args[0]; // Asume que el primer argumento es el nombre del anime
-        const language = args[1] || 'es'; // Si no se especifica, se usa 'es' como idioma por defecto
-        await downloadAnimesByLanguage(query, language);
-    }
-};
-
+// Definir el comando del handler
+handler.command = ['animedl'];
 
 export default handler;
-handler.command = ['animedl'];
+    
