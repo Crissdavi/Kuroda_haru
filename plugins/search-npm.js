@@ -37,8 +37,8 @@ await m.react(error)
 }}
 
 handler.help = ['npmjs']
-handler.tags = ['buscador']
-handler.command = ['npmjs']
+handler.tags = ['download']
+handler.command = ['npmjs', 'npm']
 handler.register = true
 handler.cookies = 1
 export default handler
