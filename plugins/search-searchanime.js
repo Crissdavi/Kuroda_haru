@@ -36,7 +36,6 @@ message: {
 messageContextInfo: { deviceListMetadata: {}, deviceListMetadataVersion: 2 },
 interactiveMessage: 
 footer: proto.Message.InteractiveMessage.Footer.create({ text: 'ANIME SLIDE' }),
-header: proto.Message.InteractiveMessage.Header.create({ hasMediaAttachment: false }),
 carouselMessage: proto.Message.InteractiveMessage.CarouselMessage.fromObject({cards: [...HasumiBotFreeCodes]})
 })
 }}}, { quoted: m })
