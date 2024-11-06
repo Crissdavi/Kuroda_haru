@@ -18,7 +18,7 @@ let ult = res.sort(() => 0.5 - Math.random()).slice(0, 7)
 for (let result of ult) {
 HasumiBotFreeCodes.push({header: proto.Message.InteractiveMessage.Header.fromObject({title: `${result.name}`,
 
-body: proto.Message.InteractiveMessage.Body.fromObject({text: `
+InteractiveMessage.Body.fromObject({text: `
 *Tipo:* ${result.payload.media_type}
 *Año de inicio:* ${result.payload.start_year}
 *Emitido:* ${result.payload.aired}
