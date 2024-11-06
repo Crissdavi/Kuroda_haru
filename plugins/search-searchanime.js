@@ -4,6 +4,9 @@ const { proto, generateWAMessageFromContent, generateWAMessageContent } = (await
 
 let handler = async (m, { conn, text }) => {
 if (!text) return m.reply('Ingresa el texto de lo que quieres buscar')
+let resolutions = ["144p", "240p", "360p", "480p", "720p", "1080p"]
+  let qu = args[1] && resolutions.includes(args[1]) ? args[1] : "360p"
+  let q = qu.replace('p', '')
 
 async function createImage(url) {
 const { imageMessage } = await generateWAMessageContent({ image: { url } }, { upload: conn.waUploadToServer })
