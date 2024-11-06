@@ -1,4 +1,3 @@
-// *[ ANIME - SEARCH CARRUSEL ]*
 import axios from 'axios'
 const { proto, generateWAMessageFromContent, generateWAMessageContent } = (await import('@whiskeysockets/baileys')).default
 
@@ -16,9 +15,9 @@ let { data } = await axios.get(`https://deliriussapi-oficial.vercel.app/anime/an
 let res = data.data
 let ult = res.sort(() => 0.5 - Math.random()).slice(0, 7)
 for (let result of ult) {
-InteractiveMessage.Header.fromObject({title: `${result.name}`,
-
-InteractiveMessage.Body.fromObject({text: `
+HasumiBotFreeCodes.push({header: proto.Message.InteractiveMessage.Header.fromObject({title: `${result.name}`,
+hasMediaAttachment: true,imageMessage: await createImage(result.image_url)}),
+body: proto.Message.InteractiveMessage.Body.fromObject({text: `
 *Tipo:* ${result.payload.media_type}
 *Año de inicio:* ${result.payload.start_year}
 *Emitido:* ${result.payload.aired}
@@ -34,8 +33,10 @@ let msg = generateWAMessageFromContent(m.chat, {
 viewOnceMessage: {
 message: {
 messageContextInfo: { deviceListMetadata: {}, deviceListMetadataVersion: 2 },
-interactiveMessage: 
+interactiveMessage: proto.Message.InteractiveMessage.fromObject({
+body: proto.Message.InteractiveMessage.Body.create({ text: '' }),
 footer: proto.Message.InteractiveMessage.Footer.create({ text: 'ANIME SLIDE' }),
+header: proto.Message.InteractiveMessage.Header.create({ hasMediaAttachment: false }),
 carouselMessage: proto.Message.InteractiveMessage.CarouselMessage.fromObject({cards: [...HasumiBotFreeCodes]})
 })
 }}}, { quoted: m })
