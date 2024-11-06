@@ -1,8 +1,3 @@
-
-
-
-
-//INSTAGRAM  - DL
 import fetch from 'node-fetch'
 
 let handler = async (m, { conn, usedPrefix, command, args }) => {
@@ -23,7 +18,7 @@ await conn.sendMessage(m.chat, { video: { url: HFC.url } }, { quoted: m })
 } catch (error) {
 console.error(error)
 }}
-handler.tags = ['descargas']
+handler.tags = ['download']
 handler.help = ['ig']
 handler.command = /^(igdl|ig|instagramdl|instagram)$/i
 
