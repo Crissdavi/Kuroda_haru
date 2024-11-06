@@ -1,13 +1,20 @@
-// *[ ANIME - SEARCH CARRUSEL ]*
-import axios from 'axios'
-const { proto, generateWAMessageFromContent, generateWAMessageContent } = (await import('@whiskeysockets/baileys')).default
+const axios = require('axios');
 
-let handler = async (m, { conn, text }) => {
-if (!text) return m.reply('Ingresa el texto de lo que quieres buscar')
-
-async function createImage(url) {
-const { imageMessage } = await generateWAMessageContent({ image: { url } }, { upload: conn.waUploadToServer })
-return imageMessage
+// Función para mejorar la calidad de la imagen
+async function enhanceImage(imageUrl) {
+    try {
+        const response = await axios.post('https://api.deepai.org/api/waifu2x', {
+            image: imageUrl,
+        }, {
+            headers: {
+                'api-key': 'YOUR_API_KEY' // Reemplaza con tu clave de API de DeepAI
+            }
+        });
+        return response.data.output_url; // URL de la imagen mejorada
+    } catch (error) {
+        console.error('Error al mejorar la imagen:', error);
+        return imageUrl; // Devuelve la URL original si hay un error
+    }
 }
 
 try {
@@ -16,14 +23,14 @@ try {
     let ult = res.sort(() => 0.5 - Math.random()).slice(0, 7);
 
     for (let result of ult) {
-        // Asegúrate de que 'result.image_url' apunte a la imagen de alta calidad
-        const highQualityImageUrl = result.image_url; // Aquí puedes modificar esto si tienes una URL de mayor calidad
+        // Mejora la calidad de la imagen antes de usarla
+        const enhancedImageUrl = await enhanceImage(result.image_url);
 
         HasumiBotFreeCodes.push({
             header: proto.Message.InteractiveMessage.Header.fromObject({
                 title: `${result.name}`,
                 hasMediaAttachment: true,
-                imageMessage: await createImage(highQualityImageUrl) // Usa la URL de alta calidad
+                imageMessage: await createImage(enhancedImageUrl) // Usa la imagen mejorada
             }),
             body: proto.Message.InteractiveMessage.Body.fromObject({
                 text: `
@@ -54,7 +61,6 @@ try {
     }, { quoted: m });
 
     await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id });
-
 } catch (error) {
     console.error(error);
 }
