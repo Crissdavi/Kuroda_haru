@@ -1,13 +1,8 @@
 import axios from 'axios';
-const { proto, generateWAMessageFromContent, generateWAMessageContent } = (await import('@whiskeysockets/baileys')).default;
+const { proto, generateWAMessageFromContent } = (await import('@whiskeysockets/baileys')).default;
 
 let handler = async (m, { conn, text }) => {
     if (!text) return m.reply('Ingresa el texto de lo que quieres buscar');
-
-    async function createImage(url) {
-        const { imageMessage } = await generateWAMessageContent({ image: { url } }, { upload: conn.waUploadToServer });
-        return imageMessage;
-    }
 
     try {
         let HasumiBotFreeCodes = [];
@@ -16,12 +11,10 @@ let handler = async (m, { conn, text }) => {
         let ult = res.sort(() => 0.5 - Math.random()).slice(0, 7);
 
         for (let result of ult) {
-            const imageMessage = await createImage(result.image_url);
             HasumiBotFreeCodes.push({
                 header: proto.Message.InteractiveMessage.Header.fromObject({ 
                     title: `${result.name}`, 
-                    hasMediaAttachment: true, 
-                    imageMessage: imageMessage 
+                    hasMediaAttachment: false // Cambiado a false para no enviar imágenes
                 }),
                 body: proto.Message.InteractiveMessage.Body.fromObject({ text: `
 *Tipo:* ${result.payload.media_type}
@@ -42,7 +35,7 @@ let handler = async (m, { conn, text }) => {
                     interactiveMessage: proto.Message.InteractiveMessage.fromObject({
                         body: proto.Message.InteractiveMessage.Body.create({ text: '' }),
                         footer: proto.Message.InteractiveMessage.Footer.create({ text: 'ANIME SLIDE' }),
-                        header: proto.Message.InteractiveMessage.Header.create({ hasMediaAttachment: false }),
+                        header: proto.Message.InteractiveMessage.Header.create({ hasMediaAttachment: false }), // Sin imágenes
                         carouselMessage: proto.Message.InteractiveMessage.CarouselMessage.fromObject({ cards: [...HasumiBotFreeCodes] })
                     })
                 }
