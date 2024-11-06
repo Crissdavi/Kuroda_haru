@@ -23,7 +23,8 @@ await conn.sendMessage(m.chat, { video: { url: HFC.url } }, { quoted: m })
 } catch (error) {
 console.error(error)
 }}
-
+handler.tags = ['descargas']
+handler.help = ['ig']
 handler.command = /^(igdl|ig|instagramdl|instagram)$/i
 
 export default handler
