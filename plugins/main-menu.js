@@ -215,7 +215,7 @@ switch(hour){
   case 7: hour = 'una linda mañana 🌅'; break;
   case 8: hour = 'una linda mañana 💫'; break;
   case 9: hour = 'una linda mañana ✨'; break;
-  case 10: hour = 'un lindo dia 🌞'; break;
+  case 10: hour = 'un lindo mañana 🌞'; break;
   case 11: hour = 'un lindo dia 🌨'; break;
   case 12: hour = 'un lindo dia ❄'; break;
   case 13: hour = 'una linda tarde 🌄'; break;
