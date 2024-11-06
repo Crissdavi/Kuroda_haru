@@ -16,7 +16,7 @@ let { data } = await axios.get(`https://deliriussapi-oficial.vercel.app/anime/an
 let res = data.data
 let ult = res.sort(() => 0.5 - Math.random()).slice(0, 7)
 for (let result of ult) {
-HasumiBotFreeCodes.push({header: proto.Message.InteractiveMessage.Header.fromObject({title: `${result.name}`,
+InteractiveMessage.Header.fromObject({title: `${result.name}`,
 
 InteractiveMessage.Body.fromObject({text: `
 *Tipo:* ${result.payload.media_type}
