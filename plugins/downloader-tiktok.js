@@ -17,7 +17,7 @@ await conn.sendFile(m.chat, audio, 'HasumiBotFreeCodes.mp3', null, m)
 } catch (error) {
 console.error(error)    
 }}
-handler.tags = ['DOWNLOAD']
+handler.tags = ['downloader']
 handler.help = ['tiktok']
 handler.command = /^(tiktok)$/i
 
