@@ -104,6 +104,7 @@ export async function handler(chatUpdate) {
                     antiLink: false,
                     onlyLatinos: false,
                     nsfw: false, 
+                    modoadmin: false,
                     expired: 0, 
                 }
             var settings = global.db.data.settings[this.user.jid]
