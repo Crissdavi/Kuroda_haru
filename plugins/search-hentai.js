@@ -47,7 +47,8 @@ await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
 } catch (error) {
 console.error(error)
 }}
-
+handler.tags = ['search']
+handler.help = ['hentaitv']
 handler.command = ['hentaitv']
 
 export default handler
