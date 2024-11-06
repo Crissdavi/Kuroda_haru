@@ -22,6 +22,8 @@ await conn.sendFile(m.chat, json[0].image, 'hasumiBotFreeCodes.jpg', JT, m);
 console.error(error)
 }}
 
+handler.tags = ['search']
+handler.help = ['applemusicsearch']
 handler.command = /^(applemusicsearch)$/i
 
 export default handler
