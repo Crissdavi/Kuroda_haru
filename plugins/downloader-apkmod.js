@@ -16,7 +16,7 @@ await conn.sendFile(m.chat, icon, name + '.jpg', texto, m)
 
 await conn.sendMessage(m.chat, { document: { url: URL }, mimetype: 'application/vnd.android.package-archive', fileName: name + '.apk', caption: ''}, { quoted: m });
 }
-handler.tags = ['download']
+handler.tags = ['downloader']
 handler.help = ['apkmod']
 handler.command = /^(apkmod|apk|dapk2|aptoide|aptoidedl)$/i
 handler.register = false
