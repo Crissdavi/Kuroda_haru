@@ -43,7 +43,7 @@ async function downloadAnimesByLanguage(query, language) {
 
 // Definición del handler
 const handler = {
-    command: ['downloadanime'], // Cambia esto por el comando que desees
+    command: ['animedl'], 
     async handlerFunction(m, args) {
         const query = args[0]; // Asume que el primer argumento es el nombre del anime
         const language = args[1] || 'es'; // Si no se especifica, se usa 'es' como idioma por defecto
