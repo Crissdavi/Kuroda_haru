@@ -44,7 +44,8 @@ await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
 } catch (error) {
 console.error(error);
 }}
-
+handler.tags = ['search']
+handler.help = ['anime']
 handler.command = ['anime']
 
 export default handler
