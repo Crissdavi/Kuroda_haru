@@ -2,35 +2,16 @@ const axios = require('axios');
 
 // Función para mejorar la calidad de la imagen
 async function enhanceImage(imageUrl) {
-    try {
-        const response = await axios.post('https://api.deepai.org/api/waifu2x', {
-            image: imageUrl,
-        }, {
-            headers: {
-                'api-key': 'YOUR_API_KEY' // Reemplaza con tu clave de API de DeepAI
-            }
-        });
-        return response.data.output_url; // URL de la imagen mejorada
-    } catch (error) {
-        console.error('Error al mejorar la imagen:', error);
-        return imageUrl; // Devuelve la URL original si hay un error
-    }
-}
-
-try {
+   try {
     let { data } = await axios.get(`https://deliriussapi-oficial.vercel.app/anime/animesearch?query=${encodeURIComponent(text)}`);
     let res = data.data;
     let ult = res.sort(() => 0.5 - Math.random()).slice(0, 7);
 
     for (let result of ult) {
-        // Mejora la calidad de la imagen antes de usarla
-        const enhancedImageUrl = await enhanceImage(result.image_url);
-
         HasumiBotFreeCodes.push({
             header: proto.Message.InteractiveMessage.Header.fromObject({
                 title: `${result.name}`,
-                hasMediaAttachment: true,
-                imageMessage: await createImage(enhancedImageUrl) // Usa la imagen mejorada
+                hasMediaAttachment: false // Cambiado a false, ya no se enviará imagen
             }),
             body: proto.Message.InteractiveMessage.Body.fromObject({
                 text: `
@@ -39,7 +20,8 @@ try {
 *Emitido:* ${result.payload.aired}
 *Puntuación:* ${result.payload.score}
 *Estado:* ${result.payload.status}
-*Vistas:* ${result.views}`
+*Vistas:* ${result.views}
+*Imagen:* ${result.image_url}` // Agregada la URL de la imagen en el cuerpo
             }),
             footer: proto.Message.InteractiveMessage.Footer.fromObject({ text: `${result.url}` }),
             nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.fromObject({ buttons: [] })
