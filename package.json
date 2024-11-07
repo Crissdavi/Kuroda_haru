@@ -41,7 +41,7 @@
 	"dependencies": {
 		"@adiwajshing/keyed-db": "^0.2.4",
 		"@bochilteam/scraper": "^4.2.4",
-		"@whiskeysockets/baileys": "*",
+		"@whiskeysockets/baileys": "6.7.8",
 		"@ibaraki-douji/pixivts": "^2.4.1",
 		"@bochilteam/scraper-sosmed": "^1.0.5",
 		"@StarlightsTeam/Scraper": "github:StarlightsTeam/StarlightsTeam-Scraper",
