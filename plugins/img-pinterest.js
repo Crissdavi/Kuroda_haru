@@ -46,7 +46,7 @@ let handler = async (message, { conn, text }) => {
                                 text: null
                             }),
                             footer: proto.Message.InteractiveMessage.Footer.create({
-                                text: ' `𝙋𝙄𝙉𝙏𝙀𝙍𝙀𝙎𝙏`'
+                                text: ' `𝙋𝙄𝙉𝙏𝙀𝙍𝙀𝙎𝙏`', m, canal)
                             }),
                             header: proto.Message.InteractiveMessage.Header.create({
                                 title: 'Koruda',
