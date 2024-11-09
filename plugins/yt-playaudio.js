@@ -50,7 +50,7 @@ conn.sendMessage(m.chat, { react: { text: "🕒", key: m.key } });
 }
 handler.help = ['playaudio']
 handler.tags = ['downloader']
-handler.command = /^(play|audio)$/i
+handler.command = /^(play|audio|playaudio)$/i
 handler.premium = false
 handler.register = true
 export default handler
