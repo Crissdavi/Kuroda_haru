@@ -30,7 +30,7 @@ await m.react('✅')
 await m.react('✖️')
 }}}
 handler.help = ['Video']
-handler.tags = ['downloader']
+handler.tags = ['youtube']
 handler.customPrefix = /^(Video|video|vídeo|Vídeo)/
 handler.command = new RegExp
 //handler.limit = 1
