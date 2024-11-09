@@ -34,7 +34,7 @@ const getBuffer = async (url) => {
 }
 handler.help = ['playvideo']
 handler.tags = ['downloader']
-handler.command = /^(playvideo|video)$/i
+handler.command = /^(playvideo|video|play2)$/i
 handler.premium = false
 handler.register = true
 export default handler
