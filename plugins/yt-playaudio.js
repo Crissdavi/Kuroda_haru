@@ -1,57 +1,25 @@
-import fetch from 'node-fetch'
+//*`[ PLAY - AUDIO ]`*
 import yts from 'yt-search'
+import axios from 'axios'
 
-let handler = async (m, { conn, text, usedPrefix, command }) => {
-if (!text) throw m.reply(`Ingrese su consulta\n* Ejemplo:* ${usedPrefix}${command} Blue lock-Edit`);
-conn.sendMessage(m.chat, { react: { text: "🕒", key: m.key } });
-    let results = await yts(text);
-    let tes = results.all[0]
-    let {
-      title,
-      thumbnail,
-      timestamp,
-      views,
-      ago,
-      url
-    } = tes;
-  let d2 = await fetch(`https://exonity.tech/api/ytdlp2-faster?apikey=adminsepuh&url=${url}`)
-  let dp = await d2.json()
-  m.reply(`_Enviando su audio_
-  ${dp.result.title} (${dp.result.duration})_\n\n> ${url}`)
-      const doc = {
-      audio: { url: dp.result.media.mp3 },
-      mimetype: 'audio/mp4',
-      fileName: `${title}.mp3`,
-      contextInfo: {
-        externalAdReply: {
-          showAdAttribution: true,
-          mediaType: 2,
-          mediaUrl: url,
-          title: title,
-          sourceUrl: url,
-          thumbnail: await (await conn.getFile(thumbnail)).data
-        }
-      }
-    };
-    await conn.sendMessage(m.chat, doc, { quoted: m });
-    
-const getBuffer = async (url) => {
-  try {
-    const response = await fetch(url);
-    const buffer = await response.arrayBuffer();
-    return Buffer.from(buffer);
-  } catch (error) {
-    console.error("Error al obtener el audio", error);
-    throw new Error("Error al obtener el audio");
-  }
-}
-    let audiop = await getBuffer(dp.result.media.mp3)
-	await conn.sendFile(m.chat, audiop, `${title}.mp3`, ``, m)
-	await conn.sendMessage(m.chat, { react: { text: '✅', key: m.key }})
-}
-handler.help = ['playaudio']
-handler.tags = ['downloader']
-handler.command = /^(play|audio|playaudio)$/i
-handler.premium = false
-handler.register = true
+let handler = async (m, { conn, text }) => {
+if (!text) return m.reply('ingrese su consulta\n* Ejemplo:* ${usedPrefix}${command} ULTIMATE - xneymar');
+try {
+let ytsres = await yts(text)
+let vid = ytsres.videos[0]
+let { url, title, thumbnail, timestamp, ago } = vid
+let api = await axios.get(`https://widipe.com/download/ytdl?url=${url}`)
+let json = api.data.result
+let { mp3 } = json
+
+let audioMsg = { audio: { url: mp3 },mimetype: 'audio/mpeg',fileName: `${title}.mp3`,contextInfo: {externalAdReply: {showAdAttribution: true,
+mediaType: 2,mediaUrl: url,title: title,body: '©HasumiBot',sourceUrl: url,thumbnailUrl: thumbnail,renderLargerThumbnail: true}}}
+await conn.sendMessage(m.chat, audioMsg, { quoted: m })
+} catch (error) {
+console.error(error)
+}}
+
+
+handler.command = /^(play)$/i
+
 export default handler
