@@ -18,7 +18,12 @@ mediaType: 2,mediaUrl: url,title: title,body: 'Kuroda~',sourceUrl: url,thumbnail
 await conn.sendMessage(m.chat, audioMsg, { quoted: m })
 } catch (error) {
 console.error(error)
-}}
+        await m.react('✅'); 
+    } else {
+        await m.reply("❌ No se pudo obtener el audio.");
+        await m.react('❌'); 
+    }
+};
 
 
 handler.command = /^(play)$/i
