@@ -15,6 +15,10 @@ let { mp3 } = json
 
 let audioMsg = { audio: { url: mp3 },mimetype: 'audio/mpeg',fileName: `${title}.mp3`,contextInfo: {externalAdReply: {showAdAttribution: true,
 mediaType: 2,mediaUrl: url,title: title,body: 'Kuroda~',sourceUrl: url,thumbnailUrl: thumbnail,renderLargerThumbnail: true}}}
+    await m.react('✅')
+  } catch {
+  await m.react('✖️')
+}}
 await conn.sendMessage(m.chat, audioMsg, { quoted: m })
 } catch (error) {
 console.error(error)
