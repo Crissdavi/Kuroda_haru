@@ -2,7 +2,7 @@ import fetch from 'node-fetch'
 import yts from 'yt-search'
 
 let handler = async (m, { conn, text, usedPrefix, command }) => {
-if (!text) throw m.reply(`Ingresa una consulta\n*✧ Ejemplo:* ${usedPrefix}${command} ULTIMATE - xneymar`);
+if (!text) throw m.reply(`Ingrese su consulta\n* Ejemplo:* ${usedPrefix}${command} Blue lock-Edit`);
 conn.sendMessage(m.chat, { react: { text: "🕒", key: m.key } });
     let results = await yts(text);
     let tes = results.all[0]
@@ -35,14 +35,14 @@ conn.sendMessage(m.chat, { react: { text: "🕒", key: m.key } });
     };
     await conn.sendMessage(m.chat, doc, { quoted: m });
     
-/*const getBuffer = async (url) => {
+const getBuffer = async (url) => {
   try {
     const response = await fetch(url);
     const buffer = await response.arrayBuffer();
     return Buffer.from(buffer);
   } catch (error) {
-    console.error("Error al obtener el buffer", error);
-    throw new Error("Error al obtener el buffer");
+    console.error("Error al obtener el audio", error);
+    throw new Error("Error al obtener el audio");
   }
 }
     let audiop = await getBuffer(dp.result.media.mp3)
