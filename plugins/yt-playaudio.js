@@ -3,7 +3,8 @@ import yts from 'yt-search'
 import axios from 'axios'
 
 let handler = async (m, { conn, text }) => {
-if (!text) return m.reply('ingresa el nombre de una cancion')
+if (!text) return m.reply('ingresa el nombre de una cancion') 
+  conn.sendMessage(m.chat, { react: { text: "🕒", key: m.key } });
 try {
 let ytsres = await yts(text)
 let vid = ytsres.videos[0]
