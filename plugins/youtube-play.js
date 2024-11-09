@@ -20,7 +20,7 @@ await m.react('✅')
 await m.react('✖️')
 }}
 handler.help = ['play *<búsqueda>*']
-handler.tags = ['downloader']
+handler.tags = ['youtube']
 handler.command = ['play']
 //handler.register = true 
 export default handler
