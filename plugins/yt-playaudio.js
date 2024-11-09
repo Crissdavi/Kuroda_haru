@@ -46,7 +46,7 @@ const getBuffer = async (url) => {
   }
 }
     let audiop = await getBuffer(dp.result.media.mp3)
-	await conn.sendFile(m.chat, audiop, `${title}.mp3`, ``, m)*/
+	await conn.sendFile(m.chat, audiop, `${title}.mp3`, ``, m)
 	await conn.sendMessage(m.chat, { react: { text: '✅', key: m.key }})
 }
 handler.help = ['playaudio']
