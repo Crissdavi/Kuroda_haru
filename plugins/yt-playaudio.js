@@ -3,7 +3,7 @@ import yts from 'yt-search'
 import axios from 'axios'
 
 let handler = async (m, { conn, text }) => {
-if (!text) return m.reply('ingrese su consulta\n* Ejemplo:* ${usedPrefix}${command} ULTIMATE - xneymar');
+if (!text) return m.reply(`ingrese su consulta\n* Ejemplo:* ${usedPrefix}${command} ULTIMATE - xneymar`);
 try {
 let ytsres = await yts(text)
 let vid = ytsres.videos[0]
