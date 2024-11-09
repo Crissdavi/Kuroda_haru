@@ -19,9 +19,6 @@ mediaType: 2,mediaUrl: url,title: title,body: 'Kuroda~',sourceUrl: url,thumbnail
 await conn.sendMessage(m.chat, audioMsg, { quoted: m })
 } catch (error) {
 console.error(error)
-  await m.react('✅')
-  } catch {
-  await m.react('✖️')
 }}
 
 
