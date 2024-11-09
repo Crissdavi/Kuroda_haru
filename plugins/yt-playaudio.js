@@ -16,7 +16,7 @@ conn.sendMessage(m.chat, { react: { text: "🕒", key: m.key } });
     } = tes;
   let d2 = await fetch(`https://exonity.tech/api/ytdlp2-faster?apikey=adminsepuh&url=${url}`)
   let dp = await d2.json()
-  m.reply(`_ Enviando su audio
+  m.reply(`_Enviando su audio_
   ${dp.result.title} (${dp.result.duration})_\n\n> ${url}`)
       const doc = {
       audio: { url: dp.result.media.mp3 },
