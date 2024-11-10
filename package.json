@@ -100,7 +100,7 @@
 		"wa-sticker-formatter": "^4.4.4",
 		"yargs": "^17.7.2",
 		"yt-search": "^2.10.4",
-		"ytdl-core": "github:HanSamu-27/ytdl-core#main"
+		"ytdl-mp3": "github:HanSamu-27/ytdl-mp3"
 	},
 	"optionalDependencies": {
 		"@vitalets/google-translate-api": "^9.2.0",
