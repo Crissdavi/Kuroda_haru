@@ -48,6 +48,7 @@
 		"awesome-phonenumber": "^6.4.0",
 		"fluid-spotify.js": "*",
 		"axios": "*",
+		"google-libphonenumber": "latest",
 		"aptoide-scraper": "*",
 		"api-dylux": "*",
 		"brainly-scraper-v2": "^2.2.8",
