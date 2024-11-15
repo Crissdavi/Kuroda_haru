@@ -1,6 +1,7 @@
 //import { areJidsSameUser } from '@adiwajshing/baileys'
 
 import db from '../lib/database.js'
+
 let { areJidsSameUser } = (await import(global.baileys)).default
 let toM = a => '@' + a.split('@')[0]
 let handler = async (m, { conn, usedPrefix, command, text, participants, groupMetadata}) => {
