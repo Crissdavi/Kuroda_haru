@@ -1,6 +1,7 @@
 //import { areJidsSameUser } from '@adiwajshing/baileys'
 
 import db from '../lib/database.js'
+let cooldowns = {}
 
 let { areJidsSameUser } = (await import(global.baileys)).default
 let toM = a => '@' + a.split('@')[0]
