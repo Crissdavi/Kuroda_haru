@@ -278,7 +278,7 @@ console.log(chalk.bold.redBright(`\n⚠️❗ RAZON DE DESCONEXIÓN DESCONOCIDA:
 process.on('uncaughtException', console.error);
 
 async function connectSubBots() {
-const subBotDirectory = './GokuJadiBot';
+const subBotDirectory = './KorudaJadiBot';
 if (!existsSync(subBotDirectory)) {
 console.log('🚩 koruda no tiene Sub-Bots vinculados.');
 return;
@@ -307,7 +307,7 @@ const mainBotAuthFile = 'GokuSession';
 try {
 const mainBot = await connectionUpdate(mainBotAuthFile);
 global.conns.push(mainBot);
-console.log(chalk.bold.greenBright(`🚩 Ai Kakaroto conectado correctamente.`))
+console.log(chalk.bold.greenBright(`🚩 Koruda conectado correctamente.`))
 
 await connectSubBots();
 } catch (error) {
