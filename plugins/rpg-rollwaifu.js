@@ -87,7 +87,7 @@ let handler = async (m, { conn }) => {
                     title: '¡Nuevo personaje!',
                     body: '¡Felicidades por tu nuevo personaje!',
                     thumbnailUrl: randomCharacter.url,
-                    sourceUrl: 'https://github.com/Crissdavi/Kuroda_haru',
+                    sourceUrl: 'https://github.com/Crissdavi',
                     mediaType: 1,
                 }
             }
