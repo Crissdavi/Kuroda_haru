@@ -9,6 +9,7 @@ let tags = {
   'game': 'GAME',
   'serbot': 'SUB BOTS',
   'rpg': 'RPG',
+  'rw': 'RW',
   'rg': 'REGISTRO',
   'sticker': 'STICKER',
   'img': 'IMAGE',
