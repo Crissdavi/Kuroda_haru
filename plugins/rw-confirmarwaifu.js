@@ -98,8 +98,8 @@ const id = match && match[1];
 
     return manejarConfirmacion(personaje, sender, data.usuarios, conn, m);
 };
-handler.help = ['confirmar'];
-handler.tags = ['game'];
+handler.help = ['cofirmarwaifu'];
+handler.tags = ['rw'];
 handler.command = ['confirmar', 'c'];
 handler.group = true;
 
