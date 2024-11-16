@@ -1,10 +1,9 @@
-
 import fs from 'fs';
 import { v4 as uuidv4 } from 'uuid';
 import dotenv from 'dotenv';
 
 dotenv.config();
-const completadoImage = './src/completado.jpg';
+
 
 const obtenerDatos = () => {
     try {
@@ -42,7 +41,6 @@ const obtenerPersonajes = () => {
 let cooldowns = {};
 
 let handler = async (m, { conn }) => {
-    try {
         let userId = m.sender;
         let currentTime = new Date().getTime();
         const cooldownDuration = 10 * 60 * 1000; // 10 minutos
@@ -74,7 +72,7 @@ let handler = async (m, { conn }) => {
         let reservedBy = data.usuarios[randomCharacter.url] || null;
 
         let statusMessage = reservedBy ? `Reservado por ${reservedBy.userId}` : 'Libre';
-        let responseMessage = `*Nombre:* ${randomCharacter.name}\n*Valor:* ${randomCharacter.value} WFC!\n*Estado:* ${statusMessage}\n*ID:* ${uniqueId}`;
+        let responseMessage = `🌱 \`Nombre:\` --> \`${randomCharacter.name}\`\n💹 \`Valor:\` -->  \`${randomCharacter.value} Coins!\`\n💲 \`Estado:\` --> \`${statusMessage}\`\n🆔 \`ID:\` --> \`${uniqueId}\``;
 
         await conn.sendMessage(m.chat, {
             image: { url: randomCharacter.url },
@@ -86,8 +84,8 @@ let handler = async (m, { conn }) => {
                     showAdAttribution: true,
                     title: '¡Nuevo personaje!',
                     body: '¡Felicidades por tu nuevo personaje!',
-                    thumbnailUrl: randomCharacter.url,
-                    sourceUrl: 'https://github.com/Crissdavi',
+                    thumbnailUrl: https://i.ibb.co/f9z1gyf/Sylph.jpg', //Especifica la imagen
+                    sourceUrl: 'https://github.com/CrissDavi',
                     mediaType: 1,
                 }
             }
@@ -99,14 +97,10 @@ let handler = async (m, { conn }) => {
 
         cooldowns[userId] = currentTime;
         console.log('Cooldown actualizado para ' + userId + ': ' + cooldowns[userId]);
-    } catch (error) {
-        console.error('Error en el handler:', error);
-        await conn.sendMessage(m.chat, { text: 'Ocurrió un error al procesar tu solicitud. Intenta nuevamente.' });
-    }
 };
 
 handler.help = ['roll'];
-handler.tags = ['rw'];
+handler.tags = ['game'];
 handler.command = ['roll', 'rw'];
 handler.group = true;
 
