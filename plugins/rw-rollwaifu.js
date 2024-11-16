@@ -100,7 +100,7 @@ let handler = async (m, { conn }) => {
 };
 
 handler.help = ['roll'];
-handler.tags = ['game'];
+handler.tags = ['RW'];
 handler.command = ['roll', 'rw'];
 handler.group = true;
 
