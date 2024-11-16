@@ -84,8 +84,8 @@ let handler = async (m, { conn }) => {
                     showAdAttribution: true,
                     title: '¡Nuevo personaje!',
                     body: '¡Felicidades por tu nuevo personaje!',
-                    thumbnailUrl: 'https://files.catbox.moe/6yqzsu.jpg', //Especifica la imagen
-                    sourceUrl: 'https://github.com/CrissDavi',
+                    thumbnailUrl: https://files.catbox.moe/6yqzsu.jpg', //Especifica la imagen
+                    'sourceUrl': 'https://github.com/CrissDavi',
                     mediaType: 1,
                 }
             }
