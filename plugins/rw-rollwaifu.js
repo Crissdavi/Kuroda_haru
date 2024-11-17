@@ -31,7 +31,7 @@ const reservarPersonaje = (userId, character) => {
 
 const obtenerPersonajes = () => {
     try {
-        return JSON.parse(fs.readFileSync('./src/characters.json', 'utf-8'));
+        return JSON.parse(fs.readFileSync('./src/JSON/characters.json', 'utf-8'));
     } catch (error) {
         console.error('Error al leer characters.json:', error);
         return [];
