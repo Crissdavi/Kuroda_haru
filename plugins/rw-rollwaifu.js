@@ -85,7 +85,7 @@ let handler = async (m, { conn }) => {
                     title: '¡Nuevo personaje!',
                     body: '¡Felicidades por tu nuevo personaje!',
                     thumbnailUrl: 'https://files.catbox.moe/6yqzsu.jpg', //Especifica la imagen
-                    'sourceUrl': 'https://github.com/CrissDavi',
+                    'sourceUrl': 'https://www.instagram.com/ig.de.haru/profilecard/?igsh=bmNyczltZnlvM3Jx',
                     mediaType: 1,
                 }
             }
