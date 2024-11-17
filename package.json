@@ -57,6 +57,7 @@
 		"cheerio": "github:AikerDev/cheeiro",
 		"colors": "1.4.0",
 		"acrcloud": "^1.4.0",
+		"dotenv": "latest",
 		"emoji-api": "^3.0.1",
 		"express": "^4.18.2",
 		"ffmpeg": "^0.0.4",
