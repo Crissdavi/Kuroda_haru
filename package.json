@@ -1,5 +1,5 @@
 {
-	"name": "Kuroda_haru",
+	"name": "Ai Hoshino",
 	"version": "6.0.0",
 	"description": "Simple WhatsApp Bot Multi Device",
 	"main": "main.js",
@@ -26,16 +26,16 @@
 		"MD",
 		"baileys-md"
 	],
-	"homepage": "https://github.com/Crissdavi/Kuroda_haru",
+	"homepage": "https://github.com/StarlightsTeam/Ai-Hoshino",
 	"author": {
-		"name": "Crissdavi⁩"
+		"name": "おDanịel.xyz⁩"
 	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/Crissdavi/Kuroda_haru.git"
 	},
 	"bugs": {
-		"url": "https://github.com/Crissdavi/Kuroda_haru/issues"
+		"url": "https://github.com/StarlightsTeam/Ai-Hoshino/issues"
 	},
 	"license": "GPL-3.0-or-later",
 	"dependencies": {
