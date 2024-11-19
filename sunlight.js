@@ -438,7 +438,7 @@ return file.startsWith('pre-key-')
 })
 prekey = [...prekey, ...filesFolderPreKeys]
 filesFolderPreKeys.forEach(files => {
-unlinkSync(`./GokuSession/${files}`)
+unlinkSync(`./KorudaSession/${files}`)
 })
 } 
 function purgeSessionSB() {
