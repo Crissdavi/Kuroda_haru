@@ -464,7 +464,7 @@ console.log(chalk.bold.cyanBright(`\n╭»  Koruda \n│→ ARCHIVOS NO ESENCIAL
 console.log(chalk.bold.red(`\n╭» 🚫 Koruda \n│→ OCURRIÓ UN ERROR\n╰― ― ― ― ― ― ― ― ― ― ― ― ― ― ― ― ― ― ― 🗑️♻️\n` + err))
 }}
 function purgeOldFiles() {
-const directories = ['./GokuSession/', './GokuJadiBot/']
+const directories = ['./KorudaSession/', './KorudaJadiBot/']
 directories.forEach(dir => {
 readdirSync(dir, (err, files) => {
 if (err) throw err
