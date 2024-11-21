@@ -46,9 +46,9 @@ await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
 console.error(error) 
 }}
 
-handler.help = ['pinvid']
-handler.tags = ['downloader']
-handler.command = /^(pinvid|pinvideo)$/i
+handler.help = ['pinterest']
+handler.tags = ['searcy']
+handler.command = /^(pinterest)$/i
 handler.premium = false
 handler.register = true
 
