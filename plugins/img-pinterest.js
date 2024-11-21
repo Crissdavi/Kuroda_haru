@@ -1,88 +1,51 @@
 
+//*`[ PINTEREST SEARCH - CARRUSEL ]`*
 import axios from 'axios';
-const baileys = (await import("@whiskeysockets/baileys")).default;
-const { proto } = baileys;
-const { generateWAMessageFromContent } = baileys;
-const { generateWAMessageContent } = baileys;
+const { proto, generateWAMessageFromContent, generateWAMessageContent } = (await import('@whiskeysockets/baileys')).default
 
-let handler = async (message, { conn, text }) => {
-    if (!text) {
-        return conn.reply(message.chat, ' *¿Qué término de búsqueda quieres usar para encontrar imágenes en Pinterest?*', message);
-    }
+let handler = async (m, { conn, text }) => {
+if (!text) return m.reply('Ingresa el texto de lo que quieres buscar en Pinterest');
 
-    async function createImageMessage(url) {
-        const { imageMessage } = await generateWAMessageContent(
-            { image: { url } },
-            { upload: conn.waUploadToServer }
-        );
-        return imageMessage;
-    }
+async function createImage(url) {
+const { imageMessage } = await generateWAMessageContent({image: { url }}, { upload: conn.waUploadToServer })
+return imageMessage
+}
 
-    try {
-        const { data: response } = await axios.get(`https://rembotapi.vercel.app/api/pinterest?text=${encodeURIComponent(text)}`);
+try {
+let HasumiBotFreeCodes = []
+let { data } = await axios.get(`https://api.ryzendesu.vip/api/search/pinterest?query=${encodeURIComponent(text)}`)
+let JT = data
+let imgs = JT.slice(0, 7)
 
-        if (!response.success || !Array.isArray(response.images)) {
-            return conn.reply(message.chat, ' *No se encontraron imágenes o el formato de respuesta es inválido.*', message);
-        }
-        let images = response.images.map(img => img.imageUrl); 
-        if (images.length < 5) {
-            images = [...images, ...Array(5 - images.length).fill('')]; 
-        } else {
-            images = images.slice(0, 7); 
-        }
-        const imageMessages = await Promise.all(images.filter(url => url).map(createImageMessage)); 
+for (let result of imgs) {
+HasumiBotFreeCodes.push({
+header: proto.Message.InteractiveMessage.Header.fromObject({ title: ``, hasMediaAttachment: true, imageMessage: await createImage(result) }),
+body: proto.Message.InteractiveMessage.Body.fromObject({ text: `${text}` }),
+footer: proto.Message.InteractiveMessage.Footer.fromObject({ text: `` }),
+nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.fromObject({ buttons: [] })
+})
+}
 
-        const responseMessage = generateWAMessageFromContent(
-            message.chat,
-            {
-                viewOnceMessage: {
-                    message: {
-                        messageContextInfo: {
-                            deviceListMetadata: {},
-                            deviceListMetadataVersion: 2
-                        },
-                        interactiveMessage: proto.Message.InteractiveMessage.fromObject({
-                            body: proto.Message.InteractiveMessage.Body.create({
-                                text: null
-                            }),
-                            footer: proto.Message.InteractiveMessage.Footer.create({
-                                text:  '`𝙋𝙄𝙉𝙏𝙀𝙍𝙀𝙎𝙏`', m, canal)
-                            }),
-                            header: proto.Message.InteractiveMessage.Header.create({
-                                title: 'Koruda',
-                                hasMediaAttachment: false
-                            }),
-                            carouselMessage: proto.Message.InteractiveMessage.CarouselMessage.fromObject({
-                                cards: imageMessages.map((imgMessage, index) => ({
-                                    body: proto.Message.InteractiveMessage.Body.fromObject({
-                                        text: null
-                                    }),
-                                    footer: proto.Message.InteractiveMessage.Footer.fromObject({
-                                        text: `𝙄𝙈𝘼𝙂𝙀𝙉 ${index + 1}`
-                                    }),
-                                    header: proto.Message.InteractiveMessage.Header.fromObject({
-                                        hasMediaAttachment: true,
-                                        imageMessage: imgMessage
-                                    }),
-                                    nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.fromObject({
-                                        buttons: []
-                                    })
-                                }))
-                            })
-                        })
-                    }
-                }
-            },
-            { quoted: message }
-        );
-        await conn.relayMessage(message.chat, responseMessage.message, { messageId: responseMessage.key.id });
+const msg = generateWAMessageFromContent(m.chat, {
+viewOnceMessage: {
+message: {
+messageContextInfo: {
+deviceListMetadata: {},
+deviceListMetadataVersion: 2
+},
+interactiveMessage: proto.Message.InteractiveMessage.fromObject({contextInfo: {mentionedJid: [m.sender]},
+body: proto.Message.InteractiveMessage.Body.create({ text: 'HasumiBotFreeCodes' }),
+footer: proto.Message.InteractiveMessage.Footer.create({ text: 'Pinterest search' }),
+header: proto.Message.InteractiveMessage.Header.create({ hasMediaAttachment: false }),
+carouselMessage: proto.Message.InteractiveMessage.CarouselMessage.fromObject({ cards: [...HasumiBotFreeCodes] })
+})
+}}}, { quoted: m })
 
-    } catch (error) {
-        await conn.reply(message.chat, `Error: ${error.message}`, message);
-    }
-};
-handler.help = ['pinterest <text>'];
-handler.tags = ['search'];
-handler.command = ['pinterest', 'pins'];
+await conn.relayMessage(m.chat, msg.message, { messageId: msg.key.id })
+} catch (error) {
+console.error(error) 
+}}
 
-export default handler;
+handler.command = ['pinterestsearch']
+
+export default handler
