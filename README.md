@@ -22,45 +22,7 @@
 ---------
 
 
----------
 
-## <img src="https://i.giphy.com/media/nWGRHBnAl5Kmc/giphy.gif" alt="Instalacion" width="40" height="40"> Instalación en [termux](https://f-droid.org/repo/com.termux_118.apk)
-
-```bash
-cd && termux-setup-storage
-```
-
-```bash
-apt-get update -y && apt-get upgrade -y
-```
-
-```bash
-pkg install -y git nodejs ffmpeg imagemagick && pkg install yarn 
-```
-
-```bash
-git clone https://github.com/Team Koruda ofc/Koruda.git && cd Koruda-bot
-```
-
-```bash
-yarn install
-```
-
-```bash
-npm install
-```
-
-```bash
-npm update
-```
-
-```bash
-npm start
-```
-
-- Después de eso te aparecerά un código **QR** lo escaneas con el Whatsapp web y listo
-
----------
 
 ## <img src="https://i.pinimg.com/originals/73/69/6e/73696e022df7cd5cb3d999c6875361dd.gif" alt="Características" width="42" height="42"> Características
 
