@@ -1,7 +1,8 @@
 let handler = async (m, { command, text }) => m.reply(`
 *🚫 𝐑𝐞𝐯𝐞𝐥𝐚𝐧𝐝𝐨 𝐠é𝐧𝐞𝐫𝐨 🚫*
   
-*𝙿𝚁𝙴𝙶𝚄𝙽𝚃𝙰:* ${text}
+*𝐐𝐮𝐞 𝐠𝐞𝐧𝐞𝐫ó 𝐞𝐬
+:* ${text}
 *𝚁𝙴𝚂𝙿𝚄𝙴𝚂𝚃𝙰:* ${['Mujer','Hombre','trans','Bisexual','Polisexual', 'Pansexual', 'Ni idea'].getRandom()}
 `.trim(), null, m.mentionedJid ? {
 mentions: m.mentionedJid
