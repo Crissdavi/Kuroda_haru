@@ -67,7 +67,7 @@ _*${text.toUpperCase()}* *ES* *${(500).getRandom()}%* *${command.replace('how', 
 mentions: m.mentionedJid
 } : {})}         
 }
-handler.help = ['gay2', 'lesbiana', 'pajero', 'pajera', 'puto', 'puta', 'manco', 'manca', 'rata', 'prostituta', 'prostituto'].map((v) => v + " *@user*")
+handler.help = ['gay', 'lesbiana', 'pajero', 'pajera', 'puto', 'puta', 'manco', 'manca', 'rata', 'prostituta', 'prostituto'].map((v) => v + " *@user*")
 handler.tags = ['fun']
-handler.command = /^gay2|lesbiana|pajero|pajera|puto|puta|manco|manca|rata|prostituta|prostituto/i
+handler.command = /^gay|lesbiana|pajero|pajera|puto|puta|manco|manca|rata|prostituta|prostituto/i
 export default handler
