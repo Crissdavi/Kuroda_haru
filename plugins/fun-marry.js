@@ -39,7 +39,7 @@ const handler = async (m, { conn, command }) => {
             proposals[proposer] = proposee;
             const proposerName = conn.getName(proposer);
             const proposeeName = conn.getName(proposee);
-            const confirmationMessage = `♡ ${proposerName} te ha propuesto matrimonio. ${proposeeName}  ¿aceptas? (⁠◍⁠•⁠ᴗ⁠•⁠◍⁠)⁠♡。\n\n*Debes Responder con:*\n> ✐"Si" » para aceptar\n> ✐"No" » para rechazar.`;
+            const confirmationMessage = `♡ @tag te ha propuesto matrimonio. @tag  ¿aceptas? (⁠◍⁠•⁠ᴗ⁠•⁠◍⁠)⁠♡。\n\n*Debes Responder con:*\n> ✐"Si" » para aceptar\n> ✐"No" » para rechazar.`;
             await conn.reply(m.chat, confirmationMessage, m, { mentions: [proposee, proposer] });
 
             confirmation[proposee] = {
