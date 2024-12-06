@@ -16,11 +16,16 @@ let dl_urlaud = json.download.audio
 let dl_urlvid = json.download.video
  
 await conn.sendMessage(m.chat, { video: { url: dl_urlaud }, mimetype: 'video/mp4', fileName: `${json.title}.mp4`, caption: `${json.title}` }, { quoted: m })
+await m.react('✅')
+
  
 await conn.sendMessage(m.chat, { audio: { url: dl_urlvid }, mimetype: 'audio/mpeg', fileName: `${json.title}.mp3`, }, { quoted: m })
 } catch (error) {
 console.log(error)
-}}
+await m.react('✅')
+} catch {
+await m.react('✖️')
+}}}
 handler.command = /^(video)$/i;
  
 export default handler
