@@ -20,7 +20,6 @@ await conn.sendMessage(m.chat, { audio: { url: dl_urlvid }, mimetype: 'audio/mpe
 console.log(error)
 }}
 
-Please, Sign In to add comment
 handler.help = ['Video']
 handler.tags = ['youtube']
 handler.customPrefix = /^(Video|video|vídeo|Vídeo)/
