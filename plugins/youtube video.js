@@ -1,6 +1,6 @@
 import axios from 'axios'
 import yts from 'yt-search'
-
+ 
 const handler = async (m, { conn, text, usedPrefix, command }) => {
 if (!text || text.trim() === "") return m.reply(`ingresa el texto de lo que quieras buscar`)
 try {
@@ -19,11 +19,6 @@ await conn.sendMessage(m.chat, { audio: { url: dl_urlvid }, mimetype: 'audio/mpe
 } catch (error) {
 console.log(error)
 }}
-
-handler.help = ['Video']
-handler.tags = ['youtube']
-handler.customPrefix = /^(Video|video|vídeo|Vídeo)/
-handler.command = new RegExp
-//handler.limit = 1
-
+handler.command = /^(video)$/i;
+ 
 export default handler
