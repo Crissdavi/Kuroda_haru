@@ -3,6 +3,8 @@ import yts from 'yt-search'
  
 const handler = async (m, { conn, text, usedPrefix, command }) => {
 if (!text || text.trim() === "") return m.reply(`ingresa el texto de lo que quieras buscar`)
+
+await m.react('🕓')
 try {
 let api = await axios.get(`https://Ikygantengbangetanjay-api.hf.space/yt?query=${encodeURIComponent(text)}`);
 let json = api.data.result
