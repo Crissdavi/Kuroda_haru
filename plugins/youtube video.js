@@ -10,7 +10,7 @@ let api = await axios.get(`https://Ikygantengbangetanjay-api.hf.space/yt?query=$
 let json = api.data.result
  
 if (json.duration.seconds >= 3600) {
-return m.reply('el video no puede durar mas de 1 hora')
+return m.reply('el video no puede durar mas de 1 hora'), m, rcanal).then(_ => m.react('✖️'))
 }
 let dl_urlaud = json.download.audio
 let dl_urlvid = json.download.video
