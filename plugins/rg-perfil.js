@@ -48,7 +48,7 @@ var handler = async (m, { conn }) => {
 🌐 *Pais:* ${userNationality}
 
 「 💰 *RECURSOS* 」
-💴 *Estrellas:* ${estrellas || 0}
+💴 *Zenis:* ${zenis || 0}
 🌟 *Nivel:* ${level || 0}
 ✨ *Experiencia:* ${exp || 0}
 👑 *Premium:* ${premium ? '✅': '❌'}
