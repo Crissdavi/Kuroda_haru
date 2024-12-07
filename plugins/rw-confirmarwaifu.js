@@ -36,7 +36,7 @@ const obtenerPersonajes = () => {
     }
 };
 let cooldowns = {};
-const COOLDOWN_TIME = 10 * 60 * 1000; // 10 minutos
+const COOLDOWN_TIME = 24 * 60 * 1000; // 10 minutos
 const manejarConfirmacion = async (personaje, sender, usuarios, conn, m) => {
     if (!usuarios[sender]) {
         usuarios[sender] = { characters: [], characterCount: 0, totalRwcoins: 0 };
