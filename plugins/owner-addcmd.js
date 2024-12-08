@@ -1,18 +1,13 @@
 const handler = async (m, {conn, text, usedPrefix, command}) => {
-  const datas = global
-  const idioma = datas.db.data.users[m.sender].language || global.defaultLenguaje
-  const _translate = JSON.parse(fs.readFileSync(`./src/languages/${idioma}.json`))
-  const tradutor = _translate.plugins.cmd_add
-
   global.db.data.sticker = global.db.data.sticker || {};
-  if (!m.quoted) throw `*${tradutor.texto1}*`;
-  if (!m.quoted.fileSha256) throw `*${tradutor.texto2}*`;
-  if (!text) throw `*${tradutor.texto3[0]}*\n*—◉ ${usedPrefix + command} ${tradutor.texto3[1]}*\n\n*${tradutor.texto3[2]}*\n*—◉ ${usedPrefix + command} <#menu> ${tradutor.texto3[3]}*`;
+  if (!m.quoted) throw `*Responde a un archivo / sticker / imágen*`;
+  if (!m.quoted.fileSha256) throw `*Responde a un sticker pije*`;
+  if (!text) throw `*Añade un texto o comando:*\n*—◉ ${usedPrefix + command} #kick*\n\n*Ejemplo de uso:*\n*—◉ ${usedPrefix + command} <#menu> <sticker>*`;
   const sticker = global.db.data.sticker;
   const hash = m.quoted.fileSha256.toString('base64');
-  if (sticker[hash] && sticker[hash].locked) throw `*${tradutor.texto4}*`;
+  if (sticker[hash] && sticker[hash].locked) throw `*Responde a un sticker*`;
   sticker[hash] = {text, mentionedJid: m.mentionedJid, creator: m.sender, at: + new Date, locked: false};
-  m.reply(`*${tradutor.texto5}*`);
+  m.reply(`*Se añadió con éxito*`);
 };
 handler.command = ['setcmd', 'addcmd', 'cmdadd', 'cmdset'];
 handler.rowner = true;
