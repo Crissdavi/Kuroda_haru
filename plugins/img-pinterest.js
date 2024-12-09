@@ -47,7 +47,7 @@ console.error(error)
 }}
 
 handler.help = ['pinterest']
-handler.tags = ['searcy']
+handler.tags = ['search']
 handler.command = /^(pinterest)$/i
 handler.premium = false
 handler.register = true
