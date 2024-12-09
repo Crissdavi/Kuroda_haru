@@ -27,7 +27,7 @@ await conn.sendFile(m.chat, vid.thumbnail, 'thumbnail.jpg', txt, m, null, rcanal
 try {
 let yt = await fg.yta(vid.url, q)
 let { title, dl_url, size } = yt
-let limit = 500
+let limit = 1000
 
 if (size.split('MB')[0] >= limit) return conn.reply(m.chat,`El archivo pesa mas de ${limit} MB, se canceló la Descarga.`, m, rcanal).then(_ => m.react('✖️'))
 
@@ -37,7 +37,7 @@ await m.react('✅')
 try {
 let yt = await fg.ytmp3(vid.url, q)
 let { title, dl_url, size } = yt
-let limit = 100
+let limit = 1000
 
 if (size.split('MB')[0] >= limit) return conn.reply(m.chat,`El archivo pesa mas de ${limit} MB, se canceló la Descarga.`, m, rcanal).then(_ => m.react('✖️'))
 
@@ -65,7 +65,7 @@ await conn.sendFile(m.chat, vid.thumbnail, 'thumbnail.jpg', txt, m, rcanal)
 try {
 let yt = await fg.ytv(vid.url, q)
 let { title, dl_url, size } = yt
-let limit = 500
+let limit = 1000
 
 if (size.split('MB')[0] >= limit) return conn.reply(m.chat,`El archivo pesa mas de ${limit} MB, se canceló la Descarga.`, m, rcanal).then(_ => m.react('✖️'))
 
@@ -75,7 +75,7 @@ await m.react('✅')
 try {
 let yt = await fg.ytmp4(vid.url, q)
 let { title, dl_url, size } = yt
-let limit = 800
+let limit = 1000
 
 if (size.split('MB')[0] >= limit) return conn.reply(m.chat,`El archivo pesa mas de ${limit} MB, se canceló la Descarga.`, m, rcanal).then(_ => m.react('✖️'))
 
@@ -103,7 +103,7 @@ await conn.sendFile(m.chat, vid.thumbnail, 'thumbnail.jpg', txt, m, null, rcanal
 try {
 let yt = await fg.yta(vid.url, q)
 let { title, dl_url, size } = yt
-let limit = 800
+let limit = 1000
 
 if (size.split('MB')[0] >= limit) return conn.reply(m.chat,`El archivo pesa mas de ${limit} MB, se canceló la Descarga.`, m, rcanal).then(_ => m.react('✖️'))
 
@@ -113,7 +113,7 @@ await m.react('✅')
 try {
 let yt = await fg.ytmp3(vid.url, q)
 let { title, dl_url, size } = yt
-let limit = 100
+let limit = 1000
 
 if (size.split('MB')[0] >= limit) return conn.reply(m.chat,`El archivo pesa mas de ${limit} MB, se canceló la Descarga.`, m, rcanal).then(_ => m.react('✖️'))
 
@@ -140,7 +140,7 @@ await conn.sendFile(m.chat, vid.thumbnail, 'thumbnail.jpg', txt, m, null, rcanal
 try {
 let yt = await fg.ytv(vid.url, q)
 let { title, dl_url, size } = yt
-let limit = 300
+let limit = 1000
 
 if (size.split('MB')[0] >= limit) return conn.reply(m.chat,`El archivo pesa mas de ${limit} MB, se canceló la Descarga.`, m, rcanal).then(_ => m.react('✖️'))
 
@@ -150,7 +150,7 @@ await m.react('✅')
 try {
 let yt = await fg.ytmp4(vid.url, q)
 let { title, dl_url, size } = yt
-let limit = 300
+let limit = 1000
 
 if (size.split('MB')[0] >= limit) return conn.reply(m.chat,`El archivo pesa mas de ${limit} MB, se canceló la Descarga.`, m, rcanal).then(_ => m.react('✖️'))
 
