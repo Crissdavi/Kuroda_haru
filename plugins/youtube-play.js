@@ -160,7 +160,7 @@ await m.react('✅')
 await m.react('✖️')
 }}}}}
 handler.help = ['play2'].map(v => v + " *<formato> <búsqueda>*")
-handler.tags = ['dowloader']
+handler.tags = ['dowload']
 handler.command = ['play', 'play2', 'mp3', 'yta', 'audio', 'mp4', 'ytv', 'video', 'mp3doc', 'ytadoc', 'audiodoc', 'mp4doc', 'ytvdoc', 'videodoc']
 handler.register = true 
 //handler.limit = 1
