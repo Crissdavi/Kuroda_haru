@@ -161,7 +161,7 @@ await m.react('✖️')
 }}}}}
 handler.help = ['play2'].map(v => v + " *<formato> <búsqueda>*")
 handler.tags = ['downloader']
-handler.command = ['play2', 'mp3', 'yta', 'audio', 'mp4', 'ytv', 'video', 'mp3doc', 'ytadoc', 'audiodoc', 'mp4doc', 'ytvdoc', 'videodoc']
+handler.command = ['play2', 'mp3' 'mp4','mp3doc', 'mp4doc']
 handler.register = true 
 handler.zenis = 30
 export default handler
