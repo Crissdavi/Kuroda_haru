@@ -15,7 +15,7 @@ await m.react('✖️')
 handler.help = ['neko']
 handler.tags = ['img']
 handler.command = ['neko']
-//handler.limit = 1
+handler.limit = 1
 handler.register = true 
 
 export default handler
