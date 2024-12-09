@@ -1,5 +1,5 @@
 import Starlights from '@StarlightsTeam/Scraper'
-let limit = 800
+let limit = 1000
 
 let handler = async (m, { conn, text, isPrems, isOwner, usedPrefix, command }) => {
 if (!m.quoted) return conn.reply(m.chat, `[ ✰ ] Etiqueta el mensaje que contenga el resultado de YouTube Play.`, m, rcanal).then(_ => m.react('✖️'))
