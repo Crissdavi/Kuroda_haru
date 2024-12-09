@@ -9,7 +9,7 @@ let lister = ["mp3","mp4", "mp3doc", "mp4doc"]
 let [feature, inputs, inputs_, inputs__, inputs___] = text.split(" ")
 if (!lister.includes(feature)) return conn.reply(m.chat, `🐢 _*Ingresa el formato en que deseas descargar más el titulo de un video o musica de YouTube.*_\n\nEjemplo : ${usedPrefix + command} *mp3* Enemy Tommoee Profitt\n\nFormatos disponibles :\n${usedPrefix + command} *mp3*\n${usedPrefix + command} *mp3doc*\n${usedPrefix + command} *mp4*\n${usedPrefix + command} *mp4doc*`, m, rcanal)
 if (lister.includes(feature)) {
-if (feature == "mp3" || feature == "yta" || feature == "audio") {
+if (feature == "mp3") {
 if (!inputs) return conn.reply(m.chat, `🐢 *Ingresa el título de un video o canción de YouTube.*\n\n*Ejemplo:*\n*${usedPrefix + command}* Enemy Tommoee Profitt`, m, rcanal)
 await m.react('🕓')
 let res = await yts(text)
@@ -47,7 +47,7 @@ await m.react('✅')
 await m.react('✖️')
 }}}
 
-if (feature == "mp4" || feature == "ytv" || feature == "video" || feature == "video") {
+if (feature == "mp4") {
 if (!inputs) return conn.reply(m.chat, `🐢 *Ingresa el título de un video o canción de YouTube.*\n\n*Ejemplo:*\n*${usedPrefix + command}* Enemy Tommoee Profitt`, m, rcanal)
 await m.react('🕓')
 let res = await yts(text)
@@ -85,7 +85,7 @@ await m.react('✅')
 await m.react('✖️')
 }}}
 
-if (feature == "mp3doc" || feature == "ytadoc" || feature == "audiodoc") {
+if (feature == "mp3doc" ) {
 if (!inputs) return conn.reply(m.chat, `🐢 *Ingresa el título de un video o canción de YouTube.*\n\n*Ejemplo:*\n*${usedPrefix + command}* Enemy Tommoee Profitt`, m, rcanal)
 await m.react('🕓')
 let res = await yts(text)
@@ -122,7 +122,7 @@ await conn.sendMessage(m.chat, { document: { url: dl_url }, caption: '', mimetyp
 await m.react('✖️')
     }}}
 
-if (feature == "mp4doc" || feature == "ytvdoc" || feature == "videodoc" || feature == "videodoc") {
+if (feature == "mp4doc") {
 if (!inputs) return conn.reply(m.chat, `🐢 *Ingresa el título de un video o canción de YouTube.*\n\n*Ejemplo:*\n*${usedPrefix + command}* Enemy Tommoee Profitt`, m, rcanal)
 await m.react('🕓')
 let res = await yts(text)
