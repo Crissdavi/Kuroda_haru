@@ -20,6 +20,6 @@ handler.tags = ['downloader']
 handler.help = ['apkmod']
 handler.command = /^(apkmod|apk|dapk2|aptoide|aptoidedl)$/i
 handler.register = false
-handler.estrellas = 1
+handler.zenis = 1
 
 export default handler
