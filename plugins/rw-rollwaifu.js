@@ -1,107 +1,51 @@
-import fs from 'fs';
-import { v4 as uuidv4 } from 'uuid';
-import dotenv from 'dotenv';
+import { promises as fs } from 'fs';
 
-dotenv.config();
+// Ruta del archivo harem.json
+const haremFilePath = './harem.json';
 
-
-const obtenerDatos = () => {
+// Función para cargar el archivo harem.json
+async function loadHarem() {
     try {
-        return fs.existsSync('data.json') ? JSON.parse(fs.readFileSync('data.json', 'utf-8')) : { 'usuarios': {}, 'personajesReservados': [] };
+        const data = await fs.readFile(haremFilePath, 'utf-8');
+        return JSON.parse(data); // Retornar el objeto completo
     } catch (error) {
-        console.error('Error al leer data.json:', error);
-        return { 'usuarios': {}, 'personajesReservados': [] };
+        throw new Error('No se pudo cargar el archivo harem.json.');
     }
-};
+}
 
-const guardarDatos = (data) => {
-    try {
-        fs.writeFileSync('data.json', JSON.stringify(data, null, 2));
-    } catch (error) {
-        console.error('Error al escribir en data.json:', error);
-    }
-};
-
-
-const reservarPersonaje = (userId, character) => {
-    let data = obtenerDatos();
-    data.personajesReservados.push({ userId, ...character });
-    guardarDatos(data);
-};
-
-const obtenerPersonajes = () => {
-    try {
-        return JSON.parse(fs.readFileSync('./src/JSON/characters.json', 'utf-8'));
-    } catch (error) {
-        console.error('Error al leer characters.json:', error);
-        return [];
-    }
-};
-
-let cooldowns = {};
-
+// Definición del handler del comando 'harem'
 let handler = async (m, { conn }) => {
-        let userId = m.sender;
-        let currentTime = new Date().getTime();
-        const cooldownDuration = 10 * 60 * 1000; // 10 minutos
-        let userCooldown = cooldowns[userId] || 0;
-        let timeSinceLastRoll = currentTime - userCooldown;
+    try {
+        const harem = await loadHarem();
 
-        if (timeSinceLastRoll < cooldownDuration) {
-            let remainingTime = cooldownDuration - timeSinceLastRoll;
-            let minutes = Math.floor(remainingTime / (60 * 1000));
-            let seconds = Math.floor((remainingTime % (60 * 1000)) / 1000);
-            let replyMessage = `¡Espera ${minutes} minutos y ${seconds} segundos antes de usar el comando de nuevo!`;
-            await conn.sendMessage(m.chat, { text: replyMessage });
-            return;
-        }
-        let data = obtenerDatos();
-        let personajes = obtenerPersonajes();
-        let availableCharacters = personajes.filter(character => {
-            let isReserved = data.personajesReservados.some(reserved => reserved.url === character.url);
-            return !isReserved;
-        });
+        // Obtener el ID del usuario que ejecuta el comando
+        const userId = m.sender; // m.sender contiene el ID del usuario
 
-        if (availableCharacters.length === 0) {
-            await conn.sendMessage(m.chat, { image: { url: completadoImage }, caption: '¡Todos los personajes han sido reservados!' });
+        // Verificar si el usuario tiene personajes en su harem
+        const userHarem = harem[userId];
+        if (!userHarem || userHarem.length === 0) {
+            await conn.reply(m.chat, 'No tienes personajes reclamados en tu harem.', m);
             return;
         }
 
-        let randomCharacter = availableCharacters[Math.floor(Math.random() * availableCharacters.length)];
-        let uniqueId = uuidv4();
-        let reservedBy = data.usuarios[randomCharacter.url] || null;
-
-        let statusMessage = reservedBy ? `Reservado por ${reservedBy.userId}` : 'Libre';
-        let responseMessage = `🌱 \`Nombre:\` --> \`${randomCharacter.name}\`\n💹 \`Valor:\` -->  \`${randomCharacter.value} Coins!\`\n💲 \`Estado:\` --> \`${statusMessage}\`\n🆔 \`ID:\` --> \`${uniqueId}\``;
-
-        await conn.sendMessage(m.chat, {
-            image: { url: randomCharacter.url },
-            caption: responseMessage,
-            mimetype: 'image/jpeg',
-            contextInfo: {
-                mentionedJid: reservedBy ? [reservedBy.userId] : [],
-                externalAdReply: {
-                    showAdAttribution: true,
-                    title: '¡Nuevo personaje!',
-                    body: '¡Felicidades por tu nuevo personaje!',
-                    thumbnailUrl: 'https://files.catbox.moe/6yqzsu.jpg', //Especifica la imagen
-                    'sourceUrl': 'https://www.instagram.com/ig.de.haru/profilecard/?igsh=bmNyczltZnlvM3Jx',
-                    mediaType: 1,
-                }
-            }
+        // Crear mensaje con la lista de personajes y los nuevos datos
+        let message = '✨ *Personajes en tu Harem:*\n';
+        userHarem.forEach((character, index) => {
+            message += `${index + 1}. ${character.name}\n`;
+            message += `   Situación Sentimental: ${character.relationship}\n`;
+            message += `   Origen: ${character.source}\n \n`;
         });
 
-        if (!reservedBy) {
-            reservarPersonaje(userId, { ...randomCharacter, id: uniqueId });
-        }
-
-        cooldowns[userId] = currentTime;
-        console.log('Cooldown actualizado para ' + userId + ': ' + cooldowns[userId]);
+        // Enviar el mensaje con la lista de personajes y la imagen personalizada
+        await conn.sendFile(m.chat, 'https://qu.ax/FmlF.png', 'harem.jpg', message, m);
+    } catch (error) {
+        await conn.reply(m.chat, `Error al cargar el harem: ${error.message}`, m);
+    }
 };
 
-handler.help = ['roll'];
-handler.tags = ['rw'];
-handler.command = ['roll', 'rw'];
-handler.group = true;
+// Configuración del comando
+handler.help = ['harem'];
+handler.tags = ['anime'];
+handler.command = /^(harem)$/i;  
 
 export default handler;
