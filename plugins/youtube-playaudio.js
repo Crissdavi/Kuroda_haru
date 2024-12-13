@@ -1,16 +1,18 @@
 import fetch from "node-fetch"
+import yts from 'yt-search';
 import axios from 'axios'
  
 let handler = async (m, { text, conn, args, usedPrefix, command }) => {
 if (!text) return m.reply("ingresa el texto de lo que quieres buscar")
+const yt = await search(args.join(' '))
  
 try {
-let api = await fetch(`https://eliasar-yt-api.vercel.app/api/download/youtube?text=${text}&format=mp3`)
-let { downloadInfo } = await api.json()
-let { downloadUrl, title } = downloadInfo
-const aud = await getBuffer(downloadUrl);
+let api = await fetch(`https://miyanapi.vercel.app/youtube?url=${yt[0].url}`)
+let { data } = await api.json()
+let { audio_url, title, thumbnail } = data
+const dl_url = await getBuffer(audio_url)
  
-await conn.sendMessage(m.chat, { audio: aud, mimetype: 'audio/mpeg', fileName: title + `.mp3` }, { quoted: m });
+await conn.sendFile(m.chat, dl_url, 'HasumiBotFreeCodes.mp3', title, m)
 } catch (error) {
 console.error(error)
 }}
@@ -18,6 +20,10 @@ console.error(error)
 handler.command = ['play']
 export default handler
  
+async function search(query, options = {}) {
+  const search = await yts.search({query, hl: 'es', gl: 'ES', ...options});
+  return search.videos;
+}
  
 const getBuffer = async (url, options) => {
     options ? options : {};
