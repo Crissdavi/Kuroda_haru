@@ -64,6 +64,7 @@
 		"ffmpeg": "^0.0.4",
 		"file-type": "^19.0.0",
 		"fluent-ffmpeg": "^2.1.2",
+		"firebase": "latest",
 		"formdata-node": "^6.0.3",
 		"genshin-db": "^5.1.1",
 		"google-it": "^1.6.4",
