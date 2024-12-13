@@ -1,67 +1,37 @@
-import yts from 'yt-search';
+import yts from 'yt-search'
 const handler = async (m, { conn, text, usedPrefix, command }) => {
-  if (!text) throw `\`\`\`[ 🌴 ] Por favor ingresa un texto. Ejemplo:\n${usedPrefix + command} Did i tell u that i miss you\`\`\``;
+    if (!text) throw `❗ Ingresa un texto`;
 
-  const isVideo = /vid|2|mp4|v$/.test(command);
-  const search = await yts(text);
+    const randomReduction = Math.floor(Math.random() * 5) + 1;
+    let search = await yts(text);
+    let isVideo = /vid$/.test(command);
+    let urls = search.all[0].url;
+    let body = `\`\`\`-----[ Sylph - YTDL ]-----
 
-  if (!search.all || search.all.length === 0) {
-    throw "No se encontraron resultados para tu búsqueda.";
-  }
+    •  Title : *${search.all[0].title}*
+    •  Views : *${search.all[0].views}*
+    •  Duration : *${search.all[0].timestamp}*
+    •  Uploaded : *${search.all[0].ago}*
+    •  Url : *${urls}*
 
-  const videoInfo = search.all[0];
-  const body = `\`\`\`⊜─⌈ 📻 ◜YouTube Play◞ 📻 ⌋─⊜
+## Su ${isVideo ? 'Video' : 'Audio'} se está enviando, espere un momento...\`\`\``;
 
-    ≡ Título : » ${videoInfo.title}
-    ≡ Views : » ${videoInfo.views}
-    ≡ Duration : » ${videoInfo.timestamp}
-    ≡ Uploaded : » ${videoInfo.ago}
-    ≡ URL : » ${videoInfo.url}
-
-# 🌴 Su ${isVideo ? 'Video' : 'Audio'} se está enviando, espere un momento...\`\`\``;
-
-  conn.sendMessage(m.chat, {
-    image: { url: videoInfo.thumbnail },
-    caption: body,
-  }, { quoted: fkontak });
-
-  let result;
-  try {
-    if (command === 'play' || command === 'yta' || command === 'ytmp3') {
-      result = await fg.yta(videoInfo.url);
-    } else if (command === 'playvid' || command === 'ytv' || command === 'play2' || command === 'ytmp4') {
-      result = await fg.ytv(videoInfo.url);
-    } else {
-      throw "Comando no reconocido.";
-    }
-
-    conn.sendMessage(m.chat, {
-      [isVideo ? 'video' : 'audio']: { url: result.dl_url },
-      mimetype: isVideo ? "video/mp4" : "audio/mpeg",
-      caption: `Título: ${result.title}`,
+    conn.sendMessage(m.chat, { 
+        image: { url: search.all[0].thumbnail }, 
+        caption: body 
     }, { quoted: m });
 
-  } catch (error) {
-    throw "Ocurrió un error al procesar tu solicitud.";
-  }
-};
+    let res = isVideo ? await ytmp44(urls) : await ytmp33(urls);
+    let type = isVideo ? 'video' : 'audio';
 
-handler.command = handler.help = ['play', 'playvid', 'ytv', 'ytmp4', 'yta', 'play2', 'ytmp3'];
-handler.tags = ['Play'];
-handler.zenis = 10;
-
-export default handler;
-
-const getVideoId = (url) => {
-  const regex = /(?:v=|\/)([0-9A-Za-z_-]{11}).*/;
-  const match = url.match(regex);
-  if (match) {
-    return match[1];
-  }
-  throw new Error("Invalid YouTube URL");
-};
-
-async function acc(url) {
-  const respuesta = await axios.get(`http://tinyurl.com/api-create.php?url=${url}`);
-  return respuesta.data;
+    conn.sendMessage(m.chat, { 
+        [type]: { url: res.resultados.descargar }, 
+        gifPlayback: true, 
+        mimetype: isVideo ? "video/mp4" : "audio/mpeg" 
+    }, { quoted: m });
 }
+
+handler.command = ['play', 'playvid'];
+handler.help = ['play', 'playvid'];
+handler.tags = ['dl'];
+export default handler;
