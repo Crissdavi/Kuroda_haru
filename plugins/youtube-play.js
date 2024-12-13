@@ -6,7 +6,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
     let search = await yts(text);
     let isVideo = /vid$/.test(command);
     let urls = search.all[0].url;
-    let body = `\`\`\`-----[ Sylph - YTDL ]-----
+    let body = `\`\`\`-----[ KURODA - YTDL ]-----
 
     •  Titulo : *${search.all[0].title}*
     •  Vistas : *${search.all[0].views}*
