@@ -21,7 +21,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
         caption: body 
     }, { quoted: m });
 
-    let res = isVideo ? await ytmp44(urls) : await ytmp33(urls);
+    let res = isVideo ? await ytmp4(urls) : await ytmp3(urls);
     let type = isVideo ? 'video' : 'audio';
 
     conn.sendMessage(m.chat, { 
