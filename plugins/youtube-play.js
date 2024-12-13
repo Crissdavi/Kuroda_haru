@@ -8,9 +8,9 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
     let urls = search.all[0].url;
     let body = `\`\`\`-----[ Sylph - YTDL ]-----
 
-    •  Title : *${search.all[0].title}*
-    •  Views : *${search.all[0].views}*
-    •  Duration : *${search.all[0].timestamp}*
+    •  Titulo : *${search.all[0].title}*
+    •  Vistas : *${search.all[0].views}*
+    •  Duración : *${search.all[0].timestamp}*
     •  Uploaded : *${search.all[0].ago}*
     •  Url : *${urls}*
 
