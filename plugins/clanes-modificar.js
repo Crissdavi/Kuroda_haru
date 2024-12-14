@@ -46,8 +46,8 @@ const handler = async (m, { conn, isROwner, args, command, usedPrefix }) => {
         m.chat,
         {
           text: `⚠️ Por favor elige una opción para modificar:\n\n
-1: Cambiar nombre\n• ${usedPrefix + command} 2 <nuevo nombre>\n
-2: Cambiar imagen\n• ${usedPrefix + command} 1 <URL de imagen>\n
+1: Cambiar nombre\n• ${usedPrefix + command} 1 <nuevo nombre>\n
+2: Cambiar imagen\n• ${usedPrefix + command} 2 <URL de imagen>\n
 3: Cambiar nivel requerido\n• ${usedPrefix + command} 3 <nivel requerido>\n
 4: Cambiar beneficios diarios\n• ${usedPrefix + command} 4 <beneficios diarios>\n
 5: Cambiar descripción\n• ${usedPrefix + command} 5 <nueva descripción>\n
