@@ -72,7 +72,7 @@ let bnus = clanData.bonus_diario
 
     return conn.sendMessage(
         m.chat,
-        { text: `✅ Te has unido exitosamente al clan **${clanData.nombre}** como **Miembro**.\n\n🎆 Se añadieron ${bnus} coins como bonus!` },
+        { text: `✅ Te has unido exitosamente al clan **${clanData.nombre}** como **Miembro**.\n\n🎆 Se añadieron ${bnus} zenis como bonus!` },
         { quoted: m }
     );
     global.db.data.users[m.sender].coin += bnus
