@@ -27,7 +27,7 @@ Total gastado: *${-limit}* 💴 Zenis`)
 }
 handler.help = ['darzenis *@user <cantidad>*']
 handler.tags = ['rpg']
-handler.command = ['darcoins', 'darzenis']
+handler.command = ['darzenis']
 handler.register = true 
 
 export default handler
