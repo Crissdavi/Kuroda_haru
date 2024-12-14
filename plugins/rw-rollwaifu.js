@@ -72,7 +72,7 @@ return;
         let reservedBy = data.usuarios[randomCharacter.url] || null;
 
         let statusMessage = reservedBy ? `Reservado por ${reservedBy.userId}` : 'Libre';
-        let responseMessage = `🌱 \`Nombre:\` --> \`${randomCharacter.name}\`\n💹 \`Valor:\` -->  \`${randomCharacter.value} Coins!\`\n💲 \`Estado:\` --> \`${statusMessage}\`\n🆔 \`ID:\` --> \`${uniqueId}\``;
+        let responseMessage = `🌱 \`Nombre:\` --> \`${randomCharacter.name}\`\n💹 \`Valor:\` -->  \`${randomCharacter.value} Zekis!\`\n💲 \`Estado:\` --> \`${statusMessage}\`\n🆔 \`ID:\` --> \`${uniqueId}\``;
 
         await conn.sendMessage(m.chat, {
             image: { url: randomCharacter.url },
