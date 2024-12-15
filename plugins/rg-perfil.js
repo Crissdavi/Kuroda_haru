@@ -65,7 +65,7 @@ let prem = `
 ❁ Premium » ${premium ? '✅': '❌'}
 `.trim();
 
-    conn.sendFile(m.chat, pp, 'perfil.jpg', `${premium ? prem.trim() : noprem.trim()}`, m, { mentions: [who] });
+    conn.sendFile(m.chat, pp, 'miniurl.jpg', `${premium ? prem.trim() : noprem.trim()}`, m, { mentions: [who] });
 }
 
 handler.help = ['profile'];
