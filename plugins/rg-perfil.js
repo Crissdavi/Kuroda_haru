@@ -22,14 +22,13 @@ var handler = async (m, { conn }) => {
     }
 
     let pp = await conn.profilePictureUrl(who, 'image').catch(_ => imagen1);
-    let { premium, level, genre, birth, description, zenis, exp, lastclaim, registered, regTime, age, role } = global.db.data.users[who] || {};
+    let { premium, level, zenis, exp, lastclaim, registered, regTime, age, role } = global.db.data.users[who] || {};
     let username = conn.getName(who);
 
     genre = genre === 0 ? 'No especificado' : genre || 'No especificado';
     age = registered ? (age || 'Desconocido') : 'Sin especificar';
     birth = birth || 'No Establecido';
-    description = description || 'Sin Descripción';
-    role = role || 'Aldeano';
+    role = role || 'Novato';
 
     let isMarried = who in global.db.data.marriages;
     let partner = isMarried ? global.db.data.marriages[who] : null;
@@ -39,36 +38,32 @@ var handler = async (m, { conn }) => {
     let userNationality = userNationalityData ? `${userNationalityData.name} ${userNationalityData.emoji}` : 'Desconocido';
 
     let noprem = `
-「 👤 *PERFIL DE USUARIO* 」
-☁️ *Nombre:* ${username}
-💠 *Edad:* ${age}
-👩‍❤️‍👩 *Casad@:* ${isMarried ? partnerName : 'Nadie'}
-📜 *Descripción:* ${description}
-🌀 *Registrado:* ${registered ? '✅': '❌'}
-🌐 *Pais:* ${userNationality}
-
-「 💰 *RECURSOS* 」
-💴 *Zenis:* ${zenis || 0}
-🌟 *Nivel:* ${level || 0}
-✨ *Experiencia:* ${exp || 0}
-👑 *Premium:* ${premium ? '✅': '❌'}
+「✿」PERFIL DE USUARIO 
+ꕥ Nombre » ${username}
+✦ Edad » ${age}
+♡ Casado con » ${isMarried ? partnerName : 'Nadie'}
+✧ Registrado » ${registered ? '✅': '❌'}
+❒ Pais » ${userNationality}
+⛁ Zenis » ${zenis || 0}
+❖ Nivel » ${level || 0}
+☆ Experiencia » ${exp || 0}
+✎ Rango » ${role}
+❁ Premium » ${premium ? '✅': '❌'}
 `.trim();
 
-    let prem = `╭──⪩ 𝐔𝐒𝐔𝐀𝐑𝐈𝐎 𝐏𝐑𝐄𝐌𝐈𝐔𝐌 ⪨
-│⧼👤⧽ *ᴜsᴜᴀʀɪᴏ:* *${username}*
-│⧼💠⧽ *ᴇᴅᴀᴅ:* *${age}*
-│⧼👩‍❤️‍👩⧽ *ᴄᴀsᴀᴅᴏ:* ${isMarried ? partnerName : 'Nadie'}
-📜 *ᴅᴇsᴄʀɪᴘᴄɪᴏɴ:* ${description}
-│⧼🌀⧽ *ʀᴇɢɪsᴛʀᴀᴅᴏ:* ${registered ? '✅': '❌'}
-│⧼🌐⧽ *ᴘᴀɪs:* ${userNationality}
-
-╰─────────────────⪨
-
-╭────⪩ 𝐑𝐄𝐂𝐔𝐑𝐒𝐎𝐒 ⪨
-│⧼💴⧽ *Zenis:* ${zenis || 0}
-│⧼🌟⧽ *ɴɪᴠᴇʟ:* ${level || 0}
-│⧼✨⧽ *ᴇxᴘᴇʀɪᴇɴᴄɪᴀ:* ${exp || 0}
-╰───⪨ *𝓤𝓼𝓾𝓪𝓻𝓲𝓸 𝓓𝓮𝓼𝓽𝓪𝓬𝓪𝓭𝓸* ⪩`.trim();
+let prem = `
+「✿」𝐔𝐒𝐔𝐀𝐑𝐈𝐎 𝐏𝐑𝐄𝐌𝐈𝐔𝐌 
+ꕥ Nombre » ${username}
+✦ Edad » ${age}
+♡ Casado con » ${isMarried ? partnerName : 'Nadie'}
+✧ Registrado » ${registered ? '✅': '❌'}
+❒ Pais » ${userNationality}
+⛁ Zenis » ${zenis || 0}
+❖ Nivel » ${level || 0}
+☆ Experiencia » ${exp || 0}
+✎ Rango » ${role}
+❁ Premium » ${premium ? '✅': '❌'}
+`.trim();
 
     conn.sendFile(m.chat, pp, 'perfil.jpg', `${premium ? prem.trim() : noprem.trim()}`, m, { mentions: [who] });
 }
