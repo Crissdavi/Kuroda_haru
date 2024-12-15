@@ -20,7 +20,7 @@ let handler = async (m, { conn, text }) => {
 
     await conn.reply(m.chat, `⊜ *😏 AÑADIDO*
 ┏━━━━━━━━━━━⬣
-┃⋄ *Total:* ${len}
+┃⋄ *Total:* ${zenis}
 ┗━━━━━━━━━━━⬣`, m, rcanal)
    conn.fakeReply(m.chat, `⊜ *_Recibiste_* \n\n *_+${zenis} zenis 💴_*`, who, m.text)
 }
