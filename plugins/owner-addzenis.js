@@ -13,10 +13,10 @@ let handler = async (m, { conn, text }) => {
     let len = parseInt(txt)
     let estrellas = len
     let pjk = Math.ceil(len * impts)
-    estrellas += pjk
-    if (estrellas < 1) return m.reply('⚠️️ Mínimo es  *1*')
+    zenis += pjk
+    if (zenis < 1) return m.reply('⚠️️ Mínimo es  *1*')
     let users = global.db.data.users
-   users[who].estrellas += len
+   users[who].zenis += len
 
     await conn.reply(m.chat, `⊜ *😏 AÑADIDO*
 ┏━━━━━━━━━━━⬣
