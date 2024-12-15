@@ -10,24 +10,24 @@ let handler = async (m, { conn, text }) => {
     let txt = text.replace('@' + who.split`@`[0], '').trim()
     if (!txt) return m.reply('⚠️️ Ingrese la cantidad de *Zenis* que quiere añadir')
     if (isNaN(txt)) return m.reply('⚠️ *sólo números*')
-    let Zenis = parseInt(txt)
-    let zenis = Zenis
+    let zenis = parseInt(txt)
+    let zenis = zenis
     let pjk = Math.ceil(zenis * impts)
     zenis += pjk
     if (zenis < 1) return m.reply('⚠️️ Mínimo es  *1*')
     let users = global.db.data.users
-   users[who].zenis += Zenis
+   users[who].zenis += zenis
 
-    await conn.reply(m.chat, `⊜ *😏 AÑADIDO*
+    await conn.reply(m.chat, `⊜ *💴 AÑADIDO*
 ┏━━━━━━━━━━━⬣
 ┃⋄ *Total:* ${zenis}
 ┗━━━━━━━━━━━⬣`, m, rcanal)
-   conn.fakeReply(m.chat, `⊜ *_Recibiste_* \n\n *_+${zenis} zenis 💴_*`, who, m.text)
+   conn.fakeReply(m.chat, `⊜ *_Recibiste_* \n\n *_+${zenis} Zenis 💴_*`, who, m.text)
 }
 
 handler.help = ['addzenis *<@user>*']
 handler.tags = ['owner']
-handler.command = ['addzenis', 'addzen', 'regalarzenis'] 
+handler.command = ['addzenis', 'addzen'] 
 handler.rowner = true
 
 export default handler
