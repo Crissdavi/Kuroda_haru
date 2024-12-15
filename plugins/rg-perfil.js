@@ -25,9 +25,7 @@ var handler = async (m, { conn }) => {
     let { premium, level, zenis, exp, lastclaim, registered, regTime, age, role } = global.db.data.users[who] || {};
     let username = conn.getName(who);
 
-    genre = genre === 0 ? 'No especificado' : genre || 'No especificado';
     age = registered ? (age || 'Desconocido') : 'Sin especificar';
-    birth = birth || 'No Establecido';
     role = role || 'Novato';
 
     let isMarried = who in global.db.data.marriages;
