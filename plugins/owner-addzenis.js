@@ -10,13 +10,13 @@ let handler = async (m, { conn, text }) => {
     let txt = text.replace('@' + who.split`@`[0], '').trim()
     if (!txt) return m.reply('⚠️️ Ingrese la cantidad de *Zenis* que quiere añadir')
     if (isNaN(txt)) return m.reply('⚠️ *sólo números*')
-    let len = parseInt(txt)
+    let Zenis = parseInt(txt)
     let zenis = Zenis
     let pjk = Math.ceil(len * impts)
     zenis += pjk
     if (zenis < 1) return m.reply('⚠️️ Mínimo es  *1*')
     let users = global.db.data.users
-   users[who].zenis += len
+   users[who].zenis += Zenis
 
     await conn.reply(m.chat, `⊜ *😏 AÑADIDO*
 ┏━━━━━━━━━━━⬣
