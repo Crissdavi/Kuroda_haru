@@ -16,7 +16,7 @@ let handler = async (m, { conn, text }) => {
     estrellas += pjk
     if (zenis < 1) return m.reply('⚠️️ Mínimo es  *1*')
     let users = global.db.data.users
-   users[who].estrellas += len
+   users[who].zenis += len
 
     await conn.reply(m.chat, `⊜ *💴 AÑADIDO*
 ┏━━━━━━━━━━━⬣
