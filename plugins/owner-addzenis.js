@@ -11,7 +11,7 @@ let handler = async (m, { conn, text }) => {
     if (!txt) return m.reply('⚠️️ Ingrese la cantidad de *Zenis* que quiere añadir')
     if (isNaN(txt)) return m.reply('⚠️ *sólo números*')
     let len = parseInt(txt)
-    let estrellas = len
+    let zenis = len
     let pjk = Math.ceil(len * impts)
     zenis += pjk
     if (zenis < 1) return m.reply('⚠️️ Mínimo es  *1*')
@@ -20,9 +20,9 @@ let handler = async (m, { conn, text }) => {
 
     await conn.reply(m.chat, `⊜ *😏 AÑADIDO*
 ┏━━━━━━━━━━━⬣
-┃⋄ *Total:* ${len}
+┃⋄ *Total:* ${zenis}
 ┗━━━━━━━━━━━⬣`, m, rcanal)
-   conn.fakeReply(m.chat, `⊜ *_Recibiste_* \n\n *_+${len} zenis 💴_*`, who, m.text)
+   conn.fakeReply(m.chat, `⊜ *_Recibiste_* \n\n *_+${zenis} zenis 💴_*`, who, m.text)
 }
 
 handler.help = ['addzenis *<@user>*']
