@@ -2,7 +2,7 @@ let cooldowns = {}
 
 let handler = async (m, { conn }) => {
 
-  let hasil = Math.floor(Math.random() * 5000)
+  let hasil = Math.floor(Math.random() * 10000)
   let name = conn.getName(m.sender)
   
   let tiempoEspera = 1 * 60
