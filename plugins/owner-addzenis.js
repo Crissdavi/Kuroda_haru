@@ -22,7 +22,7 @@ let handler = async (m, { conn, text }) => {
 ┏━━━━━━━━━━━⬣
 ┃⋄ *Total:* ${zenis}
 ┗━━━━━━━━━━━⬣`, m, rcanal)
-   conn.fakeReply(m.chat, `⊜ *_Recibiste_* \n\n *_+${zenis} Zenis 💴_*`, who, m.text)
+   conn.fakeReply(m.chat, `⊜ *_Recibiste_* \n\n *_+${zenis} zenis 💴_*`, who, m.text)
 }
 
 handler.help = ['addzenis *<@user>*']
