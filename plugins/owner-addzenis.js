@@ -12,7 +12,7 @@ let handler = async (m, { conn, text }) => {
     if (isNaN(txt)) return m.reply('⚠️ *sólo números*')
     let Zenis = parseInt(txt)
     let zenis = Zenis
-    let pjk = Math.ceil(len * impts)
+    let pjk = Math.ceil(zenis * impts)
     zenis += pjk
     if (zenis < 1) return m.reply('⚠️️ Mínimo es  *1*')
     let users = global.db.data.users
@@ -22,7 +22,7 @@ let handler = async (m, { conn, text }) => {
 ┏━━━━━━━━━━━⬣
 ┃⋄ *Total:* ${len}
 ┗━━━━━━━━━━━⬣`, m, rcanal)
-   conn.fakeReply(m.chat, `⊜ *_Recibiste_* \n\n *_+${len} zenis 💴_*`, who, m.text)
+   conn.fakeReply(m.chat, `⊜ *_Recibiste_* \n\n *_+${zenis} zenis 💴_*`, who, m.text)
 }
 
 handler.help = ['addzenis *<@user>*']
