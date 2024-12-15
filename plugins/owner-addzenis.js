@@ -11,7 +11,7 @@ let handler = async (m, { conn, text }) => {
     if (!txt) return m.reply('⚠️️ Ingrese la cantidad de *Zenis* que quiere añadir')
     if (isNaN(txt)) return m.reply('⚠️ *sólo números*')
     let len = parseInt(txt)
-    let zenis = Zenis
+    let zenis = Zen
     let pjk = Math.ceil(len * impts)
     zenis += pjk
     if (zenis < 1) return m.reply('⚠️️ Mínimo es  *1*')
