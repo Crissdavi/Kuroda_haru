@@ -1,29 +1,67 @@
-import Scraper from '@SumiFX/Scraper'
+import yts from 'yt-search';
+const handler = async (m, { conn, text, usedPrefix, command }) => {
+  if (!text) throw `\`\`\`[ 🌴 ] Por favor ingresa un texto. Ejemplo:\n${usedPrefix + command} Did i tell u that i miss you\`\`\``;
 
-let handler = async (m, { conn, text, args, usedPrefix, command }) => {
-if (!text) return conn.reply(m.chat, '🍭 Ingresa el título de un video o canción de YouTube.\n\n`Ejemplo:`\n' + `> *${usedPrefix + command}* Gemini Aaliyah - If Only`, m)
+  const isVideo = /vid|2|mp4|v$/.test(command);
+  const search = await yts(text);
 
-let user = global.db.data.users[m.sender]
-try {
-let res = await Scraper.ytsearch(text)
-let { title, size, quality, thumbnail, dl_url } = await Scraper.ytmp4(res[0].url)
-if (size.includes('GB') || size.replace(' MB', '') > 300) { return await m.reply('El archivo pesa mas de 300 MB, se canceló la Descarga.')}
-let txt = `╭─⬣「 *YouTube Play* 」⬣\n`
-    txt += `│  ≡◦ *🍭 Titulo ∙* ${title}\n`
-    txt += `│  ≡◦ *📅 Publicado ∙* ${res[0].published}\n`
-    txt += `│  ≡◦ *🕜 Duración ∙* ${res[0].duration}\n`
-    txt += `│  ≡◦ *👤 Autor ∙* ${res[0].author}\n`
-    txt += `│  ≡◦ *⛓ Url ∙* ${res[0].url}\n`
-    txt += `│  ≡◦ *🪴 Calidad ∙* ${quality}\n`
-    txt += `│  ≡◦ *⚖ Peso ∙* ${size}\n`
-    txt += `╰─⬣`
-await conn.sendFile(m.chat, thumbnail, 'thumbnail.jpg', txt, m)
-await conn.sendFile(m.chat, dl_url, title + '.mp4', `*🍭 Titulo ∙* ${title}\n*🪴 Calidad ∙* ${quality}`, m, false, { asDocument: user.useDocument })
-} catch {
-}}
-handler.help = ["play <búsqueda>"]
-handler.tags = ["downloader"]
-handler.command = ["play"]
-handler.register = true
-//handler.limit = 1
-export default handler
+  if (!search.all || search.all.length === 0) {
+    throw "No se encontraron resultados para tu búsqueda.";
+  }
+
+  const videoInfo = search.all[0];
+  const body = `\`\`\`⊜─⌈ 📻 ◜YouTube Play◞ 📻 ⌋─⊜
+
+    ≡ Título : » ${videoInfo.title}
+    ≡ Views : » ${videoInfo.views}
+    ≡ Duration : » ${videoInfo.timestamp}
+    ≡ Uploaded : » ${videoInfo.ago}
+    ≡ URL : » ${videoInfo.url}
+
+# 🌴 Su ${isVideo ? 'Video' : 'Audio'} se está enviando, espere un momento...\`\`\``;
+
+  conn.sendMessage(m.chat, {
+    image: { url: videoInfo.thumbnail },
+    caption: body,
+  }, { quoted: fkontak });
+
+  let result;
+  try {
+    if (command === 'play' || command === 'yta' || command === 'ytmp3') {
+      result = await fg.yta(videoInfo.url);
+    } else if (command === 'playvid' || command === 'ytv' || command === 'play2' || command === 'ytmp4') {
+      result = await fg.ytv(videoInfo.url);
+    } else {
+      throw "Comando no reconocido.";
+    }
+
+    conn.sendMessage(m.chat, {
+      [isVideo ? 'video' : 'audio']: { url: result.dl_url },
+      mimetype: isVideo ? "video/mp4" : "audio/mpeg",
+      caption: `Título: ${result.title}`,
+    }, { quoted: m });
+
+  } catch (error) {
+    throw "Ocurrió un error al procesar tu solicitud.";
+  }
+};
+
+handler.command = handler.help = ['play', 'playvid', 'ytv', 'ytmp4', 'yta', 'play2', 'ytmp3'];
+handler.tags = ['dl'];
+handler.diamond = 4;
+
+export default handler;
+
+const getVideoId = (url) => {
+  const regex = /(?:v=|\/)([0-9A-Za-z_-]{11}).*/;
+  const match = url.match(regex);
+  if (match) {
+    return match[1];
+  }
+  throw new Error("Invalid YouTube URL");
+};
+
+async function acc(url) {
+  const respuesta = await axios.get(`http://tinyurl.com/api-create.php?url=${url}`);
+  return respuesta.data;
+}
