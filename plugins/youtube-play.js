@@ -23,7 +23,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
   conn.sendMessage(m.chat, {
     image: { url: videoInfo.thumbnail },
     caption: body,
-  }, { quoted: fkontak });
+  }, { quoted: m });
 
   let result;
   try {
@@ -48,7 +48,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
 
 handler.command = handler.help = ['play', 'playvid', 'ytv', 'ytmp4', 'yta', 'play2', 'ytmp3'];
 handler.tags = ['dl'];
-handler.diamond = 4;
+handler.zenis = 4;
 
 export default handler;
 
