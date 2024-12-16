@@ -11,7 +11,7 @@ let handler = async (m, { conn, isPrems }) => {
     return
   }
 
-  global.db.data.users[m.sender].limit += isPrems ? prem : free
+  global.db.data.users[m.sender].zenis += isPrems ? prem : free
   conn.reply(m.chat, `🚩 Felicidades 🎉, reclamaste *+${isPrems ? prem : free} 💴 Zenis*.`, m, rcanal)
 
   cooldowns[m.sender] = Date.now()
