@@ -14,7 +14,7 @@ let handler = async (m, { conn, text, command, usedPrefix }) => {
   
   cooldowns[m.sender] = Date.now()
   
-  let senderLimit = users[senderId].limit || 0
+  let senderzenis = users[senderId].zenis || 0
 
   let randomUserId = Object.keys(users)[Math.floor(Math.random() * Object.keys(users).length)]
 
@@ -22,7 +22,7 @@ let handler = async (m, { conn, text, command, usedPrefix }) => {
     randomUserId = Object.keys(users)[Math.floor(Math.random() * Object.keys(users).length)]
   }
 
-  let randomUserLimit = users[randomUserId].limit || 0
+  let randomUserZenis = users[randomUserId].zenis || 0
 
   let minAmount = 100
   let maxAmount = 1000
@@ -33,8 +33,8 @@ let handler = async (m, { conn, text, command, usedPrefix }) => {
 
   switch (randomOption) {
   case 0:
-  users[senderId].limit += amountTaken
-  users[randomUserId].limit -= amountTaken
+  users[senderId].zenis += amountTaken
+  users[randomUserId].zenis -= amountTaken
   conn.sendMessage(m.chat, {
         text: `🚩¡Lograste cometer tu crimen con exito!, acabas de robar *${amountTaken} 💴 Zenis* a @${randomUserId.split("@")[0]}\n\nSe suman *+${amountTaken} 💴 Zenis* a ${senderName}.`,
   contextInfo: { 
@@ -44,7 +44,7 @@ let handler = async (m, { conn, text, command, usedPrefix }) => {
   break
 
   case 1:
-  let amountSubtracted = Math.min(Math.floor(Math.random() * (senderLimit - minAmount + 1)) + minAmount, maxAmount)
+  let amountSubtracted = Math.min(Math.floor(Math.random() * (senderzenis - minAmount + 1)) + minAmount, maxAmount)
   users[senderId].limit -= amountSubtracted
   conn.reply(m.chat, `🚩 No fuiste cuidadoso y te atraparon mientras cometias tu cirme, se restaron *-${amountSubtracted} 💴 Zenis* a ${senderName}.`, m)
   break
