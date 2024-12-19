@@ -45,7 +45,7 @@ let handler = async (m, { conn, text, command, usedPrefix }) => {
       users.zenis += zenis
       conn.reply(m.chat, `🚩 ¡Ganaste! Obtuviste ${limit} *💴 Zenis*. Total: ${users.zenis} *💴 Zenis*.`, m, rcanal)
     } else {
-      users.zenus -= zenis
+      users.zenis -= zenis
       conn.reply(m.chat, `🚩 Perdiste. Se restaron ${limit} *💴 Zenis*. Total: ${users.zenis} *💴 Zenis*.`, m, rcanal)
     }
 
