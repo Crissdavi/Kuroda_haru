@@ -21,7 +21,7 @@ let handler = async (m, { conn, text, command, usedPrefix }) => {
   let limit = parseInt(args[0])
   let color = args[1].toLowerCase()
 
-  if (isNaN(limit) || limit <= 0) return conn.reply(m.chat, `🚩 Por favor, ingresa una cantidad válida para la apuesta.`, m, rcanal)
+  if (isNaN(zenis) || limit <= 0) return conn.reply(m.chat, `🚩 Por favor, ingresa una cantidad válida para la apuesta.`, m, rcanal)
 
   if (limit > 10000000) return conn.reply(m.chat, "🚩 La cantidad máxima de apuesta es de 50 *💴 Zenis*.", m, rcanal)
 
