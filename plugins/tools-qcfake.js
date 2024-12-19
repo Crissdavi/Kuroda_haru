@@ -71,7 +71,7 @@ let handler = async (m, { conn, text }) => {
 };
 
 handler.help = ['qcfake *@usuario <mensaje>*'];
-handler.tags = ['sticker'];
+handler.tags = ['tools'];
 handler.command = ['qcfake'];
 handler.register = true;
 
