@@ -29,7 +29,7 @@ let handler = async (m, { conn, text, command, usedPrefix }) => {
 
   if (limit > users.zenis) return conn.reply(m.chat, "🚩 No tienes suficientes *💴 Zenis* para realizar esa apuesta.", m, rcanal)
 
-  await conn.reply(m.chat, `🚩 Apostaste ${zenis} *💴 Zenis* al color ${color}. Espera *⏱ 10 segundos* para conocer el resultado.`, m, rcanal)
+  await conn.reply(m.chat, `🚩 Apostaste ${limit} *💴 Zenis* al color ${color}. Espera *⏱ 10 segundos* para conocer el resultado.`, m, rcanal)
 
   setTimeout(() => {
     let result = Math.random()
@@ -43,10 +43,10 @@ let handler = async (m, { conn, text, command, usedPrefix }) => {
 
     if (win) {
       users.zenis += zenis
-      conn.reply(m.chat, `🚩 ¡Ganaste! Obtuviste ${zenis} *💴 Zenis*. Total: ${users.zenis} *💴 Zenis*.`, m, rcanal)
+      conn.reply(m.chat, `🚩 ¡Ganaste! Obtuviste ${limit} *💴 Zenis*. Total: ${users.zenis} *💴 Zenis*.`, m, rcanal)
     } else {
       users.zenus -= zenis
-      conn.reply(m.chat, `🚩 Perdiste. Se restaron ${zenis} *💴 Zenis*. Total: ${users.zenis} *💴 Zenis*.`, m, rcanal)
+      conn.reply(m.chat, `🚩 Perdiste. Se restaron ${limit} *💴 Zenis*. Total: ${users.zenis} *💴 Zenis*.`, m, rcanal)
     }
 
 
