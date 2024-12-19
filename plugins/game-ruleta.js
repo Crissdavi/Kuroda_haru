@@ -42,11 +42,11 @@ let handler = async (m, { conn, text, command, usedPrefix }) => {
     }
 
     if (win) {
-      users.limit += limit
-      conn.reply(m.chat, `🚩 ¡Ganaste! Obtuviste ${limit} *💴 Zenis*. Total: ${users.limit} *💴 Zenis*.`, m, rcanal)
+      users.zenis += limit
+      conn.reply(m.chat, `🚩 ¡Ganaste! Obtuviste ${limit} *💴 Zenis*. Total: ${users.zenis} *💴 Zenis*.`, m, rcanal)
     } else {
-      users.limit -= limit
-      conn.reply(m.chat, `🚩 Perdiste. Se restaron ${limit} *💴 Zenis*. Total: ${users.limit} *💴 Zenis*.`, m, rcanal)
+      users.zenus -= limit
+      conn.reply(m.chat, `🚩 Perdiste. Se restaron ${limit} *💴 Zenis*. Total: ${users.zenis} *💴 Zenis*.`, m, rcanal)
     }
 
 
