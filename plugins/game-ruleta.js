@@ -27,9 +27,9 @@ let handler = async (m, { conn, text, command, usedPrefix }) => {
 
   if (!(color === 'black' || color === 'red')) return conn.reply(m.chat, "🚩 Debes apostar a un color válido: *black* o *red*.", m, rcanal)
 
-  if (limit > users.limit) return conn.reply(m.chat, "🚩 No tienes suficientes *💴 Zenis* para realizar esa apuesta.", m, rcanal)
+  if (limit > users.zenis) return conn.reply(m.chat, "🚩 No tienes suficientes *💴 Zenis* para realizar esa apuesta.", m, rcanal)
 
-  await conn.reply(m.chat, `🚩 Apostaste ${limit} *💴 Zenis* al color ${color}. Espera *⏱ 10 segundos* para conocer el resultado.`, m, rcanal)
+  await conn.reply(m.chat, `🚩 Apostaste ${zenis} *💴 Zenis* al color ${color}. Espera *⏱ 10 segundos* para conocer el resultado.`, m, rcanal)
 
   setTimeout(() => {
     let result = Math.random()
