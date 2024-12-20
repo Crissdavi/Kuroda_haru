@@ -22,6 +22,21 @@ let handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, isR
       chat.bienvenida = isEnable;
       break;
 
+case 'despedida':
+    case 'bv':
+    case 'despedida':
+      if (!m.isGroup) {
+        if (!isOwner) {
+          global.dfail('group', m, conn);
+          throw false;
+        }
+      } else if (!isAdmin) {
+        global.dfail('admin', m, conn);
+        throw false;
+      }
+      chat.bienvenida = isEnable;
+      break;
+
     case 'autoread':
     case 'autoleer':
       isAll = true;
