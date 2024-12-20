@@ -14,4 +14,4 @@ export async function before(m, {conn, participants, groupMetadata}) {
  │✑  ${groupMetadata.subject}\n └───────────────┈ ⳹`
     
 await conn.sendAi(m.chat, botname, textbot, bienvenida, img, img, canal, estilo)
-                  }
+}}
