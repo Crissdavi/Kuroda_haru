@@ -104,7 +104,7 @@ case 'despedida':
 *Tipo :* welcome
 *Descripción :* Des/Activa la *Bienvenida* para Grupos
 
-*Tipo :* Goobye
+*Tipo :* Despedida
 *Descripción :* Des/Activa la *Despedida* para Grupos
 
 *Tipo :* nsfw 
