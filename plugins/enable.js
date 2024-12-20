@@ -87,7 +87,7 @@ let handler = async (m, { conn, usedPrefix, command, args, isOwner, isAdmin, isR
 
 *≡ Lista de opciones*
 *Tipo :* welcome
-*Descripción :* Des/Activa la *Bienvenida* y *Despedida* para Grupos
+*Descripción :* Des/Activa la *Bienvenida* para Grupos
 
 *Tipo :* nsfw 
 *Descripción :* Des/Activa los comandos *NSFW* para Grupos
