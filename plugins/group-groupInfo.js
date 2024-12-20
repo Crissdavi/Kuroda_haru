@@ -24,7 +24,7 @@ ${listAdmin}
 ╰────
 *Configuración de mensajes:*
 • Bienvenida: ${sWelcome}
-• Despedida: ${sBye}
+• Despedida: ${despedida}
 • Promovidos: ${sPromote}
 • Degradados: ${sDemote}
 
