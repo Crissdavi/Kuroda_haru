@@ -23,10 +23,10 @@ ${listAdmin}
 ║❥ • ${antiLink ? '✅' : '❎'} Anti Link WhatsApp
 ╰────
 *Configuración de mensajes:*
-• Bienvenida: ${Welcome}
+• Bienvenida: $sWelcome}
 • Despedida: ${despedida}
-• Promovidos: ${Promote}
-• Degradados: ${Demote}
+• Promovidos: ${sPromote}
+• Degradados: ${sDemote}
 
 *Descripción* :
 • ${groupMetadata.desc?.toString() || 'desconocido'}
