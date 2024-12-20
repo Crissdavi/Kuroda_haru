@@ -1,9 +1,8 @@
-
 import fetch from 'node-fetch'
 import yts from 'yt-search'
 
 let handler = async (m, { conn: star, command, args, text, usedPrefix }) => {
-  if (!text) return conn.reply(m.chat, '*\`Ingresa El Nombre De Lo Que Quieres Buscar\`*', m, fake)
+  if (!text) return conn.reply(m.chat, '*\`Ingresa El Nombre De Lo Que Quieres Buscar\`*', m)
     await m.react('🕓')
     let res = await search(args.join(" "))
     let img = await (await fetch(`${res[0].image}`)).buffer()
@@ -14,7 +13,7 @@ let handler = async (m, { conn: star, command, args, text, usedPrefix }) => {
        txt += `> *\`CANAL:\`* ${res[0].author.name || 'Desconocido'}\n`
        txt += `> *\`URL:\`* ${'https://youtu.be/' + res[0].videoId}\n\n`
        txt += `> *-* _Etiqueta este mensaje con la opción a descargar 📂_\n\n*Etiqueta con \`v\` (para el video.)*\n*Etiqueta con \`a\` (para el audio.)*`
-await star.sendFile(m.chat, img, 'thumbnail.jpg', txt, m, null, fake)
+await star.sendFile(m.chat, img, 'thumbnail.jpg', txt, m)
 await m.react('✅')
 }
 handler.help = ['play *<text>*']
