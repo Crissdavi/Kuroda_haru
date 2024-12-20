@@ -91,7 +91,7 @@ export async function handler(chatUpdate) {
                 if (!('bienvenida' in chat))
                     chat.bienvenida = true 
                 if (!('Despedida'in chat))
-                   chat.despedida = falsd 
+                   chat.despedida = false
                 if (!('antiLink' in chat))
                     chat.antiLink = false
                 if (!('onlyLatinos' in chat))
