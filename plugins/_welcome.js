@@ -1,3 +1,5 @@
+//_welcome.js
+
 import {WAMessageStubType} from '@whiskeysockets/baileys'
 import fetch from 'node-fetch'
 
@@ -12,14 +14,4 @@ export async function before(m, {conn, participants, groupMetadata}) {
  │✑  ${groupMetadata.subject}\n └───────────────┈ ⳹`
     
 await conn.sendAi(m.chat, botname, textbot, bienvenida, img, img, canal, estilo)
-  }
-  
-  if (chat.bienvenida && m.messageStubType == 28) {
-    let bye = `┌─★ *${botname}* \n│「 ADIOS 👋 」\n└┬★ 「 @${m.messageStubParameters[0].split`@`[0]} 」\n   │✑  Se fue\n   │✑ byeee   └───────────────┈ ⳹`
-await conn.sendAi(m.chat, botname, textbot, bye, img, img, canal, estilo)
-  }
-  
-  if (chat.bienvenida && m.messageStubType == 32) {
-    let kick = `┌─★ *${botname}* \n│「 ADIOS 👋 」\n└┬★ 「 @${m.messageStubParameters[0].split`@`[0]} 」\n   │✑  Se fue\n   │✑ byeee   └───────────────┈ ⳹`
-await conn.sendAi(m.chat, botname, textbot, kick, img, img, canal, estilo)
-}}
+                  }
