@@ -14,7 +14,7 @@ let handler = async (m, { conn: star, command, args, text, usedPrefix }) => {
        txt += `> *\`CANAL:\`* ${res[0].author.name || 'Desconocido'}\n`
        txt += `> *\`URL:\`* ${'https://youtu.be/' + res[0].videoId}\n\n`
        txt += `> *-* _Etiqueta este mensaje con la opción a descargar 📂_\n\n*Etiqueta con \`v\` (para el video.)*\n*Etiqueta con \`a\` (para el audio.)*`
-await star.sendFile(m.chat, img, 'thumbnail.jpg', txt, m, null,rcanal)
+await star.sendFile(m.chat, img, 'thumbnail.jpg', txt, m)
 await m.react('✅')
 } catch {
 await m.react('✖️')
