@@ -34,7 +34,7 @@ case 'despedida':
         global.dfail('admin', m, conn);
         throw false;
       }
-      chat.bienvenida = isEnable;
+      chat.despedida = isEnable;
       break;
 
     case 'autoread':
@@ -103,6 +103,9 @@ case 'despedida':
 *≡ Lista de opciones*
 *Tipo :* welcome
 *Descripción :* Des/Activa la *Bienvenida* para Grupos
+
+*Tipo :* Goobye
+*Descripción :* Des/Activa la *Despedida* para Grupos
 
 *Tipo :* nsfw 
 *Descripción :* Des/Activa los comandos *NSFW* para Grupos
