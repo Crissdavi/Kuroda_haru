@@ -10,6 +10,13 @@ let api = await fetch(`https://api.ssateam.my.id/api/gpt4omini?text=${text}&id=$
 let json = await api.json()
 m.reply(json.data.reply)
 }
-handler.command = /^(chatgpt)$/i;
+
+handler.help = ['minichatgpt <pregunta>'];
+handler.tags = ['search'];
+handler.command = /^(chatgpt|minigpt|minichatgpt)$/i;
+
+handler.limit = true;
+handler.premium = false;
+handler.register = true;
 
 export default handler
