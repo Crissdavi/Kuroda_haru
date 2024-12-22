@@ -23,8 +23,8 @@ let handler = async (m, { conn, text }) => {
   }
 };
 
-handler.help = ['pin'];
+handler.help = ['pinterest'];
 handler.tags = ['descargas'];
-handler.command = ['pin'];
+handler.command = ['pin', 'pinterest'];
 handler.premium = true
 export default handler;
