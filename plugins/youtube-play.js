@@ -1,6 +1,3 @@
-
-*Contenido del plugin "youtube-play":*
-
 import fetch from 'node-fetch';
 import yts from 'yt-search';
 import fs from 'fs';
