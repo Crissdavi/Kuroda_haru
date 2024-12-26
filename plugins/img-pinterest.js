@@ -26,5 +26,5 @@ let handler = async (m, { conn, text }) => {
 handler.help = ['pinterest'];
 handler.tags = ['dowloader'];
 handler.command = ['pin', 'pinterest'];
-handler.premium = true
+handler.premium = false
 export default handler;
