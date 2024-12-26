@@ -1,149 +1,228 @@
-import fetch from 'node-fetch';
-import yts from 'yt-search';
-import fs from 'fs';
-import path from 'path';
-import ffmpeg from 'fluent-ffmpeg';
+import fetch from 'node-fetch'
+import yts from 'yt-search'
 
 let handler = async (m, { conn: star, command, args, text, usedPrefix }) => {
-  if (args.length < 2) {
-    let errorMsg = `「✦」Error: *No ingresaste un formato o título.*\n\n` +
-                   `> ✐ *Por favor, ingresa el formato (mp3, mp4, etc.) seguido del título de la canción.*\n\n` +
-                   `Ejemplo:\n> *${usedPrefix + command}* mp3 Minecraft relax soundtrack`;
-    return star.reply(m.chat, errorMsg, m);
-  }
+  if (!text) return conn.reply(m.chat, '*\`Ingresa El Nombre De Lo Que Quieres Buscar\`*', m, fake)
+    await m.react('🕓')
+    try {
+    let res = await search(args.join(" "))
+    let img = await (await fetch(`${res[0].image}`)).buffer()
+    let txt = '*\`【Y O U T U B E - P L A Y】\`*\n\n'
+       txt += `> *\`TÍTULO:\`* ${res[0].title}\n`
+       txt += `> *\`DURACIÓN:\`* ${secondString(res[0].duration.seconds)}\n`
+       txt += `> *\`PUBLICADO:\`* ${eYear(res[0].ago)}\n`
+       txt += `> *\`CANAL:\`* ${res[0].author.name || 'Desconocido'}\n`
+       txt += `> *\`URL:\`* ${'https://youtu.be/' + res[0].videoId}\n\n`
+       txt += `> *-* _Etiqueta este mensaje con la opción a descargar 📂_\n\n*Etiqueta con \`v\` (para el video.)*\n*Etiqueta con \`a\` (para el audio.)*`
+await star.sendFile(m.chat, img, 'thumbnail.jpg', txt, m)
+await m.react('✅')
+} catch {
+await m.react('✖️')
+}}
+handler.help = ['play *<text>*']
+handler.tags = ['dl']
+handler.command = ['play']
+ 
+export default handler
 
-  let format = args[0].toLowerCase(); 
-  let query = args.slice(1).join(" ");
+async function search(query, options = {}) {
+  let search = await yts.search({ query, hl: "es", gl: "ES", ...options })
+  return search.videos
+}
 
-  if (!['mp3', 'mp4', 'mp3doc', 'mp4doc', 'vn', 'vc'].includes(format)) {
-    let errorMsg = `「✦」Error: *Formato inválido.*\n\n` +
-                   `> ✐ Los formatos válidos son: mp3, mp4, mp3doc, mp4doc, vn, vc.\n\n> Ejemplo\n\n> *.play* mp3 mía khalifa`;
-    return star.reply(m.chat, errorMsg, m);
-  }
+function MilesNumber(number) {
+  let exp = /(\d)(?=(\d{3})+(?!\d))/g
+  let rep = "$1."
+  let arr = number.toString().split(".")
+  arr[0] = arr[0].replace(exp, rep)
+  return arr[1] ? arr.join(".") : arr[0]
+}
 
-  await m.react('⌛');
+function secondString(seconds) {
+  seconds = Number(seconds);
+  const d = Math.floor(seconds / (3600 * 24));
+  const h = Math.floor((seconds % (3600 * 24)) / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = Math.floor(seconds % 60);
+  const dDisplay = d > 0 ? d + (d == 1 ? ' Día, ' : ' Días, ') : '';
+  const hDisplay = h > 0 ? h + (h == 1 ? ' Hora, ' : ' Horas, ') : '';
+  const mDisplay = m > 0 ? m + (m == 1 ? ' Minuto, ' : ' Minutos, ') : '';
+  const sDisplay = s > 0 ? s + (s == 1 ? ' Segundo' : ' Segundos') : '';
+  return dDisplay + hDisplay + mDisplay + sDisplay;
+}
 
-  try {
-    let res = await yts.search({ query, hl: "es", gl: "ES" });
-    if (!res.videos || res.videos.length === 0) return star.reply(m.chat, '*✐ No se encontraron resultados para tu búsqueda.*', m);
+function sNum(num) {
+    return new Intl.NumberFormat('en-GB', { notation: "compact", compactDisplay: "short" }).format(num)
+}
 
-    let video = res.videos[0];
-    let info = `「✦」*${command === 'playaudio' ? 'Audio' : 'Video'} de YouTube descargado* \n\n` +
-               `> ✐ *Título:* ${video.title}\n` +
-               `> ✐ *Canal:* ${video.author.name || 'Desconocido'}\n` +
-               `> ✐ *Duración:* ${Math.floor(video.duration.seconds / 60)}m ${video.duration.seconds % 60}s\n` +
-               `> ✐ *Calidad:* 1080p\n` +
-               `> ✐ *Tamaño estimado:* 102MB\n` +
-               `> ✐ *Link:* https://youtu.be/${video.videoId}\n`;
-
-    await star.sendMessage(m.chat, { image: { url: video.image }, caption: info }, { quoted: m });
-
-    const downloadUrl = `https://api-rin-tohsaka.vercel.app/download/${command === 'playaudio' ? 'ytmp3' : 'ytmp4'}?url=https://youtu.be/${video.videoId}`;
-    const response = await fetch(downloadUrl);
-
-    if (!response.ok) {
-      await m.react('✖️');
-      return star.reply(m.chat, `Error, motivo: "La API devolvió un código HTTP ${response.status}"`, m);
+function eYear(txt) {
+    if (!txt) {
+        return '×'
     }
-
-    const buffer = await response.buffer();
-    const fileSize = parseInt(response.headers.get('content-length')) || buffer.length;
-
-    if (fileSize > 200 * 1024 * 1024) {
-      await m.react('✖️');
-      return star.reply(m.chat, `「✦」Error: *El archivo supera el límite de 100 MB.*\n\nPor favor, intenta con otro archivo más pequeño.`, m);
+    if (txt.includes('month ago')) {
+        var T = txt.replace("month ago", "").trim()
+        var L = 'hace '  + T + ' mes'
+        return L
     }
-
-    const filePath = path.join('/tmp', `${video.videoId}.${command === 'playaudio' ? 'mp3' : 'mp4'}`);
-    fs.writeFileSync(filePath, buffer);
-
-    if (!fs.existsSync(filePath)) {
-      await m.react('✖️');
-      return star.reply(m.chat, 'Error: No se pudo guardar el archivo correctamente.', m);
+    if (txt.includes('months ago')) {
+        var T = txt.replace("months ago", "").trim()
+        var L = 'hace ' + T + ' meses'
+        return L
     }
-
-    if (fs.statSync(filePath).size === 0) {
-      await m.react('✖️');
-      return star.reply(m.chat, 'Error: El archivo descargado está vacío.', m);
+    if (txt.includes('year ago')) {
+        var T = txt.replace("year ago", "").trim()
+        var L = 'hace ' + T + ' año'
+        return L
     }
-
-    let convertedFilePath;
-    if (format === 'mp3') {
-      convertedFilePath = filePath;
-    } else if (format === 'mp3doc') {
-      convertedFilePath = path.join('/tmp', `${video.videoId}.mp3`);
-      fs.renameSync(filePath, convertedFilePath);
-    } else if (format === 'mp4') {
-      convertedFilePath = filePath;
-    } else if (format === 'mp4doc') {
-      convertedFilePath = path.join('/tmp', `${video.videoId}.mp4`);
-      fs.renameSync(filePath, convertedFilePath);
-    } else if (format === 'vn') {
-      convertedFilePath = path.join('/tmp', `${video.videoId}.opus`);
-      await new Promise((resolve, reject) => {
-        ffmpeg(filePath)
-          .audioCodec('libopus')
-          .toFormat('opus')
-          .on('end', resolve)
-          .on('error', reject)
-          .save(convertedFilePath);
-      });
-      fs.unlinkSync(filePath);
-    } else if (format === 'vc') {
-      convertedFilePath = path.join('/tmp', `${video.videoId}.opus`);
-      await new Promise((resolve, reject) => {
-        ffmpeg(filePath)
-          .audioCodec('libopus')
-          .toFormat('opus')
-          .on('end', resolve)
-          .on('error', reject)
-          .save(convertedFilePath);
-      });
-      fs.unlinkSync(filePath);
+    if (txt.includes('years ago')) {
+        var T = txt.replace("years ago", "").trim()
+        var L = 'hace ' + T + ' años'
+        return L
     }
+    if (txt.includes('hour ago')) {
+        var T = txt.replace("hour ago", "").trim()
+        var L = 'hace ' + T + ' hora'
+        return L
+    }
+    if (txt.includes('hours ago')) {
+        var T = txt.replace("hours ago", "").trim()
+        var L = 'hace ' + T + ' horas'
+        return L
+    }
+    if (txt.includes('minute ago')) {
+        var T = txt.replace("minute ago", "").trim()
+        var L = 'hace ' + T + ' minuto'
+        return L
+    }
+    if (txt.includes('minutes ago')) {
+        var T = txt.replace("minutes ago", "").trim()
+        var L = 'hace ' + T + ' minutos'
+        return L
+    }
+    if (txt.includes('day ago')) {
+        var T = txt.replace("day ago", "").trim()
+        var L = 'hace ' + T + ' dia'
+        return L
+    }
+    if (txt.includes('days ago')) {
+        var T = txt.replace("days ago", "").trim()
+        var L = 'hace ' + T + ' dias'
+        return L
+    }
+    return txt
+}
 
-    setTimeout(async () => {
-      if (format === 'vn' || format === 'vc') {
-        await star.sendMessage(
-          m.chat,
-          { audio: { url: convertedFilePath }, mimetype: 'audio/ogg; codecs=opus', ptt: format === 'vc' },
-          { quoted: m }
-        );
-        fs.unlinkSync(convertedFilePath);
-      } else if (format === 'mp3doc' || format === 'mp4doc') {
-        await star.sendMessage(
-          m.chat,
-          { document: { url: convertedFilePath }, mimetype: format === 'mp4doc' ? 'video/mp4' : 'audio/mpeg' },
-          { quoted: m }
-        );
-        fs.unlinkSync(convertedFilePath);
-      } else {
-        if (format === 'mp3' || format === 'mp4') {
-          await star.sendMessage(
-            m.chat,
-            { [format === 'mp3' ? 'audio' : 'video']: { url: convertedFilePath }, mimetype: format === 'mp3' ? 'audio/mpeg' : 'video/mp4' },
-            { quoted: m }
-          );
-          fs.unlinkSync(convertedFilePath);
-        }
-      }
+/* import fetch from 'node-fetch'
+import yts from 'yt-search'
 
-      await m.react('✅');
-    }, 3000);
+let handler = async (m, { conn: star, command, args, text, usedPrefix }) => {
+  if (!text) return star.reply(m.chat, '🚩 Ingresa el título de un video o canción de YouTube.\n\n`Ejemplo:`\n' + `> *${usedPrefix + command}* Gemini Aaliyah - If Only`, m, rcanal)
+    await m.react('🕓')
+    try {
+    let res = await search(args.join(" "))
+    let img = await (await fetch(`${res[0].image}`)).buffer()
+    let txt = '`乂  Y O U T U B E  -  P L A Y`\n\n'
+       txt += `        ✩   *Título* : ${res[0].title}\n`
+       txt += `        ✩   *Duración* : ${secondString(res[0].duration.seconds)}\n`
+       txt += `        ✩   *Publicado* : ${eYear(res[0].ago)}\n`
+       txt += `        ✩   *Canal* : ${res[0].author.name || 'Desconocido'}\n`
+       txt += `        ✩   *Url* : ${'https://youtu.be/' + res[0].videoId}\n\n`
+       txt += `> *-* Para descargar responde a este mensaje con *Video* o *Audio*.`
+await star.sendFile(m.chat, img, 'thumbnail.jpg', txt, )
+await m.react('✅')
+} catch {
+await m.react('✖️')
+}}
+handler.help = ['play *<búsqueda>*']
+handler.tags = ['downloader']
+handler.command = ['play']
+//handler.register = true 
+export default handler
 
-  } catch (error) {
-    await m.react('✖️');
-    await star.reply(m.chat, `Error, motivo: "${error.message}"`, m);
-  }
-};
+async function search(query, options = {}) {
+  let search = await yts.search({ query, hl: "es", gl: "ES", ...options })
+  return search.videos
+}
 
-handler.help = ['playtest *<formato> <búsqueda>*'];
-handler.tags = ['downloader'];
-handler.command = ['play'];
+function MilesNumber(number) {
+  let exp = /(\d)(?=(\d{3})+(?!\d))/g
+  let rep = "$1."
+  let arr = number.toString().split(".")
+  arr[0] = arr[0].replace(exp, rep)
+  return arr[1] ? arr.join(".") : arr[0]
+}
 
-export default handler;
+function secondString(seconds) {
+  seconds = Number(seconds);
+  const d = Math.floor(seconds / (3600 * 24));
+  const h = Math.floor((seconds % (3600 * 24)) / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = Math.floor(seconds % 60);
+  const dDisplay = d > 0 ? d + (d == 1 ? ' Día, ' : ' Días, ') : '';
+  const hDisplay = h > 0 ? h + (h == 1 ? ' Hora, ' : ' Horas, ') : '';
+  const mDisplay = m > 0 ? m + (m == 1 ? ' Minuto, ' : ' Minutos, ') : '';
+  const sDisplay = s > 0 ? s + (s == 1 ? ' Segundo' : ' Segundos') : '';
+  return dDisplay + hDisplay + mDisplay + sDisplay;
+}
 
+function sNum(num) {
+    return new Intl.NumberFormat('en-GB', { notation: "compact", compactDisplay: "short" }).format(num)
+}
 
-
-
-Solo dame creditos
+function eYear(txt) {
+    if (!txt) {
+        return '×'
+    }
+    if (txt.includes('month ago')) {
+        var T = txt.replace("month ago", "").trim()
+        var L = 'hace '  + T + ' mes'
+        return L
+    }
+    if (txt.includes('months ago')) {
+        var T = txt.replace("months ago", "").trim()
+        var L = 'hace ' + T + ' meses'
+        return L
+    }
+    if (txt.includes('year ago')) {
+        var T = txt.replace("year ago", "").trim()
+        var L = 'hace ' + T + ' año'
+        return L
+    }
+    if (txt.includes('years ago')) {
+        var T = txt.replace("years ago", "").trim()
+        var L = 'hace ' + T + ' años'
+        return L
+    }
+    if (txt.includes('hour ago')) {
+        var T = txt.replace("hour ago", "").trim()
+        var L = 'hace ' + T + ' hora'
+        return L
+    }
+    if (txt.includes('hours ago')) {
+        var T = txt.replace("hours ago", "").trim()
+        var L = 'hace ' + T + ' horas'
+        return L
+    }
+    if (txt.includes('minute ago')) {
+        var T = txt.replace("minute ago", "").trim()
+        var L = 'hace ' + T + ' minuto'
+        return L
+    }
+    if (txt.includes('minutes ago')) {
+        var T = txt.replace("minutes ago", "").trim()
+        var L = 'hace ' + T + ' minutos'
+        return L
+    }
+    if (txt.includes('day ago')) {
+        var T = txt.replace("day ago", "").trim()
+        var L = 'hace ' + T + ' dia'
+        return L
+    }
+    if (txt.includes('days ago')) {
+        var T = txt.replace("days ago", "").trim()
+        var L = 'hace ' + T + ' dias'
+        return L
+    }
+    return txt
+} */
+        
