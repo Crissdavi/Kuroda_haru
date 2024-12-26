@@ -1,3 +1,4 @@
+
 import fetch from 'node-fetch';
 import Sph from 'ytdl-mp3';
 
@@ -18,13 +19,14 @@ let handler = async (m, { conn, text, isPrems, isOwner, usedPrefix, command }) =
 
     try {
         let cxf = await Sph.ytdl(videoUrl);
-        await conn.sendMessage(m.chat, { audio: { url: cxf.dl_url }, fileName: `${cxf.title}.opus`, mimetype: 'audio/opus' }, { quoted: m });
+        await conn.sendMessage(m.chat, { audio: { url: cxf.dl_url }, fileName: `${cxf.title}.mp3`, mimetype: 'audio/mp3' }, { quoted: m });
         await m.react('✅');
-    } catch (error) {
-        console.error(error);
+    } catch (error2) {
+        console.error(error2);
         await m.react('✖️');
-        return m.reply(`Algo fallo: ${error.message}.`);
+        return m.reply(`Ocurrió un error al procesar tu solicitud. Intenta nuevamente más tarde.`);
     }
 };
+
 handler.customPrefix = /^(a|A)/;
 handler.command = new RegExp();
