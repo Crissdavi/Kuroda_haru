@@ -3,9 +3,9 @@ import fetch from 'node-fetch';
 import Sph from 'ytdl-mp3';
 
 let handler = async (m, { conn, text, isPrems, isOwner, usedPrefix, command }) => {
-    if (!m.quoted) return;
+    if (!m.quoted) return // conn.reply(m.chat, `[ ✰ ] Etiqueta el mensaje que contenga el resultado de YouTube Play.`, m).then(() => m.react('✖️'));
     if (!m.quoted.text.includes("*`【Y O U T U B E - P L A Y】`*")) {
-        return;
+        return // conn.reply(m.chat, `[ ✰ ] Etiqueta el mensaje que contenga el resultado de YouTube Play.`, m).then(() => m.react('✖️'));
     }
 
     let urls = m.quoted.text.match(new RegExp(/(?:https?:\/\/)?(?:youtu\.be\/|(?:www\.|m\.)?youtube\.com\/(?:watch|v|embed|shorts)(?:\.php)?(?:\?.*v=|\/))([a-zA-Z0-9_-]+)/, 'gi'));
@@ -19,10 +19,16 @@ let handler = async (m, { conn, text, isPrems, isOwner, usedPrefix, command }) =
 
     try {
         let cxf = await Sph.ytdl(videoUrl);
-        await conn.sendMessage(m.chat, { audio: { url: cxf.dl_url }, fileName: `${cxf.title}.mp3`, mimetype: 'audio/mp3' }, { quoted: m });
+        /* let txt = `\`乂  Y O U T U B E  -  M P 3\`\n\n` +
+                  `✩   *Título* : ${cxf.title}\n` +
+                  `✩   *Calidad* : ${cxf.quality}\n` +
+                  `✩   *Url* : ${cxf.url}\n\n` +
+                  `>- 🤎 El audio se está enviando, espera un momento...`;
+
+         await conn.sendMessage(m.chat, { image: { url: cxf.thumbnail }, caption: txt }, { quoted: m }); */
+        await conn.sendMessage(m.chat, { audio: { url: cxf.dl_url }, fileName: `${cxf.title}.mp3`, mimetype: 'audio/mp4' }, { quoted: m });
         await m.react('✅');
     } catch (error2) {
-        console.error(error2);
         await m.react('✖️');
         return m.reply(`Ocurrió un error al procesar tu solicitud. Intenta nuevamente más tarde.`);
     }
