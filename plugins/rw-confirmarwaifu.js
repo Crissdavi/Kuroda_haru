@@ -20,7 +20,16 @@ const guardarDatos = (data) => {
     } catch {}
 };
 
-const manejarClaim = async (personaje, sender, usuarios, conn, m) => {
+const manejarClaim = async (id, sender, usuarios, conn, m) => {
+    const data = obtenerDatos();
+    const personaje = data.personajesReservados.find(p => p.id === id);
+    if (!personaje) {
+        return await conn.sendMessage(m.chat, {
+            text: 'El personaje citado no está disponible.',
+            mentions: [sender]
+        });
+    }
+    
     if (!usuarios[sender]) {
         usuarios[sender] = { characters: [], characterCount: 0, totalRwcoins: 0 };
     }
@@ -29,6 +38,7 @@ const manejarClaim = async (personaje, sender, usuarios, conn, m) => {
         url: personaje.url,
         value: personaje.value
     });
+
     const personajesReservados = usuarios[personaje.userId]?.characters.filter(p => p.url !== personaje.url) || [];
     guardarDatos({ usuarios, personajesReservados });
 
@@ -43,20 +53,11 @@ const handler = async (m, { conn }) => {
     if (!m.quoted) return;
 
     const sender = m.sender;
-    const match = m.quoted.text.match(/`ID:`\s*-->\s*`([a-zA-Z0-9-]+)`/);
+    const match = m.quoted.text.match(/ID: --> `([a-zA-Z0-9-]+)`/);
     const id = match && match[1];
     if (!id) {
         return await conn.sendMessage(m.chat, {
             text: 'No se encontró un ID válido en el mensaje citado.',
-            mentions: [sender]
-        });
-    }
-
-    const data = obtenerDatos();
-    const personaje = data.personajesReservados.find(p => p.id === id);
-    if (!personaje) {
-        return await conn.sendMessage(m.chat, {
-            text: 'El personaje citado no está disponible.',
             mentions: [sender]
         });
     }
@@ -70,12 +71,12 @@ const handler = async (m, { conn }) => {
     }
 
     cooldowns[sender] = Date.now();
-    return manejarClaim(personaje, sender, data.usuarios, conn, m);
+    return manejarClaim(id, sender, data.usuarios, conn, m);
 };
 
 let cooldowns = {};
-const COOLDOWN_TIME = 10 * 60 * 1000;
-
+const COOLDOWN_TIME = 5 * 60 * 1000;
+console.log('bymasha')
 handler.help = ['claimwaifu'];
 handler.tags = ['rw'];
 handler.command = ['claim', 'c'];
