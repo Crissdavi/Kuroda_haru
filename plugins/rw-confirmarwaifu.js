@@ -20,7 +20,7 @@ const guardarDatos = (data) => {
     } catch {}
 };
 
-const manejarConfirmacion = async (personaje, sender, usuarios, conn, m) => {
+const manejarClaim = async (personaje, sender, usuarios, conn, m) => {
     if (!usuarios[sender]) {
         usuarios[sender] = { characters: [], characterCount: 0, totalRwcoins: 0 };
     }
@@ -34,7 +34,7 @@ const manejarConfirmacion = async (personaje, sender, usuarios, conn, m) => {
 
     const mentions = [sender];
     return await conn.sendMessage(m.chat, { 
-        text: `¡Felicidades @${sender.split('@')[0]}, confirmaste a ${personaje.name}!`, 
+        text: `¡Felicidades @${sender.split('@')[0]}, reclamaste a ${personaje.name}!`, 
         mentions 
     });
 };
@@ -64,21 +64,21 @@ const handler = async (m, { conn }) => {
     const tiempoRestante = cooldowns[sender] ? COOLDOWN_TIME - (Date.now() - cooldowns[sender]) : 0;
     if (tiempoRestante > 0) {
         return await conn.sendMessage(m.chat, {
-            text: `Debes esperar antes de confirmar otro personaje.\nTiempo restante: ${Math.floor(tiempoRestante / 60000)} minutos y ${(tiempoRestante % 60000) / 1000} segundos.`,
+            text: `Debes esperar antes de reclamar otro personaje.\nTiempo restante: ${Math.floor(tiempoRestante / 60000)} minutos y ${(tiempoRestante % 60000) / 1000} segundos.`,
             mentions: [sender]
         });
     }
 
     cooldowns[sender] = Date.now();
-    return manejarConfirmacion(personaje, sender, data.usuarios, conn, m);
+    return manejarClaim(personaje, sender, data.usuarios, conn, m);
 };
 
 let cooldowns = {};
-const COOLDOWN_TIME = 5 * 60 * 1000;
+const COOLDOWN_TIME = 10 * 60 * 1000;
 
-handler.help = ['confirmarwaifu'];
+handler.help = ['claimwaifu'];
 handler.tags = ['rw'];
-handler.command = ['confirmar', 'c'];
+handler.command = ['claim', 'c'];
 handler.group = true;
 
 export default handler;
