@@ -74,7 +74,7 @@ const handler = async (m, { conn }) => {
 };
 
 let cooldowns = {};
-const COOLDOWN_TIME = 10 * 60 * 1000;
+const COOLDOWN_TIME = 5 * 60 * 1000;
 
 handler.help = ['confirmarwaifu'];
 handler.tags = ['rw'];
