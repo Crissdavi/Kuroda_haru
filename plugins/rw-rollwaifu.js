@@ -1,23 +1,26 @@
-import fs from 'fs'; 
+import fs from 'fs';
 import { v4 as uuidv4 } from 'uuid';
 import dotenv from 'dotenv';
 
 dotenv.config();
-
+const imagenn = fs.readFileSync('./src/Kuroda.jpg');
 const obtenerDatos = () => {
     try {
-        return fs.existsSync('data.json') ? JSON.parse(fs.readFileSync('data.json', 'utf-8')) : { 'usuarios': {}, 'personajesReservados': [] };
+        return fs.existsSync('data.json') 
+            ? JSON.parse(fs.readFileSync('data.json', 'utf-8')) 
+            : { usuarios: {}, personajesReservados: [] };
     } catch (error) {
-        return { 'usuarios': {}, 'personajesReservados': [] };
+        console.error('Error al leer data.json:', error);
+        return { usuarios: {}, personajesReservados: [] };
     }
 };
-
 const guardarDatos = (data) => {
     try {
         fs.writeFileSync('data.json', JSON.stringify(data, null, 2));
-    } catch (error) {}
+    } catch (error) {
+        console.error('Error al escribir en data.json:', error);
+    }
 };
-
 const reservarPersonaje = (userId, character) => {
     let data = obtenerDatos();
     data.personajesReservados.push({ userId, ...character });
@@ -26,65 +29,78 @@ const reservarPersonaje = (userId, character) => {
 
 const obtenerPersonajes = () => {
     try {
-        return JSON.parse(fs.readFileSync('./src/JSON/characters.json', 'utf-8'));
+        return JSON.parse(fs.readFileSync('./src/characters.json', 'utf-8'));
     } catch (error) {
+        console.error('Error al leer characters.json:', error);
         return [];
     }
 };
-
 let cooldowns = {};
-
-let handler = async (m, { conn }) => {
-    let userId = m.sender;
-    let currentTime = new Date().getTime();
-    const cooldownDuration = 3 * 60 * 1000;
-    let userCooldown = cooldowns[userId] || 0;
-    let timeSinceLastRoll = currentTime - userCooldown;
-
-    if (timeSinceLastRoll < cooldownDuration) {
-        let remainingTime = cooldownDuration - timeSinceLastRoll;
-        let minutes = Math.floor(remainingTime / (60 * 1000));
-        let seconds = Math.floor((remainingTime % (60 * 1000)) / 1000);
-        let replyMessage = `¡Espera ${minutes} minutos y ${seconds} segundos antes de usar el comando de nuevo!`;
-        await conn.sendMessage(m.chat, { text: replyMessage });
-        return;
+const COOLDOWN_TIME = 24 * 60 * 1000; // 10 minutos
+const manejarConfirmacion = async (personaje, sender, usuarios, conn, m) => {
+    if (!usuarios[sender]) {
+        usuarios[sender] = { characters: [], characterCount: 0, totalRwcoins: 0 };
     }
-
-    let data = obtenerDatos();
-    let personajes = obtenerPersonajes();
-    let availableCharacters = personajes.filter(character => {
-        let isReserved = data.personajesReservados.some(reserved => reserved.url === character.url);
-        return !isReserved;
+    usuarios[sender].characters.push({
+        name: personaje.name,
+        url: personaje.url,
+        value: personaje.value
     });
+    const personajesReservados = usuarios[personaje.userId]?.characters.filter(p => p.url !== personaje.url) || [];
+    guardarDatos({ usuarios, personajesReservados });
 
-    if (availableCharacters.length === 0) {
-        await conn.sendMessage(m.chat, { image: { url: completadoImage }, caption: '¡Todos los personajes han sido reservados!' });
-        return;
-    }
+    const mentions = [sender];
 
-    let randomCharacter = availableCharacters[Math.floor(Math.random() * availableCharacters.length)];
-    let uniqueId = uuidv4();
-    let reservedBy = data.usuarios[randomCharacter.url] || null;
-
-    let statusMessage = reservedBy ? `Reservado por ${reservedBy.userId}` : 'Libre';
-    let responseMessage = `🌱 Nombre: ${randomCharacter.name}\n💹 Valor: ${randomCharacter.value} Zekis\n💲 Estado: ${statusMessage}\n🆔 ID: ${uniqueId}`;
-
-    await conn.sendMessage(m.chat, {
-        image: { url: randomCharacter.url },
-        caption: responseMessage,
-        mimetype: 'image/jpeg',
+    return await conn.sendMessage(m.chat, { 
+        text: `¡Felicidades @${sender.split('@')[0]}, confirmaste a ${personaje.name}!`, 
+        mentions 
     });
-
-    if (!reservedBy) {
-        reservarPersonaje(userId, { ...randomCharacter, id: uniqueId });
-    }
-
-    cooldowns[userId] = currentTime;
 };
 
-handler.help = ['roll'];
+const handler = async (m, { conn }) => {
+    if (!m.quoted) return;
+
+    const sender = m.sender;
+    const match = m.quoted.text.match(/\`ID:\`\s*-->\s*\`([a-zA-Z0-9-]+)\`/);
+const id = match && match[1];
+    if (!match) {
+        return await conn.sendMessage(m.chat, {
+            text: 'No se encontró un ID válido en el mensaje citado.',
+            mentions: [sender]
+        });
+    }
+
+    const personajeId = id
+    const data = obtenerDatos();
+    if (!personajeId) {
+        return await conn.sendMessage(m.chat, {
+            text: 'No se ha podido extraer un ID válido del mensaje citado.',
+            mentions: [sender]
+        });
+    }
+
+    const personaje = data.personajesReservados.find(p => p.id === personajeId);
+    if (!personaje) {
+        return await conn.sendMessage(m.chat, {
+            text: 'El personaje citado no está disponible.',
+            mentions: [sender]
+        });
+    }
+    const tiempoRestante = cooldowns[sender] ? COOLDOWN_TIME - (Date.now() - cooldowns[sender]) : 0;
+    if (tiempoRestante > 0) {
+        return await conn.sendMessage(m.chat, {
+            text: `Debes esperar antes de confirmar otro personaje.\nTiempo restante: ${Math.floor(tiempoRestante / 60000)} minutos y ${(tiempoRestante % 60000) / 1000} segundos.`,
+            mentions: [sender]
+        });
+    }
+
+    cooldowns[sender] = Date.now();
+
+    return manejarConfirmacion(personaje, sender, data.usuarios, conn, m);
+};
+handler.help = ['cofirmarwaifu'];
 handler.tags = ['rw'];
-handler.command = ['roll', 'rw'];
+handler.command = ['confirmar', 'c'];
 handler.group = true;
 
 export default handler;
