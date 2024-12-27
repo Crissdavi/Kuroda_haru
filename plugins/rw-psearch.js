@@ -1,15 +1,4 @@
 
-
-import fs from 'fs';
-
-const obtenerDatos = () => {
-    try {
-        return fs.existsSync('data.json') ? JSON.parse(fs.readFileSync('data.json', 'utf-8')) : { usuarios: {}, personajesReservados: [] };
-    } catch {
-        return { usuarios: {}, personajesReservados: [] };
-    }
-};
-
 let handler = async (m, { conn, text }) => {
     if (!text) {
         await conn.sendMessage(m.chat, { text: 'Debes proporcionar una ID para buscar al personaje.' });
@@ -17,8 +6,7 @@ let handler = async (m, { conn, text }) => {
     }
 
     let data = obtenerDatos();
-    let personajesReservados = data.personajesReservados;
-    let personaje = personajesReservados.find(p => p.id === text.trim());
+    let personaje = data.personajesReservados.find(p => p.id === text.trim());
 
     if (!personaje) {
         await conn.sendMessage(m.chat, { text: `No se encontró un personaje con la ID: ${text}` });
