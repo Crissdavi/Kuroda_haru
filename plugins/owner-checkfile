@@ -1,0 +1,29 @@
+import fs from 'fs';
+import path from 'path';
+
+let handler = async (m, { text, conn }) => {
+    if (!text) {
+        return m.reply('Por favor, especifica el nombre del archivo. Ejemplo: .leer2 config.js');
+    }
+
+    const fileName = text.trim();
+    const filePath = path.join(process.cwd(), fileName);
+
+    if (!fs.existsSync(filePath)) {
+        return m.reply(`No se encontró el archivo "${fileName}".`);
+    }
+
+    try {
+        const fileContent = fs.readFileSync(filePath, 'utf-8');
+        m.reply(`*Contenido del archivo "${fileName}":*\n\n${fileContent}`);
+    } catch (err) {
+        console.error(err);
+        m.reply('Hubo un error al leer el archivo.');
+    }
+};
+
+handler.command = /^leer2$/i;
+handler.help = ['leer2 <nombre>'];
+handler.rowner = true;
+
+export default handler;
