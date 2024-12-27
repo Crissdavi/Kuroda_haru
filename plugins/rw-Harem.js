@@ -23,7 +23,7 @@ const handler = async (m, { conn }) => {
     }
 
     const personajes = usuario.characters.map((p, i) => 
-        `*${i + 1}.* ${p.name}\n  🔗 URL: ${p.url}\n  💎 Valor: ${p.value}`
+        `*${i + 1}.* ${p.name}\n  🔑 ID: ${p.id}\n  💎 Valor: ${p.value}`
     ).join('\n\n');
 
     return await conn.sendMessage(m.chat, {
