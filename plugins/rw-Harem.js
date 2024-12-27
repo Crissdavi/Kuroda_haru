@@ -1,51 +1,40 @@
-import { promises as fs } from 'fs';
+import fs from 'fs';
 
-// Ruta del archivo harem.json
-const haremFilePath = './src/JSON/characters.json', 'utf-8';
-
-// Función para cargar el archivo harem.json
-async function loadHarem() {
+const obtenerDatos = () => {
     try {
-        const data = await fs.readFile(haremFilePath, 'utf-8');
-        return JSON.parse(data); // Retornar el objeto completo
-    } catch (error) {
-        throw new Error('No se pudo cargar el archivo harem.json.');
-    }
-}
-
-// Definición del handler del comando 'harem'
-let handler = async (m, { conn }) => {
-    try {
-        const harem = await loadHarem();
-
-        // Obtener el ID del usuario que ejecuta el comando
-        const userId = m.sender; // m.sender contiene el ID del usuario
-
-        // Verificar si el usuario tiene personajes en su harem
-        const userHarem = harem[userId];
-        if (!userHarem || userHarem.length === 0) {
-            await conn.reply(m.chat, 'No tienes personajes reclamados en tu harem.', m);
-            return;
-        }
-
-        // Crear mensaje con la lista de personajes y los nuevos datos
-        let message = '✨ *Personajes en tu Harem:*\n';
-        userHarem.forEach((character, index) => {
-            message += `${index + 1}. ${character.name}\n`;
-            message += `   Situación Sentimental: ${character.relationship}\n`;
-            message += `   Origen: ${character.source}\n \n`;
-        });
-
-        // Enviar el mensaje con la lista de personajes y la imagen personalizada
-        await conn.sendFile(m.chat, 'https://qu.ax/FmlF.png', 'harem.jpg', message, m);
-    } catch (error) {
-        await conn.reply(m.chat, `Error al cargar el harem: ${error.message}`, m);
+        return fs.existsSync('data.json') 
+            ? JSON.parse(fs.readFileSync('data.json', 'utf-8')) 
+            : { usuarios: {}, personajesReservados: [] };
+    } catch {
+        return { usuarios: {}, personajesReservados: [] };
     }
 };
 
-// Configuración del comando
+const handler = async (m, { conn }) => {
+    const sender = m.sender;
+    const data = obtenerDatos();
+    const usuario = data.usuarios[sender];
+
+    if (!usuario || !usuario.characters || usuario.characters.length === 0) {
+        return await conn.sendMessage(m.chat, {
+            text: `@${sender.split('@')[0]}, no tienes personajes reclamados.`,
+            mentions: [sender]
+        });
+    }
+
+    const personajes = usuario.characters.map((p, i) => 
+        `*${i + 1}.* ${p.name}\n  🔗 URL: ${p.url}\n  💎 Valor: ${p.value}`
+    ).join('\n\n');
+
+    return await conn.sendMessage(m.chat, {
+        text: `@${sender.split('@')[0]}, estos son tus personajes reclamados:\n\n${personajes}`,
+        mentions: [sender]
+    });
+};
+
 handler.help = ['harem'];
-handler.tags = ['anime'];
-handler.command = /^(harem)$/i; // Comando "harem"
+handler.tags = ['rw'];
+handler.command = ['harem', 'miswaifus'];
+handler.group = true;
 
 export default handler;
