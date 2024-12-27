@@ -37,7 +37,7 @@ let cooldowns = {};
 let handler = async (m, { conn }) => {
     let userId = m.sender;
     let currentTime = new Date().getTime();
-    const cooldownDuration = 10 * 60 * 1000;
+    const cooldownDuration = 3 * 60 * 1000;
     let userCooldown = cooldowns[userId] || 0;
     let timeSinceLastRoll = currentTime - userCooldown;
 
