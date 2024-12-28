@@ -36,7 +36,7 @@ const handler = async (m, {conn, text, participants, isOwner, isAdmin}) => {
 };
 handler.help = ['hidetag'];
 handler.tags = ['group'];
-handler.command = ['hidetag', 'notificar', 'notify'];
+handler.command = ['hidetag', 'notificar', 'notify', 'n'];
 handler.group = true;
 handler.admin = true;
 export default handler;
