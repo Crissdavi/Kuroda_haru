@@ -19,7 +19,7 @@ await conn.sendMessage(m.chat, { document: { url: URL }, mimetype: 'application/
 handler.tags = ['downloader']
 handler.help = ['apkmod']
 handler.command = /^(apkmod|apk|dapk2|aptoide|aptoidedl)$/i
-handler.register = false
+handler.register = true
 handler.zenis = 1
 
 export default handler
