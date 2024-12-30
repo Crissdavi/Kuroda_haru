@@ -43,8 +43,15 @@ console.error(error)
 }}
 
 
-handler.command = ['play']
-export default handler
+handler.help = ['play'];
+handler.tags = ['dowloader'];
+handler.command = /^(play)$/i;
+
+handler.limit = true;
+handler.premium = false;
+handler.register = true;
+
+export default handler;
 
 function eYear(txt) {
     if (!txt) return '×'
