@@ -18,6 +18,10 @@ await conn.sendMessage(m.chat, { document: { url: download_url }, mimetype: mime
 console.error(error)
 }}
 
-handler.command = /^(apk)$/i
+handler.tags = ['downloader']
+handler.help = ['apk2']
+handler.command = /^(apk2|dapk2)$/i
+handler.register = true
+handler.zenis = 10
 
 export default handler
