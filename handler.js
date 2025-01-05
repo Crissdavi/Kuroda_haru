@@ -92,6 +92,8 @@ export async function handler(chatUpdate) {
                     chat.bienvenida = true 
                 if (!('Despedida'in chat))
                    chat.despedida = false
+                 if(!('jadibot' in chat)) 
+                   chat.jadibot = false
                 if (!('antiLink' in chat))
                     chat.antiLink = false
                 if (!('onlyLatinos' in chat))
@@ -107,6 +109,7 @@ export async function handler(chatUpdate) {
                     isBanned: false,
                     bienvenida: true,
                     despedida: false,
+                    jadibot: false, 
                     antiLink: false,
                     onlyLatinos: false,
                     nsfw: false, 
