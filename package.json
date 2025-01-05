@@ -52,6 +52,7 @@
 		"aptoide-scraper": "*",
 		"api-dylux": "*",
 		"brainly-scraper-v2": "^2.2.8",
+    "btch-downloader": "^2.3.2",
 		"cfonts": "^3.2.0",
 		"chalk": "^5.3.0",
 		"cheerio": "github:AikerDev/cheeiro",
