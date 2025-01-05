@@ -1,178 +1,69 @@
+/* 
+By Jtxs
+[ Canal Principal ] :
+https://whatsapp.com/channel/0029VaeQcFXEFeXtNMHk0D0n
+
+[ Canal Rikka Takanashi Bot ] :
+https://whatsapp.com/channel/0029VaksDf4I1rcsIO6Rip2X
+
+[ Canal StarlightsTeam] :
+https://whatsapp.com/channel/0029VaBfsIwGk1FyaqFcK91S
+
+[ HasumiBot FreeCodes ] :
+https://whatsapp.com/channel/0029Vanjyqb2f3ERifCpGT0W
+*/
+
+// *[ ❀ PLAY (VIDEO|AUDIO|DOC) ]*
+import yts from 'yt-search'
 import fetch from 'node-fetch'
-import yts from 'yt-search'
 
-let handler = async (m, { conn: star, command, args, text, usedPrefix }) => {
-  if (!text) return conn.reply(m.chat, '*\`Ingresa El Nombre De Lo Que Quieres Buscar\`*', m, fake)
-    await m.react('🕓')
-    try {
-    let res = await search(args.join(" "))
-    let img = await (await fetch(`${res[0].image}`)).buffer()
-    let txt = '*\`【Y O U T U B E - P L A Y】\`*\n\n'
-       txt += `> *\`TÍTULO:\`* ${res[0].title}\n`
-       txt += `> *\`DURACIÓN:\`* ${secondString(res[0].duration.seconds)}\n`
-       txt += `> *\`PUBLICADO:\`* ${eYear(res[0].ago)}\n`
-       txt += `> *\`CANAL:\`* ${res[0].author.name || 'Desconocido'}\n`
-       txt += `> *\`URL:\`* ${'https://youtu.be/' + res[0].videoId}\n\n`
-       txt += `> *-* _Etiqueta este mensaje con la opción a descargar 📂_\n\n*Etiqueta con \`v\` (para el video.)*\n*Etiqueta con \`a\` (para el audio.)*`
-await star.sendFile(m.chat, img, 'thumbnail.jpg', txt, m)
-await m.react('✅')
-} catch {
-await m.react('✖️')
+let handler = async (m, { conn, args, usedPrefix, text, command }) => {
+let formatos = ["mp3", "mp4", "mp3doc", "mp4doc"]
+let [feature, ...query] = text.split(" ")
+
+if (!formatos.includes(feature)) {
+return conn.reply(m.chat, `❀ Ingresa el formato y el texto de lo que quieres buscar\n\n*❀ ejemplo :*\n*${usedPrefix + command}* mp3 *<txt>*\n\n*❀ Formatos disponibles* :\n\n*${usedPrefix + command}* mp3\n*${usedPrefix + command}* mp3doc\n*${usedPrefix + command}* mp4\n*${usedPrefix + command}* mp4doc`, m)
+}
+
+if (!query.length) {
+return conn.reply(m.chat, `❀ ingresa el texto de lo que quieres buscar\n\n*❀ ejemplo :*\n*${usedPrefix + command}* mp3 *<txt>*`, m)
+}
+
+let res = await yts(query.join(" "))
+let vid = res.videos[0]
+let txt = `- *Título*: ${vid.title}
+- *Duración*: ${vid.timestamp}
+- *Visitas*: ${toNum(vid.views)}
+- *Autor*: ${vid.author.name}
+- *Publicado*: ${eYear(vid.ago)}
+- *Url*: https://youtu.be/${vid.videoId}`
+
+await conn.sendFile(m.chat, vid.thumbnail, 'thumbnail.jpg', txt, m)
+  
+try {
+let api = await fetch(`https://api.giftedtech.my.id/api/download/ytdl?apikey=gifted&url=${vid.url}`)
+let json = await api.json()
+
+
+let dl_url = feature.includes('mp3') ? json.result.audio_url : json.result.video_url
+let fileType = feature.includes('mp3') ? 'audio/mp3' : 'video/mp4'
+let fileName = `${json.result.title}.${feature.includes('mp3') ? 'mp3' : 'mp4'}`
+
+let isDoc = feature.includes('doc')
+let file = { url: dl_url }
+
+await conn.sendMessage(m.chat, { [isDoc ? 'document' : feature.includes('mp3') ? 'audio' : 'video']: file,  mimetype: fileType,  fileName: fileName  }, { quoted: m })
+    
+} catch (error) {
+console.error(error)
 }}
-handler.help = ['play2 *<text>*']
-handler.tags = ['dowloader']
-handler.command = ['play2']
- 
-export default handler
 
-async function search(query, options = {}) {
-  let search = await yts.search({ query, hl: "es", gl: "ES", ...options })
-  return search.videos
-}
 
-function MilesNumber(number) {
-  let exp = /(\d)(?=(\d{3})+(?!\d))/g
-  let rep = "$1."
-  let arr = number.toString().split(".")
-  arr[0] = arr[0].replace(exp, rep)
-  return arr[1] ? arr.join(".") : arr[0]
-}
-
-function secondString(seconds) {
-  seconds = Number(seconds);
-  const d = Math.floor(seconds / (3600 * 24));
-  const h = Math.floor((seconds % (3600 * 24)) / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  const s = Math.floor(seconds % 60);
-  const dDisplay = d > 0 ? d + (d == 1 ? ' Día, ' : ' Días, ') : '';
-  const hDisplay = h > 0 ? h + (h == 1 ? ' Hora, ' : ' Horas, ') : '';
-  const mDisplay = m > 0 ? m + (m == 1 ? ' Minuto, ' : ' Minutos, ') : '';
-  const sDisplay = s > 0 ? s + (s == 1 ? ' Segundo' : ' Segundos') : '';
-  return dDisplay + hDisplay + mDisplay + sDisplay;
-}
-
-function sNum(num) {
-    return new Intl.NumberFormat('en-GB', { notation: "compact", compactDisplay: "short" }).format(num)
-}
-
-function eYear(txt) {
-    if (!txt) {
-        return '×'
-    }
-    if (txt.includes('month ago')) {
-        var T = txt.replace("month ago", "").trim()
-        var L = 'hace '  + T + ' mes'
-        return L
-    }
-    if (txt.includes('months ago')) {
-        var T = txt.replace("months ago", "").trim()
-        var L = 'hace ' + T + ' meses'
-        return L
-    }
-    if (txt.includes('year ago')) {
-        var T = txt.replace("year ago", "").trim()
-        var L = 'hace ' + T + ' año'
-        return L
-    }
-    if (txt.includes('years ago')) {
-        var T = txt.replace("years ago", "").trim()
-        var L = 'hace ' + T + ' años'
-        return L
-    }
-    if (txt.includes('hour ago')) {
-        var T = txt.replace("hour ago", "").trim()
-        var L = 'hace ' + T + ' hora'
-        return L
-    }
-    if (txt.includes('hours ago')) {
-        var T = txt.replace("hours ago", "").trim()
-        var L = 'hace ' + T + ' horas'
-        return L
-    }
-    if (txt.includes('minute ago')) {
-        var T = txt.replace("minute ago", "").trim()
-        var L = 'hace ' + T + ' minuto'
-        return L
-    }
-    if (txt.includes('minutes ago')) {
-        var T = txt.replace("minutes ago", "").trim()
-        var L = 'hace ' + T + ' minutos'
-        return L
-    }
-    if (txt.includes('day ago')) {
-        var T = txt.replace("day ago", "").trim()
-        var L = 'hace ' + T + ' dia'
-        return L
-    }
-    if (txt.includes('days ago')) {
-        var T = txt.replace("days ago", "").trim()
-        var L = 'hace ' + T + ' dias'
-        return L
-    }
-    return txt
-}
-
-/* import fetch from 'node-fetch'
-import yts from 'yt-search'
-
-let handler = async (m, { conn: star, command, args, text, usedPrefix }) => {
-  if (!text) return star.reply(m.chat, '🚩 Ingresa el título de un video o canción de YouTube.\n\n`Ejemplo:`\n' + `> *${usedPrefix + command}* Gemini Aaliyah - If Only`, m)
-    await m.react('🕓')
-    try {
-    let res = await search(args.join(" "))
-    let img = await (await fetch(`${res[0].image}`)).buffer()
-    let txt = '`乂  Y O U T U B E  -  P L A Y`\n\n'
-       txt += `        ✩   *Título* : ${res[0].title}\n`
-       txt += `        ✩   *Duración* : ${secondString(res[0].duration.seconds)}\n`
-       txt += `        ✩   *Publicado* : ${eYear(res[0].ago)}\n`
-       txt += `        ✩   *Canal* : ${res[0].author.name || 'Desconocido'}\n`
-       txt += `        ✩   *Url* : ${'https://youtu.be/' + res[0].videoId}\n\n`
-       txt += `> *-* Para descargar responde a este mensaje con *Video* o *Audio*.`
-await star.sendFile(m.chat, img, 'thumbnail.jpg', txt, m, null, rcanal)
-await m.react('✅')
-} catch {
-await m.react('✖️')
-}}
-handler.help = ['play *<búsqueda>*']
-handler.tags = ['downloader']
 handler.command = ['play']
-//handler.register = true 
 export default handler
 
-async function search(query, options = {}) {
-  let search = await yts.search({ query, hl: "es", gl: "ES", ...options })
-  return search.videos
-}
-
-function MilesNumber(number) {
-  let exp = /(\d)(?=(\d{3})+(?!\d))/g
-  let rep = "$1."
-  let arr = number.toString().split(".")
-  arr[0] = arr[0].replace(exp, rep)
-  return arr[1] ? arr.join(".") : arr[0]
-}
-
-function secondString(seconds) {
-  seconds = Number(seconds);
-  const d = Math.floor(seconds / (3600 * 24));
-  const h = Math.floor((seconds % (3600 * 24)) / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  const s = Math.floor(seconds % 60);
-  const dDisplay = d > 0 ? d + (d == 1 ? ' Día, ' : ' Días, ') : '';
-  const hDisplay = h > 0 ? h + (h == 1 ? ' Hora, ' : ' Horas, ') : '';
-  const mDisplay = m > 0 ? m + (m == 1 ? ' Minuto, ' : ' Minutos, ') : '';
-  const sDisplay = s > 0 ? s + (s == 1 ? ' Segundo' : ' Segundos') : '';
-  return dDisplay + hDisplay + mDisplay + sDisplay;
-}
-
-function sNum(num) {
-    return new Intl.NumberFormat('en-GB', { notation: "compact", compactDisplay: "short" }).format(num)
-}
-
 function eYear(txt) {
-    if (!txt) {
-        return '×'
-    }
+    if (!txt) return '×'
     if (txt.includes('month ago')) {
         var T = txt.replace("month ago", "").trim()
         var L = 'hace '  + T + ' mes'
@@ -224,4 +115,19 @@ function eYear(txt) {
         return L
     }
     return txt
-} */
+}
+
+
+function toNum(number) {
+    if (number >= 1000 && number < 1000000) {
+        return (number / 1000).toFixed(1) + 'k'
+    } else if (number >= 1000000) {
+        return (number / 1000000).toFixed(1) + 'M'
+    } else if (number <= -1000 && number > -1000000) {
+        return (number / 1000).toFixed(1) + 'k'
+    } else if (number <= -1000000) {
+        return (number / 1000000).toFixed(1) + 'M'
+    } else {
+        return number.toString()
+    }
+}
