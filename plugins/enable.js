@@ -47,6 +47,18 @@ case 'despedida':
       global.opts['autoread'] = isEnable;
       break;
 
+   case 'jadibot': 
+   case 'modojadibot': 
+   case 'serbot': 
+   case 'modoserbot': 
+     isAll = true
+     if (!isROwner) {
+       global.dfail('rowner', m, conn)
+       throw false
+     }
+     bot.jadibotmd = isEnable
+     break;
+
     case 'document':
     case 'documento':
       isUser = true;
