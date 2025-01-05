@@ -137,6 +137,9 @@ case 'despedida':
 *Tipo :* modoadmin 
 *Descripción :* Des/Activa el *Modo Solo Administradores* para Grupos
 
+*Tipo :* jadibot
+*Descripción :* Des/Activa el *jadibot* para el Bot
+
 *• Ejemplo:*
 *- ${usedPrefix + command}* welcome
 `.trim());
