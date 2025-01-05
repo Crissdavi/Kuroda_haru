@@ -131,7 +131,7 @@ if (_0x4ea9f2) {
             return _0xaa3d6b.message && undefined;
           }
           return {
-            'conversation': "Genesis-Ai"
+            'conversation': "Kuroda"
           };
         }
       };
