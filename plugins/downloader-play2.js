@@ -37,6 +37,6 @@ await conn.sendMessage(m.chat, { audio: { url: data.mp3 }, mimetype: 'audio/mpeg
 console.error(error)
 }}
 
-handler.command = ['play']
+handler.command = ['play2']
 
 export default handler
