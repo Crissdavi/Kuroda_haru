@@ -24,7 +24,7 @@ await conn.sendMessage(m.chat, { video: { url: download_url }, caption: `${title
 console.error(error)
 }}
 
-handler.command = /^(vídeo)$/i
+handler.command = /^(vídeo|video)$/i
 
 export default handler
 
