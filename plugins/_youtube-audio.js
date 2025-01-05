@@ -37,3 +37,5 @@ let handler = async (m, { conn, text, isPrems, isOwner, usedPrefix, command }) =
 
 handler.customPrefix = /^(a|A)/;
 handler.command = new RegExp();
+
+export default handler;
