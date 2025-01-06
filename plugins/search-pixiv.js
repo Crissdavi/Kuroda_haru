@@ -7,7 +7,7 @@ try {
 let api = await fetch(`https://api.vreden.web.id/api/pixiv-r18?query=${text}`)
 let json = await api.json()
 if (!json.result) {
-return conn.reply(m.chat, '❀ Sin resultados', m)
+return conn.reply(m.chat, '❀ Sin resultados', m, null, rcanal)
 }
 let res = json.result[Math.floor(Math.random() * json.result.length)]
 if (!res || !res.title || !res.urls || !res.urls.regular) {
