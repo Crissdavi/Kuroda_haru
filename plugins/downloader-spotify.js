@@ -1,73 +1,26 @@
-//*`[ SPOTIFY - DL ]`*
-import axios from 'axios'
+import fetch from 'node-fetch'
 
-let delay = ms => new Promise(resolve => setTimeout(resolve, ms))
+let handler = async (m, { conn, command, text, usedPrefix }) => {
+if (!text) return conn.reply(m.chat, `❀ Ingresa el texto de lo que quieras buscar`, m)
 
-let handler = async (m, { conn, args }) => {
-if (!args[0]) return m.reply('Ingresa un enlace de spotify')
 try {
-let api = await axios.get(`https://api.ryzendesu.vip/api/downloader/spotify?url=${encodeURIComponent(args[0])}`)
-let json = api.data
-
-if (json.success) {
-if (json.metadata.playlistName) {
-let playlistName = json.metadata.playlistName
-let cover = json.metadata.cover
-let tracks = json.tracks
-m.reply(`*Playlist:* ${playlistName}
-*Cover:* ${cover}
-*Total Tracks:* ${tracks.length}`)
-
-for (let i = 0; i < tracks.length; i++) {
-let track = tracks[i]
-if (track.success) {
-let { title, artists, album, cover, releaseDate } = track.metadata
-let link = track.link  
-let audioGet = await axios.get(link, { responseType: 'arraybuffer' })
-let audio = audioGet.data
-
-await conn.sendMessage(m.chat, {
-document: audio, 
-mimetype: 'audio/mpeg',
-fileName: `${title}.mp3`,
-caption: `
-*Title:* ${title}
-*Artists:* ${artists}
-*Album:* ${album}
-*Release Date:* ${releaseDate}
-*Cover:* ${cover}
-`,
-}, { quoted: m })
-
-await delay(1500)
-} else {}
-}
-} else {
-let { title, artists, album, cover, releaseDate } = json.metadata
-let link = json.link  
-
-let audioGet = await axios.get(link, { responseType: 'arraybuffer' })
-let audio = audioGet.data
-
-await conn.sendMessage(m.chat, {
-document: audio,
-mimetype: 'audio/mpeg',
-fileName: `${title}.mp3`,
-caption: `
-*Title:* ${title}
-*Artists:* ${artists}
-*Album:* ${album}
-*Release Date:* ${releaseDate}
-*Cover:* ${cover}
-`,
-}, { quoted: m })
-}
-} else {}
+let apiSearch = await fetch(`https://api.vreden.web.id/api/spotifysearch?query=${text}`)
+let jsonSearch = await apiSearch.json()
+let { popularity, url } = jsonSearch.result[0]
+let apiDL = await fetch(`https://api.vreden.web.id/api/spotify?url=${url}`)
+let jsonDL = await apiDL.json()
+let { title, artists, cover, music } = jsonDL.result.result
+let HS = `- *Titulo :* ${title}
+- *autor :* ${artists}
+- *Popularidad :* ${popularity}
+- *Link :* ${url}
+`
+await conn.sendFile(m.chat, cover, 'HasumiBotFreeCodes.jpg', HS, m)
+await conn.sendFile(m.chat, music, 'HasumiBotFreeCodes.mp4', null, m)
 } catch (error) {
 console.error(error)
 }}
 
-
-handler.command = /^(spotifydl)$/i
+handler.command = /^(spotify)$/i
 
 export default handler
