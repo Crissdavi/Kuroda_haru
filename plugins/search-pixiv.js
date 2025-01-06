@@ -11,10 +11,10 @@ return conn.reply(m.chat, '❀ Sin resultados', m, null, rcanal)
 }
 let res = json.result[Math.floor(Math.random() * json.result.length)]
 if (!res || !res.title || !res.urls || !res.urls.regular) {
-return conn.reply(m.chat, '❀ Sin resultados', m)
+return conn.reply(m.chat, '❀ Sin resultados', m, null, rcanal)
 }
 let { title, urls } = res
-await conn.sendFile(m.chat, urls.regular, 'HasumiBotFreeCodes.jpg', title, m)
+await conn.sendFile(m.chat, urls.regular, 'HasumiBotFreeCodes.jpg', title, m, null, rcanal)
 } catch (error) {
 console.error(error)
 }}
