@@ -1,117 +1,77 @@
-import fetch from 'node-fetch'
 
-let handler = async (m, { conn, args, usedPrefix, text, command }) => {
-let formatos = ["mp3", "mp4", "mp3doc", "mp4doc"]
-let [feature, ...query] = text.split(" ")
+import fetch from 'node-fetch';
+import yts from 'yt-search';
 
-if (!formatos.includes(feature)) {
-return conn.reply(m.chat, `❀ Ingresa el formato y el texto de lo que quieres buscar\n\n*❀ ejemplo :*\n*${usedPrefix + command}* mp3 *<txt>*\n\n*❀ Formatos disponibles* :\n\n*${usedPrefix + command}* mp3\n*${usedPrefix + command}* mp3doc\n*${usedPrefix + command}* mp4\n*${usedPrefix + command}* mp4doc`, m)
+let handler = async (m, { conn, args }) => {
+  if (!args[0]) return conn.reply(m.chat, '*\`Ingresa el nombre de lo que quieres buscar\`*', m);
+
+  await m.react('🕓');
+  try {
+    let res = await search(args.join(" "));
+    let video = res[0];
+    let img = await (await fetch(video.image)).buffer();
+
+    let txt = `*\`【Y O U T U B E - P L A Y】\`*\n\n`;
+    txt += `• *\`Título:\`* ${video.title}\n`;
+    txt += `• *\`Duración:\`* ${secondString(video.duration.seconds)}\n`;
+    txt += `• *\`Publicado:\`* ${eYear(video.ago)}\n`;
+    txt += `• *\`Canal:\`* ${video.author.name || 'Desconocido'}\n`;
+    txt += `• *\`Url:\`* _https://youtu.be/${video.videoId}_\n\n`;
+
+    await conn.sendMessage(m.chat, {
+      image: img,
+      caption: txt,
+      footer: 'Selecciona una opción',
+      buttons: [
+        {
+          buttonId: `.ytmp3 https://youtu.be/${video.videoId}`,
+          buttonText: {
+            displayText: '🎵 Audio',
+          },
+        },
+        {
+          buttonId: `.ytmp4 https://youtu.be/${video.videoId}`,
+          buttonText: {
+            displayText: '🎥 Video',
+          },
+        },
+      ],
+      viewOnce: true,
+      headerType: 4,
+    }, { quoted: m });
+
+    await m.react('✅');
+  } catch (e) {
+    console.error(e);
+    await m.react('✖️');
+    conn.reply(m.chat, '*\`Error al buscar el video.\`*', m);
+  }
+};
+
+handler.help = ['play *<texto>*'];
+handler.tags = ['dl'];
+handler.command = ['play'];
+
+export default handler;
+
+async function search(query, options = {}) {
+  let search = await yts.search({ query, hl: "es", gl: "ES", ...options });
+  return search.videos;
 }
 
-if (!query.length) {
-return conn.reply(m.chat, `❀ ingresa el texto de lo que quieres buscar\n\n*❀ ejemplo :*\n*${usedPrefix + command}* mp3 *<txt>*`, m)
+function secondString(seconds) {
+  seconds = Number(seconds);
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = Math.floor(seconds % 60);
+  return `${h > 0 ? h + 'h ' : ''}${m}m ${s}s`;
 }
-
-let res = await yts(query.join(" "))
-let vid = res.videos[0]
-let txt = `- *Título*: ${vid.title}
-- *Duración*: ${vid.timestamp}
-- *Visitas*: ${toNum(vid.views)}
-- *Autor*: ${vid.author.name}
-- *Publicado*: ${eYear(vid.ago)}
-- *Url*: https://youtu.be/${vid.videoId}`
-
-await conn.sendFile(m.chat, vid.thumbnail, 'thumbnail.jpg', txt, m)
-  
-try {
-let api = await fetch(`https://api.giftedtech.my.id/api/download/ytdl?apikey=gifted&url=${vid.url}`)
-let json = await api.json()
-
-
-let dl_url = feature.includes('mp3') ? json.result.audio_url : json.result.video_url
-let fileType = feature.includes('mp3') ? 'audio/mp3' : 'video/mp4'
-let fileName = `${json.result.title}.${feature.includes('mp3') ? 'mp3' : 'mp4'}`
-
-let isDoc = feature.includes('doc')
-let file = { url: dl_url }
-
-await conn.sendMessage(m.chat, { [isDoc ? 'document' : feature.includes('mp3') ? 'audio' : 'video']: file,  mimetype: fileType,  fileName: fileName  }, { quoted: m })
-    
-} catch (error) {
-console.error(error)
-}}
-
-
-handler.command = ['play2']
-
-export default handler
 
 function eYear(txt) {
-    if (!txt) return '×'
-    if (txt.includes('month ago')) {
-        var T = txt.replace("month ago", "").trim()
-        var L = 'hace '  + T + ' mes'
-        return L
-    }
-    if (txt.includes('months ago')) {
-        var T = txt.replace("months ago", "").trim()
-        var L = 'hace ' + T + ' meses'
-        return L
-    }
-    if (txt.includes('year ago')) {
-        var T = txt.replace("year ago", "").trim()
-        var L = 'hace ' + T + ' año'
-        return L
-    }
-    if (txt.includes('years ago')) {
-        var T = txt.replace("years ago", "").trim()
-        var L = 'hace ' + T + ' años'
-        return L
-    }
-    if (txt.includes('hour ago')) {
-        var T = txt.replace("hour ago", "").trim()
-        var L = 'hace ' + T + ' hora'
-        return L
-    }
-    if (txt.includes('hours ago')) {
-        var T = txt.replace("hours ago", "").trim()
-        var L = 'hace ' + T + ' horas'
-        return L
-    }
-    if (txt.includes('minute ago')) {
-        var T = txt.replace("minute ago", "").trim()
-        var L = 'hace ' + T + ' minuto'
-        return L
-    }
-    if (txt.includes('minutes ago')) {
-        var T = txt.replace("minutes ago", "").trim()
-        var L = 'hace ' + T + ' minutos'
-        return L
-    }
-    if (txt.includes('day ago')) {
-        var T = txt.replace("day ago", "").trim()
-        var L = 'hace ' + T + ' dia'
-        return L
-    }
-    if (txt.includes('days ago')) {
-        var T = txt.replace("days ago", "").trim()
-        var L = 'hace ' + T + ' dias'
-        return L
-    }
-    return txt
-}
-
-
-function toNum(number) {
-    if (number >= 1000 && number < 1000000) {
-        return (number / 1000).toFixed(1) + 'k'
-    } else if (number >= 1000000) {
-        return (number / 1000000).toFixed(1) + 'M'
-    } else if (number <= -1000 && number > -1000000) {
-        return (number / 1000).toFixed(1) + 'k'
-    } else if (number <= -1000000) {
-        return (number / 1000000).toFixed(1) + 'M'
-    } else {
-        return number.toString()
-    }
+  if (txt.includes('year')) return txt.replace('year', 'año').replace('years', 'años');
+  if (txt.includes('month')) return txt.replace('month', 'mes').replace('months', 'meses');
+  if (txt.includes('day')) return txt.replace('day', 'día').replace('days', 'días');
+  if (txt.includes('hour')) return txt.replace('hour', 'hora').replace('hours', 'horas');
+  if (txt.includes('minute')) return txt.replace('minute', 'minuto').replace('minutes', 'minutos');
+  return txt;
 }
