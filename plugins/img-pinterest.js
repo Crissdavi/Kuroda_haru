@@ -1,19 +1,37 @@
-import axios from 'axios'
+const axios = require("axios")
 
-let handler = async (m, { conn, text, usedPrefix, command }) => {
-if (!text) return conn.reply(m.chat, `🪐 Ingresa el texto de lo que quieras buscar`, m, null, rcanal)
+class pinterestsearch {
+search = async function pinterest(query) {
+  const {
+    data
+  } = await axios.get(`https://www.pinterest.com/resource/BaseSearchResource/get/`, {
+    params: {
+      source_url: `/search/pins/?q=${query}`,
+      data: JSON.stringify({
+        options: {
+          isPrefetch: false,
+          query: query,
+          scope: "pins",
+          no_fetch_context_on_resource: false
+        },
+        context: {}
+      })
+    }
+  });
+  const container = [];
+  const results = data.resource_response.data.results.filter(v => v.images?.orig);
+  results.forEach(result => {
+    container.push({
+      upload_by: result.pinner.username,
+      fullname: result.pinner.full_name,
+      followers: result.pinner.follower_count,
+      caption: result.grid_title,
+      image: result.images.orig.url,
+      source: "https://id.pinterest.com/pin/" + result.id
+    });
+  });
+  return container;
+}
+}
 
-
-try {
-let api = await axios.get(`https://restapi.apibotwa.biz.id/api/search-pinterest?message=${text}`)
-let json = api.data
-
-await conn.sendFile(m.chat, json.data.response, 'HasumiBotFreeCodes.jpg', `🪐 Resultado de : *${text}*`, m, null, rcanal)
-
-} catch (error) {
-console.error(error)    
-}}    
-
-handler.command = ['pinterest', 'pinterestsearch', 'pin']
-
-export default handler
+module.exports = new pinterestsearch()
