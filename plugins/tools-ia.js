@@ -1,19 +1,18 @@
-import fetch from 'node-fetch';
+import axios from 'axios'
 
-const handler = async (m, { conn, text }) => {
-if (!text) return conn.reply(m.chat, 'Escribe un texto para hablar con koruda', m);
+let handler = async (m, { conn, text, usedPrefix, command }) => {
+if (!text) return conn.reply(m.chat, `❀ Ingresa un texto para hablar con chatgpt`, m, null, rcanal)
+
 
 try {
-let msg = await conn.sendMessage(m.chat, {text: '*koruda esta escribiendo.....*'});
+let prompt = 'eres Koruda, creado por Haru ✯, tu proposito es ayudar a los usuarios respondiendo sus preguntas'
+let api = await axios.get(`https://restapi.apibotwa.biz.id/api/gptlogic?message=${text}&prompt=${prompt}`)
+let json = api.data
+m.reply(json.data.response)
+} catch (error) {
+console.error(error)    
+}}    
 
-let userid = conn.getName(m.sender) || 'default';
-let apiurl = `https://restapi.apibotwa.biz.id/api/gptlogic?message=${encodeURIComponent(text)}`;
-let result = await fetch(apiurl);
-let response = await result.json();
-
-await conn.relayMessage(m.chat, { protocolMessage: { key: msg.key, type: 14, editedMessage: { conversation: response.msg }}}, {});
-} catch {}}
-
-handler.command = handler.help = ["chatgpt", "ia"];
+handler.command = ['chatgpt']
 
 export default handler
