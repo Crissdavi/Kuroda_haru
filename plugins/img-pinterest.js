@@ -8,7 +8,7 @@ try {
 let api = await axios.get(`https://restapi.apibotwa.biz.id/api/search-pinterest?message=${text}`)
 let json = api.data
 
-await conn.sendFile(m.chat, json.data.response, 'HasumiBotFreeCodes.jpg', `🪐 Resultado de : *${text}*`, m)
+await conn.sendFile(m.chat, json.data.response, 'HasumiBotFreeCodes.jpg', `🪐 Resultado de : *${text}*`, m, null, rcanal)
 
 } catch (error) {
 console.error(error)    
