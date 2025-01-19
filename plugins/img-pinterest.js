@@ -1,30 +1,19 @@
+import axios from 'axios'
 
-import fetch from 'node-fetch';
+let handler = async (m, { conn, text, usedPrefix, command }) => {
+if (!text) return conn.reply(m.chat, `🪐 Ingresa el texto de lo que quieras buscar`, m, null, rcanal)
 
-let handler = async (m, { conn, text }) => {
-  if (!text) return conn.reply(m.chat, `*✦ Ingresa algún texto*`, m);
-  
-  const pinterestAPI = `https://deliriussapi-oficial.vercel.app/search/pinterestv2?text=${text}`;
 
-  try {
-    const res = await fetch(pinterestAPI);
-    const json = await res.json();
+try {
+let api = await axios.get(`https://restapi.apibotwa.biz.id/api/search-pinterest?message=${text}`)
+let json = api.data
 
-    if (!json || !json.data || !json.data.length) return conn.reply(m.chat, `✧ No se encontraron resultados para "${text}".`, m);
+await conn.sendFile(m.chat, json.data.response, 'HasumiBotFreeCodes.jpg', `🪐 Resultado de : *${text}*`, m)
 
-    const result = json.data[Math.floor(Math.random() * json.data.length)];
-    
-    let message = `✦ Creador » ${result.username}\n✦ Titulo » ${result.title}\n✦ Likes » ${result.likes}\n✦ Publicado » ${result.created_at}`;
-    await conn.sendMessage(m.chat, { image: { url: result.image }, caption: message }, { quoted: m });
+} catch (error) {
+console.error(error)    
+}}    
 
-  } catch (e) {
-    conn.reply(m.chat, `✧ Ocurrió un error al buscar la imagen.`, m);
-    console.log(e);
-  }
-};
+handler.command = ['pinterest', 'pinterestsearch', 'pin']
 
-handler.help = ['pinterest'];
-handler.tags = ['dowloader'];
-handler.command = ['pin', 'pinterest'];
-handler.premium = false
-export default handler;
+export default handler
