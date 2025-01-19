@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 let handler = async (m, { conn, text, usedPrefix, command }) => {
-if (!text) return conn.reply(m.chat, `❀ Ingresa un texto para hablar con chatgpt`, m, null, rcanal)
+if (!text) return conn.reply(m.chat, `🪐 Ingresa un texto para hablar con chatgpt`, m, null, rcanal)
 
 
 try {
