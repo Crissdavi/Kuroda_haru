@@ -7,7 +7,7 @@ try {
 let msg = await conn.sendMessage(m.chat, {text: '*koruda esta escribiendo.....*'});
 
 let userid = conn.getName(m.sender) || 'default';
-let apiurl = `https://api.guruapi.tech/ai/gpt4?username=${userid}&query=hii${encodeURIComponent(text)}`;
+let apiurl = `https://restapi.apibotwa.biz.id/api/gptlogic?message=${encodeURIComponent(text)}`;
 let result = await fetch(apiurl);
 let response = await result.json();
 
