@@ -5,16 +5,16 @@ const handler = async (m, { conn, text, usedPrefix, command, args }) => {
   const user = global.db.data.users[m.sender];
 
   if (user.level < 15) {
-    throw `⚠️ Para poder crear un clan es necesario que seas nivel 15.\n\nNivel actual: ${user.level}`;
+  asait m.reply(`⚠️ Para poder crear un clan es necesario que seas nivel 15.\n\nNivel actual: ${user.level}`);
   }
 
   if (!args[0] || args[0].trim().length === 0) {
-    throw `*[ 🌱 ] Por favor ingrese un nombre válido para su clan.*`;
+    await m.reply(`*[ 🌱 ] Por favor ingrese un nombre válido para su clan.*`);
   }
 
   const clanExistente = await verificarClanExistente(m.sender);
   if (clanExistente) {
-    throw `⚠️ Ya eres líder de un clan llamado "${clanExistente.nombre}". No puedes crear otro clan.`;
+    await m.reply(`⚠️ Ya eres líder de un clan llamado "${clanExistente.nombre}". No puedes crear otro clan.`);
   }
 
   let ids = await generarID(args[0]);
@@ -44,7 +44,7 @@ const handler = async (m, { conn, text, usedPrefix, command, args }) => {
       return clan.id;
     } catch (error) {
       console.error("Error al guardar el clan:", error);
-      throw `⚠️ Hubo un error al crear el clan. Por favor, intente de nuevo más tarde.`;
+      m.reply(`⚠️ Hubo un error al crear el clan. Por favor, intente de nuevo más tarde.`);
     }
   }
 
@@ -84,6 +84,6 @@ async function verificarClanExistente(lider) {
     return null;
   } catch (error) {
     console.error("Error al verificar clan existente:", error);
-    throw `⚠️ Hubo un problema al verificar si ya tienes un clan. Intenta de nuevo más tarde.`;
+    m.reply(`⚠️ Hubo un problema al verificar si ya tienes un clan. Intenta de nuevo más tarde.`;
   }
 }
