@@ -5,7 +5,7 @@ if (!text) return conn.reply(m.chat, `🪐 Ingresa un texto para hablar con chat
 
 
 try {
-let prompt = 'eres Koruda, creado por Haru ✯, tu proposito es ayudar a los usuarios respondiendo sus preguntas'
+let prompt = 'eres Koruda, creado por Haru ✯, tu proposito es ayudar a los usuarios respondiendo sus preguntas', m, null, rcanal)
 let api = await axios.get(`https://restapi.apibotwa.biz.id/api/gptlogic?message=${text}&prompt=${prompt}`)
 let json = api.data
 m.reply(json.data.response)
