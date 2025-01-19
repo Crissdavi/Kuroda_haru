@@ -37,7 +37,7 @@ let handler = async (m, { conn, text }) => {
       contextInfo: {
         externalAdReply: {
           title: ytData.title,
-          body: 'Genesis Ai By Izumi-kzx',
+          body: '𝐊𝐔𝐑𝐎𝐃𝐀',
           mediaType: 2,
           mediaUrl: ytData.url,
           thumbnailUrl: ytData.thumbnail,
