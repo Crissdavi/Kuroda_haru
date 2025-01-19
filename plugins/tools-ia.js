@@ -13,6 +13,6 @@ m.reply(json.data.response)
 console.error(error)    
 }}    
 
-handler.command = ['chatgpt']
+handler.command = ['chatgpt', 'ia']
 
 export default handler
