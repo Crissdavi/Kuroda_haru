@@ -4,7 +4,10 @@ let result = await pinterest(text)
 ......
 }
 
-> async function pinterest(query) {
+const axios = require("axios")
+
+class pinterestsearch {
+search = async function pinterest(query) {
   const {
     data
   } = await axios.get(`https://www.pinterest.com/resource/BaseSearchResource/get/`, {
@@ -35,5 +38,6 @@ let result = await pinterest(text)
   });
   return container;
 }
-let r = await pinterest('sylphiette')
-return r
+}
+
+module.exports = new pinterestsearch()
