@@ -1,43 +1,63 @@
+import fetch from 'node-fetch';
 
+let handler = async (m, { conn, text }) => {
+  if (!text) {
+    await m.react('✖️');
+    throw '☁️ Ingresa un enlace de YouTube.';
+  }
 
-import fetch from 'node-fetch'
+  const ytRegex = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+$/;
+  if (!ytRegex.test(text)) {
+    await m.react('❌');
+    throw '☁️ Ingresa un enlace válido de YouTube.';
+  }
 
-let handler = async (m, { conn, command, text, usedPrefix }) => {
-if (!text) return conn.reply(m.chat, `❀ Ingresa un link de youtube`, m)
+  try {
+    await m.react('🕒');
 
-try {
-let api = await fetch(`https://delirius-apiofc.vercel.app/download/ytmp3?url=${text}`)
-let json = await api.json()
-let { title, author, image:img, id, views, likes, comments, duration, download } = json.data
-let HS = `- *Titulo :* ${title}
-- *Autor :* ${author}
-- *Visitas :* ${Num(views)}
-- *Likes :* ${Num(likes)}
-- *Comentarios :* ${Num(comments)}
+    let videoId = text.split('v=')[1]?.split('&')[0] || text.split('/').pop();
+    let apiURL = `https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${videoId}&format=json`;
 
-*[ INFO ARCHIVO AUDIO ]*
+    let response = await fetch(apiURL);
+    if (!response.ok) throw 'No se pudo obtener información del video. Verifica la URL proporcionada.';
 
-- *Tamaño :* ${download.size}
-- *Calidad :* ${download.quality}`
-await conn.sendFile(m.chat, img, 'HasumiBotFreeCodes.jpg', HS, m)
-await conn.sendMessage(m.chat, { audio: { url: download.url }, mimetype: 'audio/mpeg' }, { quoted: m });
-} catch (error) {
-console.error(error)
-}}
+    let videoData = await response.json();
 
-handler.command = /^(ytmp3)$/i
+    let ytData = {
+      url: text,
+      title: videoData.title || 'Sin título',
+      thumbnail: videoData.thumbnail_url || `https://img.youtube.com/vi/${videoId}/0.jpg`
+    };
 
-export default handler
+    await conn.sendMessage(m.chat, {
+      audio: {
+        url: `https://kepolu-ytdl.hf.space/yt/dl?url=${ytData.url}&type=audio`
+      },
+      mimetype: 'audio/mpeg',
+      contextInfo: {
+        externalAdReply: {
+          title: ytData.title,
+          body: 'Genesis Ai By Izumi-kzx',
+          mediaType: 2,
+          mediaUrl: ytData.url,
+          thumbnailUrl: ytData.thumbnail,
+          sourceUrl: ytData.url,
+          containsAutoReply: true,
+          renderLargerThumbnail: true,
+          showAdAttribution: false,
+        }
+      }
+    }, { quoted: m });
 
-function Num(number) {
-if (number >= 1000 && number < 1000000) {
-return (number / 1000).toFixed(1) + 'k'
-} else if (number >= 1000000) {
-return (number / 1000000).toFixed(1) + 'M'
-} else if (number <= -1000 && number > -1000000) {
-return (number / 1000).toFixed(1) + 'k'
-} else if (number <= -1000000) {
-return (number / 1000000).toFixed(1) + 'M'
-} else {
-return number.toString()
-}}
+    await m.react('✅');
+  } catch (error) {
+    console.error(error);
+    await m.react('❌');
+    conn.reply(m.chat, 'Ocurrió un error al intentar descargar el audio.', m);
+  }
+};
+
+handler.help = ['ytmp3 *<url>*'];
+handler.command = ['ytmp3'];
+handler.tags = ['youtube'];
+export default handler;
