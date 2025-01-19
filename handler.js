@@ -101,7 +101,7 @@ export async function handler(chatUpdate) {
                  if (!('nsfw' in chat))
                     chat.nsfw = false
                  if (!('modoadmin' in chat))
-                     chat.modoadmin = false
+                     chat.modoadmin = true
                 if (!isNumber(chat.expired))
                     chat.expired = 0
             } else
