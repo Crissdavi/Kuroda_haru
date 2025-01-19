@@ -2,9 +2,9 @@
 import axios from 'axios'
 
 let handler = async (m, { conn, usedPrefix, args, command, text }) => {
-if (!args[0]) return conn.reply(m.chat, `❀ Ingresa un link de Instagram`, m)
+if (!args[0]) return conn.reply(m.chat, `🪐 Ingresa un link de Instagram`, m, null, rcanal)
 
-if (!args[0].match(new RegExp('^https?:\\/\\/(www\\.)?instagram\\.com\\/(p|tv|reel)\\/([a-zA-Z0-9_-]+)(\\/)?(\\?.*)?$'))) return conn.reply(m.chat, ` Verifica que sea un link de instagram`, m)
+if (!args[0].match(new RegExp('^https?:\\/\\/(www\\.)?instagram\\.com\\/(p|tv|reel)\\/([a-zA-Z0-9_-]+)(\\/)?(\\?.*)?$'))) return conn.reply(m.chat, ` Verifica que sea un link de instagram`, m, null, rcanal)
 
 try {
 let api = await axios.get(`https://apidl.asepharyana.cloud/api/downloader/igdl?url=${args[0]}`)
