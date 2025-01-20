@@ -10,12 +10,12 @@ const handler = async (m, { conn, isROwner, args }) => {
     const clanDoc = await getDoc(clanRef);
 
     if (!clanDoc.exists()) {
-      throw `⚠️ No se encontró un clan con ese ID.`;
+      if (!text) return m.reply(`⚠️ No se encontró un clan con ese ID.`);
     }
 
     const clanData = clanDoc.data();
     if (m.sender !== clanData.miembros.lider && !isROwner) {
-      throw `⚠️ Solo el líder del clan o el propietario del bot pueden eliminar este clan.`;
+      if (!text) return m.reply(`⚠️ Solo el líder del clan o el propietario del bot pueden eliminar este clan.`);
     }
     await deleteDoc(clanRef);
     await conn.sendMessage(
