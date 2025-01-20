@@ -4,7 +4,8 @@ import { db } from "../database/clanes-db.js";
 const handler = async (m, { conn, isROwner, args }) => {
     const user = global.db.data.users[m.sender];
 
-    if (!text) return m.reply(`⚠️ Por favor, ingresa el ID del clan que deseas eliminar.`);
+    if (!args[0]) throw `⚠️ Por favor, ingresa el ID del clan que deseas eliminar.`;
+
 
     const clanRef = doc(db, "clanes", args[0]);
     const clanDoc = await getDoc(clanRef);
