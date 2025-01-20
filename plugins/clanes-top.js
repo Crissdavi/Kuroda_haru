@@ -7,7 +7,7 @@ const handler = async (m, { conn, command, text, args }) => {
     const querySnapshot = await getDocs(q);
 
     if (querySnapshot.empty) {
-      throw `⚠️ Actualmente no existen clanes registrados.`;
+      if (!text) return m.reply(`⚠️ Actualmente no existen clanes registrados.`);
     }
 
     let mensaje = "*🌟 Lista de Clanes:*\n\n";
