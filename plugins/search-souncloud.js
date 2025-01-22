@@ -41,7 +41,11 @@ await conn.reply(m.chat, "Responde con uno de los numeros de la cancion que quie
 }}
 
 handler.command = ['soundcloudsearch', 'soundsearch']
-
+handler.help = ['soundsearch']
+handler.tags = ['search']
+handler.group = true
+//handler.limit = 1
+handler.register = true 
 export default handler
 
 async function soundcloudDL(url) {
