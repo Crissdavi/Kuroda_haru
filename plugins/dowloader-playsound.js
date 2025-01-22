@@ -21,4 +21,10 @@ console.error(error)
 }}
 
 handler.command = ['soundcloudplay', 'soundplay', 'playsound']
+handler.help = ['playsound']
+handler.tags = ['dowloader']
+handler.group = true
+handler.register = true 
+export default handler
+
 export default handler
