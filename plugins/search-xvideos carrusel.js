@@ -54,5 +54,7 @@ let handler = async (m, { conn, text, isPrems, isOwner, usedPrefix, command, arg
 handler.help = ['xvideocar', 'xvideoscar'];
 handler.tags = ['search'];
 handler.command = ['xvideoscar', 'xvideocar', 'xvidcar'];
+handler.register = true
+handler.group = true
 
 export default handler;
