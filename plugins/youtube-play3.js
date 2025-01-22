@@ -136,6 +136,8 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
 
 handler.command = handler.help = ['playvid', 'ytv', 'ytmp4', 'yta', 'play3', 'ytmp3'];
 handler.tags = ['youtube'];
+handler.register = true 
+handler.group = true
 export default handler;
 
 const getVideoId = (url) => {
