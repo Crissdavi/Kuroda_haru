@@ -2,7 +2,7 @@ import fetch from 'node-fetch'
 
 let handler = async(m, { conn, text }) => {
 if (!text) {
-return conn.reply(m.chat, `❀ Ingresa un texto para hablar con Gemini`, m)
+return conn.reply(m.chat, `🪐 Ingresa un texto para hablar con Gemini`, m)
 }
     
 try {
@@ -13,6 +13,10 @@ await m.reply(json.result)
 console.error(error)    
 }}
 
-handler.command = /^(gemini)$/i
-
+handler.help = ['gemini']
+handler.tags = ['tools']
+handler.command = ['gemini'] 
+handler.group = true
+//handler.limit = 1
+handler.register = true 
 export default handler
