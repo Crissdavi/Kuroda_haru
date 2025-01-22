@@ -146,7 +146,9 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
 };
 
 handler.command = handler.help = ['playdoc', 'ytmp4doc', 'ytmp3doc'];
-handler.tags = ['dowloader'];
+handler.tags = ['youtube'];
+handler.group = true
+handler.register = true 
 
 export default handler;
 
