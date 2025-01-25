@@ -1,4 +1,5 @@
 import yts from 'yt-search';
+import * as scr from 'ruhend-scraper';
 const formatAudio = ['mp3', 'm4a', 'webm', 'acc', 'flac', 'opus', 'ogg', 'wav'];
 const formatVideo = ['360', '480', '720', '1080', '1440', '4k'];
 const ddownr = {
@@ -84,7 +85,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
 # 🪐 Su ${isVideo ? 'Video' : 'Audio'} se está enviando, espere un momento...\`\`\``;
 
   try {
-    if (command === 'play3' || command === 'play3' || command === 'playvid') {
+    if (command === 'play' || command === 'play2' || command === 'playvid') {
   await conn.sendMessage(m.chat, {
       image: { url: videoInfo.thumbnail },
       caption: body,
@@ -106,7 +107,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
       viewOnce: true,
       headerType: 4,
     }, { quoted: fkontak });
-    m.react('🪐');
+    m.react('🌱');
     
     } else if (command === 'yta' || command === 'ytmp3') {
     m.react(rwait)
@@ -119,8 +120,10 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
     m.react(done)
     } else if (command === 'ytv' || command === 'ytmp4') {
     m.react(rwait)
+    let data = await (await fetch(`https://api.davidcyriltech.my.id/download/ytmp4?url=${videoInfo.url}`)).json()
+    
       await conn.sendMessage(m.chat, {
-      video: { url: `https://kepolu-ytdl.hf.space/yt/dl?url=${videoInfo.url}&type=video` },
+      video: {url: data.result.download_url },
       mimetype: "video/mp4",
       caption: `Título: ${videoInfo.title}\nURL: ${videoInfo.url}`,
     }, { quoted: m });
@@ -129,15 +132,13 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
       throw "Comando no reconocido.";
     }
 
-  } catch (error) {
+ } catch (error) {
     throw "Ocurrió un error al procesar tu solicitud.";
   }
 };
 
-handler.command = handler.help = ['playvid', 'ytv', 'ytmp4', 'yta', 'play3', 'ytmp3'];
-handler.tags = ['youtube'];
-handler.register = true 
-handler.group = true
+handler.command = handler.help = ['play', 'playvid', 'ytv', 'ytmp4', 'yta', 'play2', 'ytmp3'];
+handler.tags = ['dl'];
 export default handler;
 
 const getVideoId = (url) => {
