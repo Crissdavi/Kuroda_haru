@@ -17,5 +17,5 @@ delete this.tekateki[id]
 else m.reply('Respuesta incorrecta!')}
 return !0
 }
-handler.exp = 0
+handler.exp = 10000
 export default handler
