@@ -1,13 +1,15 @@
 import fetch from 'node-fetch'
 import { format } from 'util'
-let handler = async (m, { text }) => {
-    if (!/^https?:\/\//.test(text)) throw 'Ejemplo:\nhttps://pornhub.com'
+let handler = async (m, { text, conn }) => {
+    if (!/^https?:\/\//.test(text)) {
+     m.reply(`✳️Ingresa una URL : http:// o https://`)
+    }
     let _url = new URL(text)
     let url = global.API(_url.origin, _url.pathname, Object.fromEntries(_url.searchParams.entries()), 'APIKEY')
     let res = await fetch(url)
     if (res.headers.get('content-length') > 100 * 1024 * 1024 * 1024) {
         // delete res
-        return m.reply(`Content-Length: ${res.headers.get('content-length')}`)
+        throw `Content-Length: ${res.headers.get('content-length')}`
     }
     if (!/text|json/.test(res.headers.get('content-type'))) return conn.sendFile(m.chat, url, 'file', text, m)
     let txt = await res.buffer()
@@ -19,8 +21,8 @@ let handler = async (m, { text }) => {
         m.reply(txt.slice(0, 65536) + '')
     }
 }
-handler.help = ['fetch'].map(v => v + ' *<url>*')
-handler.tags = ['owner']
+handler.help = ['get']
+handler.tags = ['tools']
 handler.command = /^(fetch|get)$/i
-handler.rowner = true 
+
 export default handler
