@@ -1,3 +1,4 @@
+//codigo por papi DEPOOL
 let handler = async (m, { conn, text }) => {
     if (!text) throw "❌ Ingresa una URL válida.";
 
@@ -6,20 +7,18 @@ let handler = async (m, { conn, text }) => {
         let apiResponse = await fetch(`https://api.lyrax.net/api/dl/terabox?url=${text}&apikey=Tesina`);
         let api = await apiResponse.json();
 
-        // Validamos si la respuesta del API contiene los datos esperados
-        if (!api.data || !api.data.media || !api.data.media['360p']) {
-            throw "⚠️ No se pudo obtener el enlace del video. Verifica la URL.";
+        // Verificamos si la estructura del API es válida
+        if (!api || !api.data || !api.data.media || !api.data.media['360p']) {
+            throw "⚠️ No se pudo obtener los datos del video. Verifica la URL o intenta nuevamente.";
         }
 
-        // Extraemos los datos del API
-        let { title } = api.data;
-        let link = api.data.media['360p'];
+        // Extraemos los datos necesarios
+        let title = api.data.title || "video"; // Nombre del archivo o valor por defecto
+        let link = api.data.media['360p']; // Enlace al video en 360p
 
-        // Aseguramos que las variables estén definidas
-        if (!title) title = "video";
         if (!link) throw "⚠️ El enlace del video no está disponible.";
 
-        // Enviamos el archivo como documento
+        // Enviamos el video como documento
         await conn.sendMessage(m.chat, { 
             document: { url: link }, 
             mimetype: 'video/mp4', 
@@ -27,7 +26,7 @@ let handler = async (m, { conn, text }) => {
         }, { quoted: m });
 
     } catch (err) {
-        // Capturamos cualquier error y mostramos un mensaje claro
+        // Manejamos errores y mostramos un mensaje claro
         throw `❌ Error: ${err.message}`;
     }
 };
