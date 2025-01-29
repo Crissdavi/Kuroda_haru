@@ -22,7 +22,7 @@ await m.react('✅')
 } catch {
 await m.react('✖️')
 }}
-handler.help = ['tiktok *<url tt>*']
+handler.help = ['tiktok *<url tt>*, 'tt', 'ttdl']
 handler.tags = ['downloader']
 handler.command = /^(tiktok|ttdl|tiktokdl|tiktoknowm)$/i
 handler.register = true
