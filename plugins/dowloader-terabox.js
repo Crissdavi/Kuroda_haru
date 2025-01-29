@@ -1,24 +1,25 @@
-//codigo por papi DEPOOL
 let handler = async (m, { conn, text }) => {
     if (!text) throw "❌ Ingresa una URL válida.";
 
     try {
-        // Realizamos la solicitud al API
-        let apiResponse = await fetch(`https://api.lyrax.net/api/dl/terabox?url=${text}&apikey=Tesina`);
-        let api = await apiResponse.json();
+        // Hacemos la solicitud a la API
+        const apiResponse = await fetch(`https://api.lyrax.net/api/dl/terabox?url=${text}&apikey=Tesina`);
+        if (!apiResponse.ok) throw "❌ Error al conectar con la API. Verifica tu clave o URL.";
+        
+        const api = await apiResponse.json();
 
-        // Verificamos si la estructura del API es válida
-        if (!api || !api.data || !api.data.media || !api.data.media['360p']) {
-            throw "⚠️ No se pudo obtener los datos del video. Verifica la URL o intenta nuevamente.";
+        // Validamos que la respuesta de la API sea correcta
+        if (!api || !api.data || !api.data.media) {
+            throw "⚠️ No se pudo obtener los datos del video. Verifica la URL.";
         }
 
-        // Extraemos los datos necesarios
-        let title = api.data.title || "video"; // Nombre del archivo o valor por defecto
-        let link = api.data.media['360p']; // Enlace al video en 360p
+        // Extraemos los datos necesarios con valores por defecto si no existen
+        const title = api.data.title || "video"; // Nombre del archivo o valor predeterminado
+        const link = api.data.media['360p']; // Enlace del video en 360p
 
-        if (!link) throw "⚠️ El enlace del video no está disponible.";
+        if (!link) throw "⚠️ No se pudo obtener el enlace del video. Intenta con otra URL.";
 
-        // Enviamos el video como documento
+        // Enviamos el video como documento MP4
         await conn.sendMessage(m.chat, { 
             document: { url: link }, 
             mimetype: 'video/mp4', 
@@ -26,8 +27,8 @@ let handler = async (m, { conn, text }) => {
         }, { quoted: m });
 
     } catch (err) {
-        // Manejamos errores y mostramos un mensaje claro
-        throw `❌ Error: ${err.message}`;
+        // Capturamos y mostramos errores claros
+        throw `❌ Error: ${err.message || "Ocurrió un error desconocido."}`;
     }
 };
 
