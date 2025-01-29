@@ -1,80 +1,24 @@
-import axios from 'axios';
-let handler = async (m, { conn, text, usedPrefix, command }) => {
-  if (!text) return m.reply(`Ejemplo:\n${usedPrefix + command} https://terabox.com/s/1kReYr_2pyxLZ2c2kEAHF3A`);
-await m.react('🕓')
-  try {
-    const result = await terabox(text);
-    if (!result.length) return m.reply('ingresa un url válido.');
+let handler = async (m, { conn, text }) => {
+    if (!text) throw "Ingresa una URL";
 
-    for (let i = 0; i < result.length; i++) {
-      const { fileName, type, thumb, url } = result[i];
-      const caption = `📄 *Nombre File:* ${fileName}\n📂 *Formato:* ${type}`;
+    try {
+        let apiResponse = await fetch(`https://api.lyrax.net/api/dl/terabox?url=${text}&apikey=Tesina`);
+        let api = await apiResponse.json();
 
-      await m.react('✅')      
-      await conn.sendFile(m.chat, url, fileName, caption, m, false, {
-        thumbnail: thumb ? await getBuffer(thumb) : null
-      });
-    }
-  } catch (err) {
-    console.error(err);
-    m.reply('error al descargar el archivo.');
-  }
-};
-handler.help = ["terabox *<url>*"];
-handler.tags = ["dowloader"];
-handler.command = ["terabox"];
-
-export default handler;
-
-async function terabox(url) {
-  return new Promise(async (resolve, reject) => {
-    await axios
-      .post('https://teradl-api.dapuntaratya.com/generate_file', {
-        mode: 1,
-        url: url
-      })
-      .then(async (a) => {
-        const array = [];
-        for (let x of a.data.list) {
-          let dl = await axios
-            .post('https://teradl-api.dapuntaratya.com/generate_link', {
-              js_token: a.data.js_token,
-              cookie: a.data.cookie,
-              sign: a.data.sign,
-              timestamp: a.data.timestamp,
-              shareid: a.data.shareid,
-              uk: a.data.uk,
-              fs_id: x.fs_id
-            })
-            .then((i) => i.data)
-            .catch((e) => e.response);
-
-          if (!dl.download_link) continue;
-
-          array.push({
-            fileName: x.name,
-            type: x.type,
-            thumb: x.image,
-            url: dl.download_link.url_1
-          });
+        if (!api.data || !api.data.media || !api.data.media['360p']) {
+            throw "No se pudo obtener el enlace del video.";
         }
-        resolve(array);
-      })
-      .catch((e) => reject(e.response.data));
-  });
-}
 
+        let { title, image } = api.data;
+        let link = api.data.media['360p'];
+        let filename = title || "video";
 
-async function getBuffer(url) {
-  try {
-    const res = await axios({
-      method: 'get',
-      url,
-      responseType: 'arraybuffer'
-    });
-    return res.data;
-  } catch (err) {
-    console.error(err);
-    return null;
-  }
-}
+        await conn.sendFile(m.chat, link, `${filename}.mp4`, title, m);
+    } catch (err) {
+        throw `Error: ${err.message}`;
+    }
+};
+
+handler.tag = ['terabox']
+handler.command = ['terabox'];
+export default handler;
