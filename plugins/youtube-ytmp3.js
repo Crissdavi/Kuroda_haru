@@ -2,7 +2,7 @@
 import fetch from 'node-fetch'
 
 let handler = async (m, { conn, text }) => {
-if (!text) throw '• Ingresa un enlace de YouTube.'
+if (!text) return m.reply(`• Ingresa un enlace de YouTube.`)
 try {
 let res = await fetch(`https://api.diioffc.web.id/api/download/ytmp3?url=${encodeURIComponent(text)}`)
 let json = await res.json()
