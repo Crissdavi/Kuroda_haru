@@ -14,4 +14,3 @@ console.error(error)
 HS.command = ['ytmp4']
 
 export default HS
-//Dejen creditos 👀 [ By Jtxs ] https://whatsapp.com/channel/0029Vanjyqb2f3ERifCpGT0W
