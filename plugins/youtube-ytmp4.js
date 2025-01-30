@@ -1,23 +1,17 @@
 import fetch from 'node-fetch'
 
-let handler = async (m, { conn, text, usedPrefix, command }) => {
-if (!text) return conn.reply(m.chat, `🪐 Ingresa un  link de youtube`, m)
-
+let HS = async (m, { conn, command, text, usedPrefix }) => {
+if (!text) return conn.reply(m.chat, '🪐 ingresa un link de youtube', m, null, rcanal)
 try {
-await m.react('🕒');
-let api = await fetch(`https://apidl.asepharyana.cloud/api/downloader/ytmp4?url=${text}&quality=360`)
+let api = await fetch(`https://api.davidcyriltech.my.id/download/ytmp4?url=${text}`)
 let json = await api.json()
-let { title, author, authorUrl, lengthSeconds, views, uploadDate, thumbnail, description, duration, downloadUrl, quality } = json
-let HS = `*Titulo :* ${title}
-*Duracion :* ${duration}
-*Calidad :* ${quality}p`
-await conn.sendMessage(m.chat, { video: { url: downloadUrl }, caption: HS }, { quoted: m })
-await m.react('✅');
+let { title, quality, thumbnail, download_url } = json.result
+await conn.sendMessage(m.chat, { video: { url: download_url }, caption: title }, { quoted: m })
 } catch (error) {
 console.error(error)
-await m.react('✖️');
 }}
 
-handler.command = ['ytmp4']
+HS.command = ['ytmp4']
 
-export default handler
+export default HS
+//Dejen creditos 👀 [ By Jtxs ] https://whatsapp.com/channel/0029Vanjyqb2f3ERifCpGT0W
