@@ -64,7 +64,7 @@ const ddownr = {
 };
     
 const handler = async (m, { conn, text, usedPrefix, command }) => {
-  if (!text) throw `\`\`\`[ 🪐 ] Por favor ingresa un texto. Ejemplo:\n${usedPrefix + command} Did i tell u that i miss you\`\`\``;
+  if (!text) throw `\`\`\`[ 🌴 ] Por favor ingresa un texto. Ejemplo:\n${usedPrefix + command} Did i tell u that i miss you\`\`\``;
 
   const isVideo = /vid|2|mp4|v$/.test(command);
   const search = await yts(text);
@@ -82,7 +82,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
     ≡ Uploaded : » ${videoInfo.ago}
     ≡ URL : » ${videoInfo.url}
 
-# 🪐 Su ${isVideo ? 'Video' : 'Audio'} se está enviando, espere un momento...\`\`\``;
+# 🌴 Su ${isVideo ? 'Video' : 'Audio'} se está enviando, espere un momento...\`\`\``;
 
   try {
     if (command === 'play' || command === 'play2' || command === 'playvid') {
@@ -120,10 +120,9 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
     m.react(done)
     } else if (command === 'ytv' || command === 'ytmp4') {
     m.react(rwait)
-    let data = await (await fetch(`https://api.davidcyriltech.my.id/download/ytmp4?url=${videoInfo.url}`)).json()
     
       await conn.sendMessage(m.chat, {
-      video: {url: data.result.download_url },
+      video: {url: `https://cdn.y2ts.us.kg/yt/dl?url=${videoInfo.url}&type=video` },
       mimetype: "video/mp4",
       caption: `Título: ${videoInfo.title}\nURL: ${videoInfo.url}`,
     }, { quoted: m });
@@ -137,7 +136,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
   }
 };
 
-handler.command = handler.help = ['play2', 'playvid', 'ytv', 'ytmp4', 'yta', 'ytmp3'];
+handler.command = handler.help = ['playvid', 'ytv', 'ytmp4', 'yta', 'play2', 'ytmp3'];
 handler.tags = ['dl'];
 export default handler;
 
