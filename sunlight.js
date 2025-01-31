@@ -404,7 +404,6 @@ const test = await Promise.all([
 spawn('ffmpeg'),
 spawn('ffprobe'),
 spawn('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-filter_complex', 'color', '-frames:v', '1', '-f', 'webp', '-']),
-spawn('convert'),
 spawn('magick'),
 spawn('gm'),
 spawn('find', ['--version']),
