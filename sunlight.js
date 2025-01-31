@@ -418,8 +418,8 @@ new Promise((resolve) => {
 p.on('error', (_) => resolve(false));
 })]);
 }));
-const [ffmpeg, ffprobe, ffmpegWebp, convert, magick, gm, find] = test;
-const s = global.support = {ffmpeg, ffprobe, ffmpegWebp, convert, magick, gm, find};
+const [ffmpeg, ffprobe, ffmpegWebp, magick, gm, find] = test;
+const s = global.support = {ffmpeg, ffprobe, ffmpegWebp, magick, gm, find};
 Object.freeze(global.support);
 }
 function clearTmp() {
