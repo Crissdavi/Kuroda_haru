@@ -82,4 +82,4 @@ async function start(files) {
   }
 }
 
-start(['sunlight.js'])
+start(['main.js'])
