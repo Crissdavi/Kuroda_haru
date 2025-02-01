@@ -22,6 +22,19 @@ global.owner = [
 
 global.mods = []
 global.prems = []
+global.APIs = { // API Prefix
+  // name: 'https://website' 
+  nrtm: 'https://fg-nrtm.ddns.net',
+  fgmods: 'https://api.fgmods.xyz',
+  fzteis: 'https://api--fzteis.repl.co',
+  fz: 'https://fz-api.fzteis.repl.co'
+}
+global.fgapis = ['ELhI4IG6', 'Ys3CfFTU', '6IbiVq6V', 'dEBWvxCY']
+global.fgkey = fgapis[Math.floor(fgapis.length * Math.random())];
+global.APIKeys = { // APIKey Here
+  // 'https://website': 'apikey'
+  'https://api.fgmods.xyz': `${fgkey}` //--- 100 de límite diario --- Regístrese en https://api.fgmods.xyz/
+}
    
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
 
