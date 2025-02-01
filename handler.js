@@ -1,4 +1,4 @@
-import { smsg } from './lib/simple.js'
+ import { smsg } from './lib/simple.js'
 import { format } from 'util' 
 import { fileURLToPath } from 'url'
 import path, { join } from 'path'
@@ -6,13 +6,20 @@ import { unwatchFile, watchFile } from 'fs'
 import chalk from 'chalk'
 import fetch from 'node-fetch'
 
+/**
+ * @type {import('@whiskeysockets/baileys')}
+ */
 const { proto } = (await import('@whiskeysockets/baileys')).default
 const isNumber = x => typeof x === 'number' && !isNaN(x)
 const delay = ms => isNumber(ms) && new Promise(resolve => setTimeout(function () {
     clearTimeout(this)
     resolve()
 }, ms))
- 
+
+/**
+ * Handle messages upsert
+ * @param {import('@whiskeysockets/baileys').BaileysEventMap<unknown>['messages.upsert']} groupsUpdate 
+ */
 export async function handler(chatUpdate) {
     this.msgqueque = this.msgqueque || []
     if (!chatUpdate)
@@ -23,29 +30,39 @@ export async function handler(chatUpdate) {
         return
     if (global.db.data == null)
         await global.loadDatabase()
+    if (global.chatgpt.data === null) await global.loadChatgptDB();
     try {
         m = smsg(this, m) || m
         if (!m)
             return
+          global.mconn = m 
         m.exp = 0
-        m.limit = false
+        m.coin = 0
+        m.diamond = false
         try {
+            // TODO: use loop to insert data instead of this
             let user = global.db.data.users[m.sender]
+            const chatgptUser = global.chatgpt.data.users[m.sender];
+            if (typeof chatgptUser !== 'object') {
+        global.chatgpt.data.users[m.sender] = [];
+      }
             if (typeof user !== 'object')
                 global.db.data.users[m.sender] = {}
+
             if (user) {
                 if (!isNumber(user.exp))
                     user.exp = 0
-                if (!isNumber(user.zenis))
-                    user.zenis = 0
-                if (!isNumber(user.limit))
-                    user.limit = 10
-                if (!('premium' in user)) 
-                    user.premium = false
-                if (!user.premium) 
-                    user.premiumTime = 0
+                if (!isNumber(user.coin))
+                    user.coin = 0
+                if (!isNumber(user.diamond))
+                    user.diamond = 20
+                if (!isNumber(user.bank))
+                    user.bank = 0
+                if (!isNumber(user.lastclaim))
+                    user.lastclaim = 0
                 if (!('registered' in user))
                     user.registered = false
+                    //-- user registered 
                 if (!user.registered) {
                     if (!('name' in user))
                         user.name = m.name
@@ -54,23 +71,38 @@ export async function handler(chatUpdate) {
                     if (!isNumber(user.regTime))
                         user.regTime = -1
                 }
+                //--user number
                 if (!isNumber(user.afk))
                     user.afk = -1
                 if (!('afkReason' in user))
                     user.afkReason = ''
                 if (!('banned' in user))
                     user.banned = false
-                if (!('useDocument' in user))
-                    user.useDocument = false
+                if (!isNumber(user.warn))
+                    user.warn = 0
                 if (!isNumber(user.level))
                     user.level = 0
-                if (!isNumber(user.bank))
-                    user.bank = 0
+                if (!('role' in user))
+                    user.role = 'Novato'
+                if (!('autolevelup' in user))
+                    user.autolevelup = false
+                if (!('chatbot' in user))
+                    user.chatbot = false
+                if (!('genero' in user))
+                    user.genero = 'Indeciso'
+                if (!('language' in user))
+                    user.language = 'es'
+                if (!('prem' in user))
+                    user.prem = false
+                if (!user.premiumTime) 
+                    user.premiumTime = 0
             } else
                 global.db.data.users[m.sender] = {
                     exp: 0,
-                    zenis: 100,
-                    limit: 10,
+                    coin: 0,
+                    diamond: 20,
+                    bank: 0,
+                    lastclaim: 0,
                     registered: false,
                     name: m.name,
                     age: -1,
@@ -78,9 +110,15 @@ export async function handler(chatUpdate) {
                     afk: -1,
                     afkReason: '',
                     banned: false,
-                    useDocument: true,
-                    bank: 0,
+                    warn: 0,
                     level: 0,
+                    role: 'Novato',
+                    autolevelup: false,
+                    chatbot: false,
+                    genero: 'Indeciso',
+                    language: 'es',
+                    prem: false,
+                    premiumTime: 0,
                 }
             let chat = global.db.data.chats[m.chat]
             if (typeof chat !== 'object')
@@ -88,53 +126,83 @@ export async function handler(chatUpdate) {
             if (chat) {
                 if (!('isBanned' in chat))
                     chat.isBanned = false
-                if (!('bienvenida' in chat))
-                    chat.bienvenida = true 
-                if (!('Despedida'in chat))
-                   chat.despedida = false
-                 if(!('jadibot' in chat)) 
-                   chat.jadibot = false
+                if (!('welcome' in chat))
+                    chat.welcome = false
+                if (!('detect' in chat))
+                    chat.detect = false
+                if (!('sWelcome' in chat))
+                    chat.sWelcome = ''
+                if (!('sBye' in chat))
+                    chat.sBye = ''
+                if (!('sPromote' in chat))
+                    chat.sPromote = ''
+                if (!('sDemote' in chat))
+                    chat.sDemote = ''
+                if (!('delete' in chat))
+                    chat.delete = true
                 if (!('antiLink' in chat))
                     chat.antiLink = false
-                if (!('onlyLatinos' in chat))
-                    chat.onlyLatinos = false
-                 if (!('nsfw' in chat))
+                if (!('viewonce' in chat))
+                    chat.viewonce = false
+                if (!('captcha' in chat))
+                    chat.captcha = false
+                if (!('nsfw' in chat))
                     chat.nsfw = false
-                 if (!('modoadmin' in chat))
-                     chat.modoadmin = true
+                if (!('modoadmin' in chat)) chat.modoadmin = false
                 if (!isNumber(chat.expired))
                     chat.expired = 0
+                 if (!('rules' in chat))
+                     chat.rules = ''
             } else
                 global.db.data.chats[m.chat] = {
                     isBanned: false,
-                    bienvenida: true,
-                    despedida: false,
-                    jadibot: false, 
+                    welcome: false,
+                    detect: false,
+                    sWelcome: '',
+                    sBye: '',
+                    sPromote: '',
+                    sDemote: '',
+                    delete: true,
                     antiLink: false,
-                    onlyLatinos: false,
+                    viewonce: false,
+                    useDocument: true,
+                    captcha: false,
                     nsfw: false, 
-                    modoadmin: true,
-                    expired: 0, 
+                    modoadmin: false,
+                    expired: 0,
+                    rules: '',
                 }
             var settings = global.db.data.settings[this.user.jid]
             if (typeof settings !== 'object') global.db.data.settings[this.user.jid] = {}
             if (settings) {
                 if (!('self' in settings)) settings.self = false
                 if (!('autoread' in settings)) settings.autoread = false
+                if (!('restrict' in settings)) settings.restrict = false
+                if (!('status' in settings)) settings.status = 0
+                if (!('solopv' in settings)) settings.solopv = false // el bot responde solo por dm
+                if (!('sologp' in settings)) settings.sologp = false
+                if (!('modoia' in settings)) settings.modoia = false// el bot responde usando la ia
             } else global.db.data.settings[this.user.jid] = {
                 self: false,
                 autoread: false,
-                status: 0
+                restrict: false,
+                solopv: false, 
+                sologp: false,
+                status: 0,
+                modoia: false
             }
         } catch (e) {
             console.error(e)
         }
         if (opts['nyimak'])  return
         if (!m.fromMe && opts['self'])  return
+      //  if (settings.solopv && m.chat.endsWith('g.us')) return  
+        //if (settings.sologp && !m.chat.endsWith('g.us')) return
+        if (settings.sologp && !m.chat.endsWith('g.us') && !/jadibot|bebot|getcode|serbot|bots|stop|support|donate|off|on|grupos|s|code|newcode|join/gim.test(m.text)) return 
         if (opts['swonly'] && m.chat !== 'status@broadcast')  return
         if (typeof m.text !== 'string')
             m.text = ''
-        
+
 
         let _user = global.db.data && global.db.data.users && global.db.data.users[m.sender]
 
@@ -158,14 +226,15 @@ export async function handler(chatUpdate) {
         m.exp += Math.ceil(Math.random() * 10)
 
         let usedPrefix
-        
+        //let _user = global.db.data && global.db.data.users && global.db.data.users[m.sender]
+
         const groupMetadata = (m.isGroup ? ((conn.chats[m.chat] || {}).metadata || await this.groupMetadata(m.chat).catch(_ => null)) : {}) || {}
         const participants = (m.isGroup ? groupMetadata.participants : []) || []
-        const user = (m.isGroup ? participants.find(u => conn.decodeJid(u.id) === m.sender) : {}) || {}
-        const bot = (m.isGroup ? participants.find(u => conn.decodeJid(u.id) == this.user.jid) : {}) || {}
+        const user = (m.isGroup ? participants.find(u => conn.decodeJid(u.id) === m.sender) : {}) || {} // User Data
+        const bot = (m.isGroup ? participants.find(u => conn.decodeJid(u.id) == this.user.jid) : {}) || {} // Your Data
         const isRAdmin = user?.admin == 'superadmin' || false
-        const isAdmin = isRAdmin || user?.admin == 'admin' || false
-        const isBotAdmin = bot?.admin || false
+        const isAdmin = isRAdmin || user?.admin == 'admin' || false // Is User Admin?
+        const isBotAdmin = bot?.admin || false // Are you Admin?
 
         const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './plugins')
         for (let name in global.plugins) {
@@ -183,25 +252,32 @@ export async function handler(chatUpdate) {
                         __filename
                     })
                 } catch (e) {
+                    // if (typeof e === 'string') continue
                     console.error(e)
+                   /*for (let [jid] of global.owner.filter(([number, _, isDeveloper]) => isDeveloper && number)) {
+                        let data = (await conn.onWhatsApp(jid))[0] || {}
+                        if (data.exists)
+                            m.reply(`*Plugin:* ${name}\n*Sender:* ${m.sender}\n*Chat:* ${m.chat}\n*Command:* ${m.text}\n\n${format(e)}.trim(), data.jid)
+                    }*/
                 }
             }
             if (!opts['restrict'])
                 if (plugin.tags && plugin.tags.includes('admin')) {
+                    // global.dfail('restrict', m, this)
                     continue
                 }
             const str2Regex = str => str.replace(/[|\\{}()[\]^$+*?.]/g, '\\$&')
             let _prefix = plugin.customPrefix ? plugin.customPrefix : conn.prefix ? conn.prefix : global.prefix
-            let match = (_prefix instanceof RegExp ? 
+            let match = (_prefix instanceof RegExp ? // RegExp Mode?
                 [[_prefix.exec(m.text), _prefix]] :
-                Array.isArray(_prefix) ?
+                Array.isArray(_prefix) ? // Array?
                     _prefix.map(p => {
-                        let re = p instanceof RegExp ?
+                        let re = p instanceof RegExp ? // RegExp in Array?
                             p :
                             new RegExp(str2Regex(p))
                         return [re.exec(m.text), re]
                     }) :
-                    typeof _prefix === 'string' ?
+                    typeof _prefix === 'string' ? // String?
                         [[new RegExp(str2Regex(_prefix)).exec(m.text), new RegExp(str2Regex(_prefix))]] :
                         [[[], new RegExp]]
             ).find(p => p[1])
@@ -234,15 +310,15 @@ export async function handler(chatUpdate) {
                 let _args = noPrefix.trim().split` `.slice(1)
                 let text = _args.join` `
                 command = (command || '').toLowerCase()
-                let fail = plugin.fail || global.dfail
-                let isAccept = plugin.command instanceof RegExp ? 
+                let fail = plugin.fail || global.dfail // When failed
+                let isAccept = plugin.command instanceof RegExp ? // RegExp Mode?
                     plugin.command.test(command) :
-                    Array.isArray(plugin.command) ?
-                        plugin.command.some(cmd => cmd instanceof RegExp ? 
+                    Array.isArray(plugin.command) ? // Array?
+                        plugin.command.some(cmd => cmd instanceof RegExp ? // RegExp in Array?
                             cmd.test(command) :
                             cmd === command
                         ) :
-                        typeof plugin.command === 'string' ? 
+                        typeof plugin.command === 'string' ? // String?
                             plugin.command === command :
                             false
 
@@ -252,61 +328,62 @@ export async function handler(chatUpdate) {
                 if (m.chat in global.db.data.chats || m.sender in global.db.data.users) {
                     let chat = global.db.data.chats[m.chat]
                     let user = global.db.data.users[m.sender]
-                    let setting = global.db.data.settings[this.user.jid]
-                    if (name != 'group-unbanchat.js' && chat?.isBanned)
-                        return 
+                    if (name != 'owner-unbanchat.js' && chat?.isBanned)
+                        return // Except this
                     if (name != 'owner-unbanuser.js' && user?.banned)
                         return
-                    if (name != 'owner-unbanbot.js' && setting?.banned)
-                        return
                 }
-                if (plugin.rowner && plugin.owner && !(isROwner || isOwner)) { 
+                if (plugin.rowner && plugin.owner && !(isROwner || isOwner)) { // Both Owner
                     fail('owner', m, this)
                     continue
                 }
-                if (plugin.rowner && !isROwner) { 
+                if (plugin.rowner && !isROwner) { // Real Owner
                     fail('rowner', m, this)
                     continue
                 }
-                if (plugin.owner && !isOwner) { 
+                if (plugin.owner && !isOwner) { // Number Owner
                     fail('owner', m, this)
                     continue
                 }
-                if (plugin.mods && !isMods) { 
+                if (plugin.mods && !isMods) { // Moderator
                     fail('mods', m, this)
                     continue
                 }
-                if (plugin.premium && !isPrems) { 
+                if (plugin.premium && !isPrems) { // Usuarios Premium
                     fail('premium', m, this)
                     continue
                 }
-                if (plugin.group && !m.isGroup) { 
+                if (plugin.group && !m.isGroup) { // Group Only
                     fail('group', m, this)
                     continue
-                } else if (plugin.botAdmin && !isBotAdmin) { 
+                } else if (plugin.botAdmin && !isBotAdmin) { // You Admin
                     fail('botAdmin', m, this)
                     continue
-                } else if (plugin.admin && !isAdmin) { 
+                } else if (plugin.admin && !isAdmin) { // User Admin
                     fail('admin', m, this)
                     continue
                 }
-                if (plugin.private && m.isGroup) {
+                if (plugin.private && m.isGroup) { // Private Chat Only
                     fail('private', m, this)
                     continue
                 }
-                if (plugin.register == true && _user.registered == false) { 
+                if (plugin.register == true && _user.registered == false) { // Butuh daftar?
                     fail('unreg', m, this)
                     continue
                 }
                 m.isCommand = true
-                let xp = 'exp' in plugin ? parseInt(plugin.exp) : 17 
+                let xp = 'exp' in plugin ? parseInt(plugin.exp) : 17 // Ganancia de XP por comando
                 if (xp > 200)
-                    m.reply('chirrido -_-')
+                    m.reply('chirrido -_-') // Hehehe
                 else
                     m.exp += xp
-                if (!isPrems && plugin.limit && global.db.data.users[m.sender].limit < plugin.limit * 1) {
-                    conn.reply(m.chat, `Se agotaron tus *💴 Zenis*`, m, rcanal)
-                    continue
+                if (!isPrems && plugin.diamond && global.db.data.users[m.sender].diamond < plugin.diamond * 1) {
+                    this.reply(m.chat, `✳️ Tus diamantes se agotaron\nuse el siguiente comando para comprar más diamantes\n\n*${usedPrefix}buy*`, m)
+                    continue // Limit habis
+                }
+                if (plugin.level > _user.level) {
+                    this.reply(m.chat, `✳️ nivel requerido ${plugin.level} para usar este comando. \nTu nivel ${_user.level}`, m)
+                    continue // If the level has not been reached
                 }
                 let extra = {
                     match,
@@ -334,8 +411,9 @@ export async function handler(chatUpdate) {
                 try {
                     await plugin.call(this, m, extra)
                     if (!isPrems)
-                        m.limit = m.limit || plugin.limit || false
+                        m.diamond = m.diamond || plugin.diamond || false
                 } catch (e) {
+                    // Error occured
                     m.error = e
                     console.error(e)
                     if (e) {
@@ -345,6 +423,7 @@ export async function handler(chatUpdate) {
                         m.reply(text)
                     }
                 } finally {
+                    // m.reply(util.format(_user))
                     if (typeof plugin.after === 'function') {
                         try {
                             await plugin.after.call(this, m, extra)
@@ -352,8 +431,8 @@ export async function handler(chatUpdate) {
                             console.error(e)
                         }
                     }
-                    if (m.limit)
-                        conn.reply(m.chat, `Utilizaste *${+m.limit}* 💴`, m, rcanal)
+                    if (m.diamond)
+                        m.reply(`Utilizaste *${+m.diamond}* 💎`)
                 }
                 break
             }
@@ -366,11 +445,12 @@ export async function handler(chatUpdate) {
             if (quequeIndex !== -1)
                 this.msgqueque.splice(quequeIndex, 1)
         }
+        //console.log(global.db.data.users[m.sender])
         let user, stats = global.db.data.stats
         if (m) {
             if (m.sender && (user = global.db.data.users[m.sender])) {
                 user.exp += m.exp
-                user.limit -= m.limit * 1
+                user.diamond -= m.diamond * 1
             }
 
             let stat
@@ -391,47 +471,4 @@ export async function handler(chatUpdate) {
                         total: 1,
                         success: m.error != null ? 0 : 1,
                         last: now,
-                        lastSuccess: m.error != null ? 0 : now
-                    }
-                stat.total += 1
-                stat.last = now
-                if (m.error == null) {
-                    stat.success += 1
-                    stat.lastSuccess = now
-                }
-            }
-        }
-
-        try {
-      if (!opts['noprint']) await (await import(`./lib/print.js`)).default(m, this)
-    } catch (e) {
-      console.log(m, m.quoted, e)
-    }
-    const settingsREAD = global.db.data.settings[this.user.jid] || {}
-    if (opts['autoread']) await this.readMessages([m.key])
-    if (settingsREAD.autoread) await this.readMessages([m.key])
-  }
-}
-
-global.dfail = (type, m, conn, usedPrefix) => {
-    let msg = {
-        rowner: `✯ Hola, este comando solo puede ser utilizado por el *Creador* del Bot.`,
-        owner: `✯ Hola, este comando solo puede ser utilizado por el *Creador* del Bot y *Sub Bots*.`,
-        mods: `✯ Hola, este comando solo puede ser utilizado por los *Moderadores* del Bot.`,
-        premium: `✯ Hola, este comando solo puede ser utilizado por Usuarios *Premium*.`,
-        group: `✯ Hola, este comando solo puede ser utilizado en *Grupos*.`,
-        private: `✯ Hola, este comando solo puede ser utilizado en mi Chat *Privado*.`,
-        admin: `✯ Hola, este comando solo puede ser utilizado por los *Administradores* del Grupo.`,
-        botAdmin: `✯ Hola, la bot debe ser *Administrador* para ejecutar este Comando.`,
-        unreg: `✯ Hola, para usar este comando debes estar *Registrado.*\n\nPara usar el bot debes registrarte primero\n\nUtiliza: *.reg nombre.edad*\n\n_Ejemplo: *.reg Kuroda.21*_\n\nNo pongas los * *`,
-        restrict: `✯ Hola, esta característica está *deshabilitada.*`  
-    }[type]
-    if (msg) return conn.reply(m.chat, msg, m, rcanal).then(_ => m.react('✖️'))
-}
-
-let file = global.__filename(import.meta.url, true)
-watchFile(file, async () => {
-    unwatchFile(file)
-    console.log(chalk.magenta("Se actualizo 'handler.js'"))
-    if (global.reloadHandler) console.log(await global.reloadHandler())
-})
+         
