@@ -614,15 +614,15 @@ Para desactivar esta función, escriba
 
 global.dfail = (type, m, conn) => {
     let msg = {
-        rowner: `👑 ${mssg.rownerH}`,
-        owner: `🔱 ${mssg.ownerH}`,
-        mods: `🔰 ${mssg.modsH}`,
-        premium: `💠 ${mssg.premH}`,
-        group: `⚙️ ${mssg.groupH}`,
-        private: `📮 ${mssg.privateH}`,
-        admin: `🛡️ ${mssg.adminH}`,
-        botAdmin: `💥 ${mssg.botAdmin}`,
-        unreg: `📇 ${mssg.unregH}`,
+       rowner: `👑Solo el creador del bot puede usar este comando`,
+        owner: `🔱 Solo el creador del bot puede usar este comando`,
+        mods: `🔰 Este comando solo lo pueden usar moderadores del bot`,
+        premium: `💠 Solo los usuarios premium puede usar este comando`,
+        group: `⚙️ Este comando solo funciona en grupos`,
+        private: `📮 está prohibido el uso del bot en su privado`,
+        admin: `🛡️ solo los administradores pueden usar estos comandos`,
+        botAdmin: `💥 El bot tiene que ser administrador para usar este comando`,
+        unreg: `📇 Registro eliminado`,
         restrict: '🔐 Esta característica está *deshabilitada*'
     }[type]
     //if (msg) return conn.sendButton(m.chat, msg, mssg.ig, null, [['🔖 OK', 'khajs'], ['⦙☰ MENU', '/menu'] ], m)
