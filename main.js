@@ -68,7 +68,7 @@ global.loadDatabase = async function loadDatabase() {
     stats: {},
     msgs: {},
     sticker: {},
-    settings: {},
+    config: {},
     ...(global.db.data || {})
   }
   global.db.chain = chain(global.db.data)
