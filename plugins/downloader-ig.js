@@ -1,9 +1,3 @@
-
-/* 
-- Downloader Instagram By Izumi-kzx
-- Descarga todo de Instagram como publicaciones, historias, reels, destacadas
-- https://whatsapp.com/channel/0029VaJxgcB0bIdvuOwKTM2Y
-*/
 import axios from 'axios';
 
 let handler = async (m, { conn, usedPrefix, args, command, text }) => {
@@ -27,13 +21,12 @@ let handler = async (m, { conn, usedPrefix, args, command, text }) => {
             if (!processedUrls.has(a.url)) {
                 processedUrls.add(a.url);
 
-                // Verificación de si la URL es una imagen o un video
-                if (a.url.includes('jpg') || a.url.includes('png') || a.url.includes('jpeg') || a.url.includes('webp') || a.url.includes('heic') || a.url.includes('tiff') || a.url.includes('bmp')) {
+                          if (a.url.includes('jpg') || a.url.includes('png') || a.url.includes('jpeg') || a.url.includes('webp') || a.url.includes('heic') || a.url.includes('tiff') || a.url.includes('bmp')) {
                     await conn.sendMessage(
                         m.chat,
                         { 
                             image: { url: a.url }, 
-                            caption: '*✔️🍟Downloader instagram.*' 
+                            caption: '*✔️Downloader instagram.*' 
                         },
                         { quoted: m }
                     );
@@ -42,7 +35,7 @@ let handler = async (m, { conn, usedPrefix, args, command, text }) => {
                         m.chat,
                         { 
                             video: { url: a.url }, 
-                            caption: '*✔️🍟Downloader instagram.*' 
+                            caption: '*✔️Downloader instagram.*' 
                         },
                         { quoted: m }
                     );
