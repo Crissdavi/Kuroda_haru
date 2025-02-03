@@ -471,4 +471,172 @@ export async function handler(chatUpdate) {
                         total: 1,
                         success: m.error != null ? 0 : 1,
                         last: now,
-         
+                         } else
+                    stat = stats[m.plugin] = {
+                        total: 1,
+                        success: m.error != null ? 0 : 1,
+                        last: now,
+                        lastSuccess: m.error != null ? 0 : now
+                    }
+                stat.total += 1
+                stat.last = now
+                if (m.error == null) {
+                    stat.success += 1
+                    stat.lastSuccess = now
+                }
+            }
+        }
+
+        try {
+            if (!opts['noprint']) await (await import(`./lib/print.js`)).default(m, this)
+        } catch (e) {
+            console.log(m, m.quoted, e)
+        }
+        if (opts['autoread'])
+            await this.chatRead(m.chat, m.isGroup ? m.sender : undefined, m.id || m.key.id).catch(() => { })
+    }
+}
+
+/**
+ * Handle groups participants update
+ * @param {import('@whiskeysockets/baileys').BaileysEventMap<unknown>['group-participants.update']} groupsUpdate 
+ */
+export async function participantsUpdate({ id, participants, action }) {
+    if (opts['self'])
+        return
+    // if (id in conn.chats) return // First login will spam
+    /*if (this.isInit)
+        return*/
+     if (global.db.data == null)
+        await loadDatabase()
+    let chat = global.db.data.chats[id] || {}
+    let text = ''
+    switch (action) {
+        case 'add':
+        case 'remove':
+            if (chat.welcome) {
+                let groupMetadata = await this.groupMetadata(id) || (conn.chats[id] || {}).metadata
+                for (let user of participants) {
+                    //let welimg = fs.readFileSync('./src/Welcome_logo.jpg')
+                   // let byeimg = fs.readFileSync('./src/Leave_logo.jpg')
+                    let welimg = await (await fetch('https://telegra.ph/file/e5acfc6db7e9286bf9c01.jpg')).buffer()
+                    let byeimg = await (await fetch('https://telegra.ph/file/f2c371a30f593755851db.jpg')).buffer()
+
+                   // try {
+
+                        text = (action === 'add' ? (chat.sWelcome || this.welcome || conn.welcome || 'Bienvenido, @user').replace('@group', await this.getName(id)).replace('@desc', groupMetadata.desc?.toString() || 'Desconocido') : (chat.sBye || this.bye || conn.bye || 'Adiós, @user')).replace('@user', '@' + user.split('@')[0])
+
+
+this.sendMessage(id, {
+    image: action === 'add' ? welimg : byeimg,
+    caption: text,
+    contextInfo: {
+    mentionedJid: conn.parseMention(text),
+       externalAdReply : { 
+                        showAdAttribution: true,
+                        //sourceUrl: '',
+                        mediaType: 1,
+                        description: `🍁 This bot is still in development.`,
+                        title: `🌺 Thank you for using Sylphiette, the best WhatsApp bot.`,
+                        body: `💐 Developed by I\`m Fz ~`,          
+                        previewType: 0,
+                        thumbnail: imagen,
+                        mediaUrl: insta,
+                        renderLargerThumbnail: false
+      }
+    }
+  })
+                            //this.sendFile(id, action === 'add' ? welimg : byeimg, 'pp.jpg', text, null, false, { mentions: [user] })
+
+
+                    //}
+                }
+            }
+
+            break
+        case 'promote':
+            text = (chat.sPromote || this.spromote || conn.spromote || '@user ahora es administrador')
+        case 'demote':
+            let pp = await this.profilePictureUrl(participants[0], 'image').catch(_ => 'https://i.ibb.co/1ZxrXKJ/avatar-contact.jpg') 
+            if (!text)
+                text = (chat.sDemote || this.sdemote || conn.sdemote || '@user ya no es administrador')
+            text = text.replace('@user', '@' + participants[0].split('@')[0])
+            if (chat.detect)    
+            this.sendFile(id, pp, 'pp.jpg', text, null, false, { mentions: this.parseMention(text) })
+            //this.sendMessage(id, { text, mentions: this.parseMention(text) })
+            break
+    }
+}
+
+/**
+ * Handle groups update
+ * @param {import('@whiskeysockets/baileys').BaileysEventMap<unknown>['groups.update']} groupsUpdate 
+ */
+export async function groupsUpdate(groupsUpdate) {
+    if (opts['self'])
+        return
+    for (const groupUpdate of groupsUpdate) {
+        const id = groupUpdate.id
+        if (!id) continue
+        let chats = global.db.data.chats[id], text = ''
+        if (!chats?.detect) continue
+        if (groupUpdate.desc) text = (chats.sDesc || this.sDesc || conn.sDesc || 'Descripción cambiada a \n@desc').replace('@desc', groupUpdate.desc)
+        if (groupUpdate.subject) text = (chats.sSubject || this.sSubject || conn.sSubject || 'El nombre del grupo cambió a \n@group').replace('@group', groupUpdate.subject)
+        if (groupUpdate.icon) text = (chats.sIcon || this.sIcon || conn.sIcon || 'El icono del grupo cambió a').replace('@icon', groupUpdate.icon)
+        if (groupUpdate.revoke) text = (chats.sRevoke || this.sRevoke || conn.sRevoke || 'El enlace del grupo cambia a\n@revoke').replace('@revoke', groupUpdate.revoke)
+        if (!text) continue
+        await this.sendMessage(id, { text, mentions: this.parseMention(text) })
+    }
+}
+
+export async function deleteUpdate(message) {
+    try {
+        const { fromMe, id, participant } = message
+        if (fromMe)
+            return
+        let msg = this.serializeM(this.loadMessage(id))
+        if (!msg)
+            return
+        let chat = global.db.data.chats[msg.chat] || {}
+        if (chat.delete)
+            return
+        await this.reply(msg.chat, `
+≡ Borró un mensaje  
+┌─⊷  𝘼𝙉𝙏𝙄 𝘿𝙀𝙇𝙀𝙏𝙀 
+▢ *Nombre :* @${participant.split`@`[0]} 
+└─────────────
+Para desactivar esta función, escriba 
+*/off antidelete*
+*.enable delete*
+`.trim(), msg, {
+            mentions: [participant]
+        })
+        this.copyNForward(msg.chat, msg).catch(e => console.log(e, msg))
+    } catch (e) {
+        console.error(e)
+    }
+}
+
+global.dfail = (type, m, conn) => {
+    let msg = {
+        rowner: `👑Solo el creador del bot puede usar este comando`,
+        owner: `🔱 Solo el creador del bot puede usar este comando`,
+        mods: `🔰 Este comando solo lo pueden usar moderadores del bot`,
+        premium: `💠 Solo los usuarios premium puede usar este comando`,
+        group: `⚙️ Este comando solo funciona en grupos`,
+        private: `📮 está prohibido el uso del bot en su privado`,
+        admin: `🛡️ solo los administradores pueden usar estos comandos`,
+        botAdmin: `💥 El bot tiene que ser administrador para usar este comando`,
+        unreg: `📇 Registro eliminado`,
+        restrict: '🔐 Esta característica está *deshabilitada*'
+    }[type]
+    //if (msg) return conn.sendButton(m.chat, msg, mssg.ig, null, [['🔖 OK', 'khajs'], ['⦙☰ MENU', '/menu'] ], m)
+    if (msg) return m.reply(msg)
+}
+
+let file = global.__filename(import.meta.url, true)
+watchFile(file, async () => {
+    unwatchFile(file)
+    console.log(chalk.magenta("✅  Se actualizo 'handler.js'"))
+    if (global.reloadHandler) console.log(await global.reloadHandler())
+}) 
