@@ -14,7 +14,7 @@ const i = ``
     if (/webp|image|video/g.test(mime)) {
       if (/video/g.test(mime)) if ((q.msg || q).seconds > 11) return m.reply('Máximo 10 segundos')
       let img = await q.download?.()
-      if (!img) throw `🪐 Responde a una imagen o video con*${usedPrefix + command}*`
+      if (!img) return conn.reply(m.chat,`🪐 Responde a una imagen o video con*${usedPrefix + command}*`, m, rcanal)
       let out
       try {
         stiker = await sticker(img, false, h, i)
@@ -38,7 +38,7 @@ const i = ``
     if (!stiker) stiker = e
   } finally {
     if (stiker) conn.sendFile(m.chat, stiker, 'sticker.webp', '', m, null, rpl)
-    else throw `${mssg.stickError}`
+    else return m.reply(m.chat, 'Donde está la imagen o el vídeo.?', m, rcanal)
   }
 }
 handler.help = ['sticker']
