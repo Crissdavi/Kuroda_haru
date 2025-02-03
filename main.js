@@ -1,5 +1,5 @@
 process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = '1'
-import './config.js'
+import './settings.js'
 import {createRequire} from 'module'
 import path, {join} from 'path'
 import {fileURLToPath, pathToFileURL} from 'url'
@@ -46,7 +46,7 @@ global.timestamp = {start: new Date}
 const __dirname = global.__dirname(import.meta.url)
 
 global.opts = new Object(yargs(process.argv.slice(2)).exitProcess(false).parse())
-global.prefix = new RegExp('^[' + (opts['prefix'] || '‎z/#$%.\\-').replace(/[|\\{}()[\]^$+*?.\-\^]/g, '\\$&') + ']')
+global.prefix = new RegExp('^[' + (opts['prefix'] || '01z/#$%.\\-').replace(/[|\\{}()[\]^$+*?.\-\^]/g, '\\$&') + ']')
 
 global.db = new Low(new JSONFile(`storage/databases/database.json`))
 
@@ -68,7 +68,7 @@ global.loadDatabase = async function loadDatabase() {
     stats: {},
     msgs: {},
     sticker: {},
-    config: {},
+    settings: {},
     ...(global.db.data || {})
   }
   global.db.chain = chain(global.db.data)
@@ -121,7 +121,7 @@ global.conn = makeWASocket(connectionOptions)
 
 if (!conn.authState.creds.registered) {
   const phoneNumber = await question(chalk.blue('Ingresa el número de WhatsApp en el cual estará la Bot\n'))
-
+  
   if (conn.requestPairingCode) {
     let code = await conn.requestPairingCode(phoneNumber)
     code = code?.match(/.{1,4}/g)?.join("-") || code;
@@ -294,3 +294,6 @@ global.reload = async (_ev, filename) => {
 Object.freeze(global.reload)
 watch(pluginFolder, global.reload)
 await global.reloadHandler()
+ 
+
+      
