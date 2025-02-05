@@ -1,7 +1,7 @@
 import fetch from 'node-fetch'
 
 let HS = async (m, { conn, command, text, usedPrefix }) => {
-if (!text) return conn.reply(m.chat, '❀ ingresa un link de pornhub', m)
+if (!text) return conn.reply(m.chat, '🪐 ingresa un link de pornhub', m)
 try {
 let api = await fetch(`https://www.dark-yasiya-api.site/download/phub?url=${text}`)
 let json = await api.json()
