@@ -11,11 +11,11 @@ let handler = async (m, { conn, usedPrefix, command}) => {
     let users = global.db.data.users[who]
     let rob = Math.floor(Math.random() * ro)
     if (users.coin < rob) return m.reply(`🔖 @${who.split`@`[0]} tiene menos de *${ro} zenis 💴*\nNo robes a un podre v":`, null, { mentions: [who] })    
-   global.db.data.users[m.sender].zenis += rob * user.zenis
-   global.db.data.users[who].zenis -= rob * user.zenis
-  
+   global.db.data.users[m.sender].zenis += rob 
+   global.db.data.users[who].zenis -= rob 
+
     m.reply(`
-  ‣ Robaste *${rob * user.zenis} Zenis 💴* a @${who.split`@`[0]}
+  ‣ Robaste *${rob} Zenis 💴* a @${who.split`@`[0]}
   `, null, { mentions: [who] })
     global.db.data.users[m.sender].lastrob = new Date * 1
   }
@@ -23,18 +23,18 @@ let handler = async (m, { conn, usedPrefix, command}) => {
   handler.help = ['rob']
   handler.tags = ['rpg']
   handler.command = ['robar', 'rob']
-  
+
   export default handler
-  
+
   function msToTime(duration) {
     var milliseconds = parseInt((duration % 1000) / 100),
       seconds = Math.floor((duration / 1000) % 60),
       minutes = Math.floor((duration / (1000 * 60)) % 60),
     //  hours = Math.floor((duration / (1000 * 60 * 60)) % 24)
-  
+
    // hours = (hours < 10) ? "0" + hours : hours
     minutes = (minutes < 10) ? "0" + minutes : minutes
     seconds = (seconds < 10) ? "0" + seconds : seconds
-  
+
     return minutes + " Minuto(s) " + seconds + " Segundo(s)"
   }
