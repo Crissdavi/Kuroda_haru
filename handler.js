@@ -67,7 +67,7 @@ export async function handler(chatUpdate) {
             } else
                 global.db.data.users[m.sender] = {
                     exp: 0,
-                    limit: 10,
+                    zenis: 10,
                     registered: false,
                     name: m.name,
                     age: -1,
