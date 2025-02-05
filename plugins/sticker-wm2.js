@@ -2,11 +2,11 @@ let ro = 1587
 let handler = async (m, { conn, usedPrefix, command}) => {
     let time = global.db.data.users[m.sender].lastrob + 300000
     let user = global.db.data.users[m.sender]
-    if (new Date - global.db.data.users[m.sender].lastrob < 300000) throw `⏱️¡Hey! Espera *${msToTime(time - new Date())}* para volver a robar`
+    if (new Date - global.db.data.users[m.sender].lastrob < 300000) conn.reply(m.chat,`⏱️¡Hey! Espera *${msToTime(time - new Date())}* para volver a robar`,m)
     let who
     if (m.isGroup) who = m.mentionedJid[0] ? m.mentionedJid[0] : m.quoted ? m.quoted.sender : false
     else who = m.chat
-    if (!who) throw `🪐 Etiqueta a alguien para robar`
+    if (!who) conn.reply(m.chat,`🪐 Etiqueta a alguien para robar`,m)
     if (!(who in global.db.data.users)) throw `🪐 El usuario no se encuentra en mi base de datos`
     let users = global.db.data.users[who]
     let rob = Math.floor(Math.random() * ro)
