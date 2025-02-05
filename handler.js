@@ -36,8 +36,8 @@ export async function handler(chatUpdate) {
             if (user) {
                 if (!isNumber(user.exp))
                     user.exp = 0
-                if (!isNumber(user.limit))
-                    user.limit = 10
+                if (!isNumber(user.zenis))
+                    user.zenis = 10
                 if (!('premium' in user)) 
                     user.premium = false
                 if (!user.premium) 
