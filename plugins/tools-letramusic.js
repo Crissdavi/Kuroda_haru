@@ -24,6 +24,6 @@ m.react('✖️');
  }
 };
 
-handler.command = ['lyrics', 'letramusic];
+handler.command = ['lyrics', 'letramusic'];
 
 export default handler;
