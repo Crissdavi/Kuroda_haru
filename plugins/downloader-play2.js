@@ -1,77 +1,59 @@
+import fetch from 'node-fetch'
+import yts from 'yt-search'
 
-import fetch from 'node-fetch';
-import yts from 'yt-search';
+let handler = async (m, { conn, text, args }) => {
+if (!text)  return conn.reply(m.chat, `❀ Ingresa el nombre de lo que quieres buscar`, m)
 
-let handler = async (m, { conn, args }) => {
-  if (!args[0]) return conn.reply(m.chat, '*\`Ingresa el nombre de lo que quieres buscar\`*', m);
 
-  await m.react('🕓');
-  try {
-    let res = await search(args.join(" "));
-    let video = res[0];
-    let img = await (await fetch(video.image)).buffer();
+try {
+let res = await search(args.join(" "))
 
-    let txt = `*\`【Y O U T U B E - P L A Y】\`*\n\n`;
-    txt += `• *\`Título:\`* ${video.title}\n`;
-    txt += `• *\`Duración:\`* ${secondString(video.duration.seconds)}\n`;
-    txt += `• *\`Publicado:\`* ${eYear(video.ago)}\n`;
-    txt += `• *\`Canal:\`* ${video.author.name || 'Desconocido'}\n`;
-    txt += `• *\`Url:\`* _https://youtu.be/${video.videoId}_\n\n`;
+let apiAud = await fetch(`https://api.agungny.my.id/api/youtube-audio?url=${'https://youtu.be/' + res[0].videoId}`)
+let dataAud = await apiAud.json()
+let apiVid = await fetch(`https://api.agungny.my.id/api/youtube-video?url=${'https://youtu.be/' + res[0].videoId}`)
+let dataVid = await apiVid.json()
 
-    await conn.sendMessage(m.chat, {
-      image: img,
-      caption: txt,
-      footer: 'Selecciona una opción',
-      buttons: [
-        {
-          buttonId: `.ytmp3 https://youtu.be/${video.videoId}`,
-          buttonText: {
-            displayText: '🎵 Audio',
-          },
-        },
-        {
-          buttonId: `.ytmp4 https://youtu.be/${video.videoId}`,
-          buttonText: {
-            displayText: '🎥 Video',
-          },
-        },
-      ],
-      viewOnce: true,
-      headerType: 4,
-    }, { quoted: m });
 
-    await m.react('✅');
-  } catch (e) {
-    console.error(e);
-    await m.react('✖️');
-    conn.reply(m.chat, '*\`Error al buscar el video.\`*', m);
-  }
-};
+let txt = `*◆ [ YOUTUBE - PLAY ] ◆*
+- *Titulo:* ${res[0].title}
+- *Duracion:* ${res[0].timestamp}
+- *Visitas:* ${res[0].views}
+- *Subido:* ${res[0].ago}
 
-handler.help = ['play2 *<texto>*'];
-handler.tags = ['youtube'];
-handler.command = ['play2'];
+◆────────────────◆
 
-export default handler;
+Responde a este mensaje dependiendo lo que quieras :
+
+1 : Audio
+2 : Video`
+
+let SM = await conn.sendFile(m.chat, res[0].thumbnail, 'HasumiBotFreeCodes.jpg', txt, m)
+conn.ev.on("messages.upsert", async (upsertedMessage) => {
+let RM = upsertedMessage.messages[0];
+if (!RM.message) return
+
+const UR = RM.message.conversation || RM.message.extendedTextMessage?.text
+let UC = RM.key.remoteJid
+
+if (RM.message.extendedTextMessage?.contextInfo?.stanzaId === SM.key.id) {
+
+if (UR === '1') {
+  await conn.sendMessage(UC, { audio: { url: dataAud.result.downloadUrl }, mimetype: "audio/mpeg", caption: null }, { quoted: RM })
+} else if (UR === '2') {
+  await conn.sendMessage(m.chat, { video: { url: dataVid.result.downloadUrl }, caption: ``, mimetype: 'video/mp4', fileName: `${res[0].title}` + `.mp4`}, {quoted: m })
+} else {
+await conn.sendMessage(UC, { text: "Opcion invalida, responde con 1 *(audio)* o 2 *(video)*." }, { quoted: RM })
+}}})
+
+} catch (error) {
+console.error(error)
+}}
+
+handler.command = ["play"]
+
+export default handler
 
 async function search(query, options = {}) {
-  let search = await yts.search({ query, hl: "es", gl: "ES", ...options });
-  return search.videos;
-}
-
-function secondString(seconds) {
-  seconds = Number(seconds);
-  const h = Math.floor(seconds / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  const s = Math.floor(seconds % 60);
-  return `${h > 0 ? h + 'h ' : ''}${m}m ${s}s`;
-}
-
-function eYear(txt) {
-  if (txt.includes('year')) return txt.replace('year', 'año').replace('years', 'años');
-  if (txt.includes('month')) return txt.replace('month', 'mes').replace('months', 'meses');
-  if (txt.includes('day')) return txt.replace('day', 'día').replace('days', 'días');
-  if (txt.includes('hour')) return txt.replace('hour', 'hora').replace('hours', 'horas');
-  if (txt.includes('minute')) return txt.replace('minute', 'minuto').replace('minutes', 'minutos');
-  return txt;
+  let search = await yts.search({ query, hl: "es", gl: "ES", ...options })
+  return search.videos
 }
