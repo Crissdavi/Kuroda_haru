@@ -49,7 +49,7 @@ await conn.sendMessage(UC, { text: "Opcion invalida, responde con 1 *(audio)* o 
 console.error(error)
 }}
 
-handler.command = ["play"]
+handler.command = ['play']
 
 export default handler
 
