@@ -74,6 +74,17 @@ case 'despedida':
       chat.nsfw = isEnable;
       break;
 
+    case 'antidelete':
+    case 'delete':
+      if (m.isGroup) {
+        if (!(isAdmin || isOwner)) {
+          global.dfail('admin', m, conn)
+          throw false
+        }
+      }
+      chat.delete = !isEnable
+      break;
+
     case 'antiarabes':
     case 'antinegros':
       if (m.isGroup) {
