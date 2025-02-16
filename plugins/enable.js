@@ -119,6 +119,9 @@ case 'despedida':
 *Tipo :* autoread 
 *Descripción :* Des/Activa el *AutoRead* para el Bot
 
+*Tipo :* Antidelete
+*Descripción :* Des/activa el *Antidelete para el grupo
+
 *Tipo :* document 
 *Descripción :* Des/Activa la *Descarga En Documentos* para el Usuario
 
