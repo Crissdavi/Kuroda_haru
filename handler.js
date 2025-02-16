@@ -91,6 +91,8 @@ export async function handler(chatUpdate) {
                     chat.antiLink = false
                 if (!('onlyLatinos' in chat))
                     chat.onlyLatinos = false
+                if (!('delete' in chat))
+                    chat.delete = true
                  if (!('nsfw' in chat))
                     chat.nsfw = false
                  if (!('modoadmin' in chat))
@@ -103,6 +105,7 @@ export async function handler(chatUpdate) {
                     bienvenida: true,
                     antiLink: false,
                     onlyLatinos: false,
+                    delete: true,
                     nsfw: false, 
                     modoadmin: false,
                     expired: 0, 
