@@ -103,8 +103,8 @@ global.chatgpt.chain = lodash.chain(global.chatgpt.data);
 loadChatgptDB();
 
 global.creds = 'creds.json'
-global.authFile = 'WongSession'
-global.authFileJB  = 'WongJadiBot'
+global.authFile = 'KurodaSession'
+global.authFileJB  = 'KurodaJadiBot'
 /*global.rutaBot = join(__dirname, authFile)
 global.rutaJadiBot = join(__dirname, authFileJB)
 
