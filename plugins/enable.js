@@ -47,18 +47,6 @@ case 'despedida':
       global.opts['autoread'] = isEnable;
       break;
 
-   case 'jadibot': 
-   case 'modojadibot': 
-   case 'serbot': 
-   case 'modoserbot': 
-     isAll = true
-     if (!isROwner) {
-       global.dfail('rowner', m, conn)
-       throw false
-     }
-     bot.jadibotmd = isEnable
-     break;
-
     case 'document':
     case 'documento':
       isUser = true;
@@ -97,17 +85,6 @@ case 'despedida':
       chat.onlyLatinos = isEnable;
       break;
 
-    case 'modoadmin':
-    case 'soloadmin':
-      if (m.isGroup) {
-        if (!(isAdmin || isOwner)) {
-          global.dfail('admin', m, conn);
-          throw false;
-        }
-      }
-      chat.modoadmin = isEnable;
-      break;
-
     default:
       if (!/[01]/.test(command)) return m.reply(`
 *🚩 Ingresa una opción para habilitar o deshabilitar*
@@ -134,11 +111,6 @@ case 'despedida':
 *Tipo :* document 
 *Descripción :* Des/Activa la *Descarga En Documentos* para el Usuario
 
-*Tipo :* modoadmin 
-*Descripción :* Des/Activa el *Modo Solo Administradores* para Grupos
-
-*Tipo :* jadibot
-*Descripción :* Des/Activa el *jadibot* para el Bot
 
 *• Ejemplo:*
 *- ${usedPrefix + command}* welcome
