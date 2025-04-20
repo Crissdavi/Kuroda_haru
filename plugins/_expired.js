@@ -9,4 +9,4 @@ export async function all(m) {
         await this.groupLeave(m.chat)
         chats.expired = null
     }
-}
+} 
