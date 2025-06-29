@@ -84,6 +84,7 @@
                 "mongoose": "^6.3.3",
                 "node-gtts": "^2.0.2",
                 "node-webpmux": "^3.2.0",
+                "node-cache": "latest",
                 "open": "^10.0.3",
                 "perf_hooks": "^0.0.1",
                 "url-file-size": "^1.0.5-1",
