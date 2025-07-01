@@ -11,9 +11,6 @@ import axios from 'axios'
 
 global.owner = [
   ['278915528548432@lid', 'ㅤㅤㅤㅤㅤ…⁠ᘛDaniel', true],
-  ['51910026998', 'bot', true],
-  ['522431268546', 'Tesis', true],
-  ['595976683778', 'Masha', true],
 
 ]
 
