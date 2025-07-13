@@ -210,7 +210,7 @@ const user = m.isGroup
   ? participants.find(u => normalizeJid(u.id) === senderNum) 
   : {}
 
-const bot = m.isGroup 
+const isBotAdmin = bot?.admin === 'admin' || bot?.admin === 'superadmin'
   ? participants.find(u => botNums.includes(normalizeJid(cleanJid(u.phoneNumber)))) 
   : {}
 const isRAdmin = user?.admin === 'superadmin'
