@@ -215,7 +215,7 @@ const bot = m.isGroup
   : {}
 const isRAdmin = user?.admin === 'superadmin'
 const isAdmin = isRAdmin || user?.admin === 'admin'
-const isBotAdmin = !!bot?.admin      
+const isBotAdmin = bot?.admin === 'admin' || bot?.admin === 'superadmin'
         const ___dirname = path.join(path.dirname(fileURLToPath(import.meta.url)), './plugins')
         for (let name in global.plugins) {
             let plugin = global.plugins[name]
