@@ -212,7 +212,7 @@ const user = m.isGroup
 
 const bot = m.isGroup 
   ? participants.find(u => botNums.includes(normalizeJid(cleanJid(u.phoneNumber)))) 
-  : {}
+  : {} 
 const isRAdmin = user?.admin === 'superadmin'
 const isAdmin = isRAdmin || user?.admin === 'admin'
 const isBotAdmin = bot?.admin === 'admin' || bot?.admin === 'superadmin'
