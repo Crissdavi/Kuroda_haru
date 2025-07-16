@@ -32,7 +32,7 @@ let handler = async (m, { conn, usedPrefix }) => {
 }
 
 handler.help = ['nalguear @tag'];
-handler.tags = ['fun'];
+handler.tags = ['nalguear'];
 handler.command = ['nalguear'];
 handler.register = true;
 handler.group = true;
