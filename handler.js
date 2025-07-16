@@ -33,7 +33,7 @@ export async function handler(chatUpdate) {
 global.db.data.users[m.chat] ??= {}
 let user = global.db.data.users[m.sender]
 if (typeof user !== 'object') {
-    user = global.db.data.users[m.chat][m.sender] = {
+    user = global.db.data.users[m.sender] = {
         exp: 0,
         diamond: 10,
         coin: 50,
