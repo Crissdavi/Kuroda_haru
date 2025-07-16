@@ -31,7 +31,7 @@ export async function handler(chatUpdate) {
         try {
             //global.db.data.users[m.chat] = global.db.data.users[m.chat] || {}
 global.db.data.users[m.chat] ??= {}
-let user = global.db.data.users[m.chat][m.sender]
+let user = global.db.data.users[m.sender]
 if (typeof user !== 'object') {
     user = global.db.data.users[m.chat][m.sender] = {
         exp: 0,
