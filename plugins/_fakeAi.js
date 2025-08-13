@@ -26,6 +26,6 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
   }
 }
 
-handler.customPrefix = /^(kuroda)$/i
+handler.customPrefix = /^(kuroda|Kuro)$/i
 handler.command = new RegExp
 export default handler
