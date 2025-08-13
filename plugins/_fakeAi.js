@@ -14,7 +14,7 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
           "groupJid": "6285240750713-1610340626@g.us",
           "inviteCode": "mememteeeekkeke",
           "groupName": "P",
-          "caption": "Hello, I'm Kuroda",
+          "caption": "Un gusto, soy Kuroda",
           "jpegThumbnail": await (await fetch(pp)).buffer()
         }
       }
