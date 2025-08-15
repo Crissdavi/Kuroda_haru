@@ -138,6 +138,9 @@ break
 *Descripción :* Des/Activa la *Descarga En Documentos* para el Usuario
 
 
+*Tipo :* onlyadmin
+*Descripción :* Des/Activa el *onlyadmin* para el grupo 
+
 *• Ejemplo:*
 *- ${usedPrefix + command}* welcome
 `.trim());
