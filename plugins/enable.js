@@ -71,6 +71,18 @@ case 'despedida':
           throw false;
         }
       }
+break
+      case 'modoadmin':
+      case 'onlyadmin':
+      if (m.isGroup) {
+        if (!(isAdmin || isOwner)) {
+          global.dfail('admin', m, conn)
+          throw false
+        }
+      }
+      chat.onlyAdmin = isEnable
+        }
+      }
       chat.nsfw = isEnable;
       break;
 
