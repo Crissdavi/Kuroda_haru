@@ -99,7 +99,7 @@ case 'despedida':
     case 'onlyadmin':
     case 'modoadmin':
       if (chat.onlyadmin) {
-       if (!isAdmin) || isOwner)) {
+       if (!isAdmin) {
          global.dfail('admin', m, con);
           throw false;
         }
