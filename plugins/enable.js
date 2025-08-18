@@ -96,6 +96,17 @@ case 'despedida':
       chat.onlyLatinos = isEnable;
       break;
 
+    case 'onlyadmin':
+    case 'modoadmin':
+      if (chat.onlyadmin) {
+       if (!isAdmin) || isOwner)) {
+         global.dfail('admin', m, con);
+          throw false;
+        }
+       }
+      chat.onlyadmin = isEnable;
+      break;
+
     default:
       if (!/[01]/.test(command)) return m.reply(`
 *🚩 Ingresa una opción para habilitar o deshabilitar*
