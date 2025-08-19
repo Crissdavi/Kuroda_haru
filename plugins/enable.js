@@ -96,7 +96,7 @@ case 'despedida':
       chat.onlyLatinos = isEnable;
       break;
 
-    case 'onlyadmin':
+    case 'onlyAdmin':
     case 'modoadmin':
       if (chat.onlyadmin) {
        if (!isAdmin) {
