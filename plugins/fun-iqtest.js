@@ -17,7 +17,9 @@ function pickRandom(list) {
 
 global.iq = [
 'Tu IQ es de: 1',
+'Tu IQ es de: 2',
 'Tu IQ es de: 14',
+'Tu IQ es de: 5',
 'Tu IQ es de: 23',
 'Tu IQ es de: 35',
 'Tu IQ es de: 41',
@@ -40,6 +42,8 @@ global.iq = [
 'Tu IQ es de: 7500',
 'Tu IQ es de: 10000',
 'Tu IQ es de: 1-',
+'Tu IQ es de: 2-',
+'Tu IQ es de: 5-',
 'Tu IQ es de: 14-',
 'Tu IQ es de: 23-',
 'Tu IQ es de: 35-',
