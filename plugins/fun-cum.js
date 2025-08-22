@@ -28,7 +28,7 @@ let handler = async (m, { conn, usedPrefix }) => {
    
 }
 
-handler.help = ['correrse @tag'];
+handler.help = ['cum @tag'];
 handler.tags = ['fun'];
 handler.command = ['cum'];
 handler.group = true;
