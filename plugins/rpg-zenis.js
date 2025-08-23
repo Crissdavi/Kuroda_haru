@@ -9,7 +9,7 @@ let handler = async (m, {conn, usedPrefix}) => {
     let img = await (await fetch(`https://files.catbox.moe/z1wvch.jpeg`)).buffer()
     let txt = ` –  *S T A R S  -  U S E R*\n\n`
         txt += `┌  ✩  *🪪 Nombre* : ${user.name}\n`
-        txt += `│  ✩  *💴 Zenis* : ${toNum(user.zenis)} ( *${user.zenis}* )\n`
+        txt += `│  ✩  *💴 Zenis* : ${(user.zenis)} ( *${user.zenis}* )\n`
         txt += `│  ✩  *🏦 Bank* : ${toNum(user.bank)} ( *${user.bank}* )\n`
         txt += `└  ✩  *💫 XP* : ${toNum(user.exp)} ( *${user.exp}* )`
     let mentionedJid = [who]
