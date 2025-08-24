@@ -9,7 +9,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
     try {
          const estado = await conn.sendMessage(
             m.chat,
-            { text: ' *Kuro 𝙚𝙨𝙩𝙖 𝙚𝙨𝙘𝙧𝙞𝙗𝙞𝙚𝙣𝙙𝙤...*' },
+            { text: ' 𝙆𝙪𝙧𝙤 𝙚𝙨𝙩𝙖 𝙚𝙨𝙘𝙧𝙞𝙗𝙞𝙚𝙣𝙙𝙤...' },
             { quoted: m }
         );
 
