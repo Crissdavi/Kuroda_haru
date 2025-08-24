@@ -50,5 +50,9 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
     }
 };
 
-handler.command = ['gpt'];
-export default handler;
+handler.help = ['Gpt']
+handler.tags = ['tools']
+handler.command = /^(gpt|Kuro|kuroda)$/i
+handler.register = true
+
+export default handler
