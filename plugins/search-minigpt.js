@@ -1,22 +1,54 @@
-
-
-import fetch from 'node-fetch'
+import fetch from 'node-fetch';
 
 let handler = async (m, { conn, text, usedPrefix, command }) => {
-if (!text) return m.reply('ingresa un texto')
-let username = `${conn.getName(m.sender)}`
+    const input = text?.trim();
+    if (!input) {
+        return conn.reply(m.chat, '> ◛⑅·˚ ༘ ♡ *`¡Espera!` Proporciona una solicitud para responderte.*', m);
+    }
 
-let api = await fetch(`https://api.ssateam.my.id/api/gpt4omini?text=${text}&id=${username}&apiKey=root`)
-let json = await api.json()
-m.reply(json.data.reply)
-}
+    try {
+         const estado = await conn.sendMessage(
+            m.chat,
+            { text: '> ✎ ೃ‧₊›.｡.  𝘾𝙝𝙖𝙩𝙜𝙥𝙩 𝙚𝙨𝙩𝙖 𝙚𝙨𝙘𝙧𝙞𝙗𝙞𝙚𝙣𝙙𝙤..♡' },
+            { quoted: m }
+        );
 
-handler.help = ['minichatgpt <pregunta>'];
-handler.tags = ['search'];
-handler.command = /^(chatgpt|minigpt|minichatgpt)$/i;
+       
+        const res = await fetch(`https://api.sylphy.xyz/ai/chatgpt?text=${encodeURIComponent(input)}&apikey=tesis-me-gustas-uwu`);
+        const contentType = res.headers.get('content-type');
 
-handler.limit = true;
-handler.premium = false;
-handler.register = true;
+        if (contentType.includes('text/html')) {
+            return conn.sendMessage(
+                m.chat,
+                {
+                    edit: estado.key,
+                    text: '*`¡Perdón!` Parece que mi fuente de datos no pudo procesar tu solicitud, ¡Inténtalo más tarde por favor!*'
+                }
+            );
+        }
 
-export default handler
+        const json = await res.json();
+        const respuesta = json?.result?.trim() || '*No puedo responder a eso*';
+
+        setTimeout(async () => {
+            await conn.sendMessage(
+                m.chat,
+                {
+                    edit: estado.key,
+                    text: respuesta
+                }
+            );
+        }, 4000);
+
+    } catch (error) {
+        console.error(error);
+        conn.reply(
+            m.chat,
+            '*¡Disculpe! Parece que estoy algo cansado, vuelve a intentarlo más tarde.*',
+            m
+        );
+    }
+};
+
+handler.command = ['gpt'];
+export default handler;
