@@ -192,7 +192,7 @@ let handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
 
 handler.help = ['kuroda']
 handler.tags = ['main']
-handler.command = ['menu', 'help', 'kuroda', 'menú'] 
+handler.command = ['menu', 'help', 'menú'] 
 handler.register = true
 export default handler
 
