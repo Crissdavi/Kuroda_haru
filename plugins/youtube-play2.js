@@ -7,7 +7,9 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
     }
 
     const [format, ...query] = text.split(' ');
-    if (!['MP3', 'MP4'].includes(format)) {
+    const selectedFormat = format.toUpperCase();
+
+    if (!['MP3', 'MP4'].includes(selectedFormat)) {
         return conn.reply(m.chat, `❀ Formato no válido. Usa *${usedPrefix}${command} MP3 <búsqueda>* o *${usedPrefix}${command} MP4 <búsqueda>*`, m);
     }
 
@@ -19,24 +21,26 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
     try {
         await m.react('📦');
 
-        let res = await yts(searchQuery);
-        let video = res.videos[0];
+        const res = await yts(searchQuery);
+        const video = res.videos[0];
         if (!video) throw `❀ No se encontraron resultados para *${searchQuery}*.`;
 
-        let { title, url } = video;
-        const apiUrl = `https://api.sylphy.xyz/download/ytmp3?url=${encodeURIComponent(url)}&apikey=sylphy`;
+        const { title, url } = video;
+        const endpoint = selectedFormat === 'MP3' ? 'ytmp3' : 'ytmp4';
+        const apiUrl = `https://api.sylphy.xyz/download/${endpoint}?url=${encodeURIComponent(url)}&apikey=sylphy`;
         const apiResponse = await (await fetch(apiUrl)).json();
+
         if (!apiResponse?.res?.url) throw `❀ Error de API: ${apiResponse?.error || apiResponse?.message || JSON.stringify(apiResponse)}`;
 
         const dl_url = apiResponse.res.url;
 
-        if (format === 'MP3') {
+        if (selectedFormat === 'MP3') {
             await conn.sendMessage(
                 m.chat,
                 { audio: { url: dl_url }, mimetype: "audio/mp4", ptt: true },
                 { quoted: m }
             );
-        } else if (format === 'MP4') {
+        } else {
             await conn.sendMessage(
                 m.chat,
                 { video: { url: dl_url }, caption: `❀ Descargado: *${title}*` },
@@ -52,5 +56,4 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 };
 
 handler.command = ['play'];
-
 export default handler;
