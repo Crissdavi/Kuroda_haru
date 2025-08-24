@@ -3,13 +3,13 @@ import fetch from 'node-fetch';
 let handler = async (m, { conn, text, usedPrefix, command }) => {
     const input = text?.trim();
     if (!input) {
-        return conn.reply(m.chat, '> ◛⑅·˚ ༘ ♡ *`¡Espera!` Proporciona una solicitud para responderte.*', m);
+        return conn.reply(m.chat, '`¡Espera!` Proporciona una solicitud para responderte.*', m);
     }
 
     try {
          const estado = await conn.sendMessage(
             m.chat,
-            { text: '> ✎ ೃ‧₊›.｡.  𝘾𝙝𝙖𝙩𝙜𝙥𝙩 𝙚𝙨𝙩𝙖 𝙚𝙨𝙘𝙧𝙞𝙗𝙞𝙚𝙣𝙙𝙤..♡' },
+            { text: ' 𝘾𝙝𝙖𝙩𝙜𝙥𝙩 𝙚𝙨𝙩𝙖 𝙚𝙨𝙘𝙧𝙞𝙗𝙞𝙚𝙣𝙙𝙤..♡' },
             { quoted: m }
         );
 
