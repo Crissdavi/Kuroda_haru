@@ -20,7 +20,7 @@ let handler = async (m, { conn, usedPrefix: _p }) => {
       }
     }
     
-    conn.sendMessage(m.chat, { text: 'Hola soy Kuroda, para ver mis comandos usan .help' }, { quoted: anu })
+    conn.sendMessage(m.chat, { text: 'Hola soy Kuroda, para ver mis comandos usa el comando .help' }, { quoted: anu })
   } catch (error) {
     conn.sendMessage(m.chat, 'Hola soy Kuroda, para ver mis comandos usa el comando .help', 'conversation', { quoted: m })
   }
