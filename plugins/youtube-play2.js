@@ -19,17 +19,16 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
     try {
         await m.react('📦');
 
-        
         let res = await yts(searchQuery);
         let video = res.videos[0];
-        if (!video) {
-            throw `❀ No se encontraron resultados para *${searchQuery}*.`;
-        }
+        if (!video) throw `❀ No se encontraron resultados para *${searchQuery}*.`;
 
-        let { title, videoId } = video;
-        let apiUrl = `https://api.siputzx.my.id/api/d/yt${format.toLowerCase()}?url=https://www.youtube.com/watch?v=${videoId}`;
-        let apiResponse = await (await fetch(apiUrl)).json();
-        let dl_url = apiResponse.data.dl;
+        let { title, url } = video;
+        const apiUrl = `https://api.sylphy.xyz/download/ytmp3?url=${encodeURIComponent(url)}&apikey=sylphy`;
+        const apiResponse = await (await fetch(apiUrl)).json();
+        if (!apiResponse?.res?.url) throw `❀ Error de API: ${apiResponse?.error || apiResponse?.message || JSON.stringify(apiResponse)}`;
+
+        const dl_url = apiResponse.res.url;
 
         if (format === 'MP3') {
             await conn.sendMessage(
