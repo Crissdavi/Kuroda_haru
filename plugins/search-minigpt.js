@@ -3,7 +3,7 @@ import fetch from 'node-fetch';
 let handler = async (m, { conn, text, usedPrefix, command }) => {
     const input = text?.trim();
     if (!input) {
-        return conn.reply(m.chat, '`¡Espera!` *Proporciona una solicitud para responderte.*', m);
+        return conn.reply(m.chat, '`Disculpe` *Proporcione una solicitud para responderte.*', m);
     }
 
     try {
