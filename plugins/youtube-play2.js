@@ -3,23 +3,23 @@ import fetch from 'node-fetch';
 
 let handler = async (m, { conn, text, usedPrefix, command }) => {
     if (!text) {
-        return conn.reply(m.chat, `❀ Especifica el formato (mp3 o mp4) y la búsqueda. Ejemplo: *${usedPrefix}${command} MP3 <término>*`, m);
+        return conn.reply(m.chat, `☆Especifica el formato (mp3 o mp4) y la búsqueda. Ejemplo: *${usedPrefix}${command} mp3 <término>*`, m); 
     }
 
     const [format, ...query] = text.split(' ');
     const selectedFormat = format.toUpperCase();
 
     if (!['mp3', 'mp4'].includes(selectedFormat)) {
-        return conn.reply(m.chat, `❀ Formato no válido. Usa *${usedPrefix}${command} mp3 <búsqueda>* o *${usedPrefix}${command} mp4 <búsqueda>*`, m);
+        return conn.reply(m.chat, `🚫Formato no válido. Usa *${usedPrefix}${command} mp3 <búsqueda>* o *${usedPrefix}${command} mp4 <búsqueda>*`, m);
     }
 
     const searchQuery = query.join(' ');
     if (!searchQuery) {
-        return conn.reply(m.chat, `❀ Por favor, escribe un término de búsqueda después del formato.`, m);
+        return conn.reply(m.chat, `🟣 Por favor, escribe un término de búsqueda después del formato.`, m);
     }
 
     try {
-        await m.react('📦');
+        await m.react('🐢');
 
         const res = await yts(searchQuery);
         const video = res.videos[0];
