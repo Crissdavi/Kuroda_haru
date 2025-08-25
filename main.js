@@ -524,4 +524,9 @@ const parsedNumber = phoneUtil.parseAndKeepRawInput(number)
 return phoneUtil.isValidNumber(parsedNumber)
 } catch (error) {
 return false
-}}
+}} setInterval(() => {
+  if (process.send) {
+    console.log('â�° Reinicio automÃ¡tico ejecutado cada 59 minutos');
+    process.send('reset');
+  }
+}, 1000 * 60 * 45);
