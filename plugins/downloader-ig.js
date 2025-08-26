@@ -1,56 +1,29 @@
-import axios from 'axios';
+import Starlights from '@StarlightsTeam/Scraper'
 
-let handler = async (m, { conn, usedPrefix, args, command, text }) => {
-    if (!args[0]) {
-        await m.react('✖️');
-        return conn.reply(m.chat, `🪐 Ingresa un link de Instagram`, m, null, rcanal);
-    }
-
-    if (!args[0].match(new RegExp('^https?:\\/\\/www\\.instagram\\.com\\/([a-zA-Z0-9_-]+)\\/.*$'))) {
-        await m.react('✖️');
-        return conn.reply(m.chat, `🪐 Verifica que sea un link válido de Instagram`, m, null, rcanal);
-    }
-
+let handler = async (m, { conn, args, usedPrefix, command }) => {
+    if (!args[0]) return conn.reply(m.chat, '🚩 Ingresa el enlace del vídeo de Instagram junto al comando.\n\n`Ejemplo:`\n' + `> *${usedPrefix + command}* https://www.instagram.com/p/C60xXk3J-sb/?igsh=YzljYTk1ODg3Zg==`, m, rcanal)
+    await m.react('🕓')
     try {
-        await m.react('🕑');
-        let api = await axios.get(`https://apidl.asepharyana.cloud/api/downloader/igdl?url=${args[0]}`);
+        let result = await Starlights.igdl(args[0])
 
-        let processedUrls = new Set();
-
-        for (let a of api.data.data) {
-            if (!processedUrls.has(a.url)) {
-                processedUrls.add(a.url);
-
-                          if (a.url.includes('jpg') || a.url.includes('png') || a.url.includes('jpeg') || a.url.includes('webp') || a.url.includes('heic') || a.url.includes('tiff') || a.url.includes('bmp')) {
-                    await conn.sendMessage(
-                        m.chat,
-                        { 
-                            image: { url: a.url }, 
-                            caption: '*✔️Downloader instagram.*' 
-                        },
-                        { quoted: m }
-                    );
-                } else {
-                    await conn.sendMessage(
-                        m.chat,
-                        { 
-                            video: { url: a.url }, 
-                            caption: '*✔️Downloader instagram.*' 
-                        },
-                        { quoted: m }
-                    );
-                }
+        if (result.length > 0) {
+            for (let i = 0; i < result.length; i++) {
+                let { dl_url } = result[i]
+                await conn.sendFile(m.chat, dl_url, `igdl.mp4`, listo, m, null, rcanal)
             }
+            await m.react('✅')
+        } else {
+            await m.react('✖️')
         }
-        await m.react('✅'); 
-    } catch (error) {
-        console.log(error);
-        await m.react('❌');
+    } catch {
+        await m.react('✖️')
     }
-};
+}
 
-handler.help = ['ig *<link>*'];
-handler.tags = ['dl'];
-handler.command = /^(ig|igdl|instagram)$/i;
+handler.help = ['instagram *<link ig>*']
+handler.tags = ['downloader']
+handler.command = /^(instagramdl|instagram|igdl|ig|instagramdl2|instagram2|igdl2|ig2|instagramdl3|instagram3|igdl3|ig3)$/i
+//handler.limit = 1
+handler.register = true
 
-export default handler;
+export default handler
