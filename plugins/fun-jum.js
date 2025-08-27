@@ -11,7 +11,7 @@ let handler = async (m, { conn, usedPrefix }) => {
     let name = conn.getName(who);
     let name2 = conn.getName(m.sender);
     m.react('😃');
-    let str = `${name2} está saliendo con ${name}`.trim();
+    let str = `${name2} está saltando con ${name}`.trim();
     if (m.isGroup){
 
     let pp = 'https://sylphy.xyz/download/rBLa8s.mp4' 
