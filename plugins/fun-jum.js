@@ -15,11 +15,8 @@ let handler = async (m, { conn, usedPrefix }) => {
     if (m.isGroup){
 
     let pp = 'https://sylphy.xyz/download/rBLa8s.mp4' 
-    let pp2 = '' 
-    let pp3 = '' 
-    let pp4 = '' 
-    let pp5 = '' 
-    let pp6 = ''
+    let pp2 = 'https://sylphy.xyz/download/dryGZO.mp4' 
+    let pp3 = 'https://sylphy.xyz/download/LNlqRq.mp4' 
     const videos = [pp, pp2, pp3, pp4, pp5, pp6];
     const video = videos[Math.floor(Math.random() * videos.length)];
     conn.sendMessage(m.chat, { video: { url: video }, gifPlayback: true, caption:str, mentions: [m.sender] },{ quoted: estilo })
