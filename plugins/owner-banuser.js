@@ -13,6 +13,6 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 handler.help = ['mban *@user*']
 handler.tags = ['owner']
 handler.command = /^mban$/i
-handler.rowner= false 
+handler.rowner= true
 handler.admin = false
 export default handler
