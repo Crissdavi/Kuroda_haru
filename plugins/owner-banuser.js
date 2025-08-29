@@ -14,5 +14,5 @@ handler.help = ['mban *@user*']
 handler.tags = ['owner']
 handler.command = /^mban$/i
 handler.rowner= false 
-handler.admin = true
+handler.admin = false
 export default handler
