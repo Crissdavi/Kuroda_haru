@@ -2,7 +2,7 @@ import { canLevelUp, xpRange } from '../lib/levelling.js'
 import fetch from 'node-fetch'
 
 let handler = async (m, { conn }) => {
-let img = await (await fetch(`https://files.catbox.moe/z1wvch.jpeg`)).buffer()
+let img = await (await fetch(`https://sylphy.xyz/download/p3aOmp.jpeg`)).buffer()
 let name = conn.getName(m.sender)
 let user = global.db.data.users[m.sender]
 if (!canLevelUp(user.level, user.exp, global.multiplier)) {
