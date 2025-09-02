@@ -431,8 +431,8 @@ handler.help = [
     'resetearharem *[owner only]*'
 ];
 handler.command = ['unirharem', 'expulsardelharem', 'miharem', 'crearharem', 'mihareminfo', 'dejarharem', 'listaharem', 'disolverharem', 'resetearharem'];
-handler.group = false;
-handler.private = true;
+handler.group = true;
+handler.private = false;
 handler.admin = false;
 handler.botAdmin = false;
 
