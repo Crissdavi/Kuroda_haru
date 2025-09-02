@@ -364,8 +364,8 @@ handler.help = [
     'disolverharem'
 ];
 handler.command = ['unirharem', 'expulsardelharem', 'miharem', 'crearharem', 'mihareminfo', 'dejarharem', 'listaharem', 'disolverharem'];
-handler.group = false;
-handler.private = true;
+handler.group = true;
+handler.private = false;
 handler.admin = false;
 handler.botAdmin = false;
 
