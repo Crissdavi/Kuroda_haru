@@ -20,7 +20,7 @@ const handler = async (m, { conn, command }) => {
     if (isUnirAharem) {
       const userToRecruit = m.quoted?.sender || m.mentionedJid?.[0];
       if (!userToRecruit) {
-        throw new Error('Debes mencionar a alguien para agregarlo a tu harem.\n> Ejemplo » *.uniraharem @usuario*');
+        throw new Error('Debes mencionar a alguien para agregarlo a tu harem.\n> Ejemplo » *.unirharem @usuario*');
       }
 
       if (!groups[groupId]) {
