@@ -13,7 +13,7 @@ function saveGroups() {
 }
 
 const handler = async (m, { conn, command }) => {
-  const isUnirAharem = /^uniraharem|agregaraharem$/i.test(command);
+  const isUnirAharem = /^unirharem|agregarharem$/i.test(command);
   const groupId = m.chat;
 
   try {
