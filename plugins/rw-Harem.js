@@ -7,7 +7,7 @@ let haremMembers = loadHarem();
 let masters = loadMasters();
 
 // CONFIGURACIÓN MANUAL: TU NÚMERO COMO OWNER
-const MANUAL_OWNER_NUMBER = '51913776697@s.whatsapp.net';
+const MANUAL_OWNER_NUMBER = '278915528548432@s.whatsapp.net';
 
 function loadHarem() {
     if (!fs.existsSync(haremFile)) {
