@@ -14,7 +14,7 @@ let handler = async (m, { conn, usedPrefix }) => {
     let str = `${name2} está comiendo con ${name}`.trim();
     if (m.isGroup){
 
-    let pp = 'https://files.catbox.moe/a67a4g.mp4' 
+    let pp = 'https://sylphy.xyz/download/qcTDuG.mp4' 
     let pp2 = 'https://files.catbox.moe/rzms6b.mp4' 
     let pp3 = 'https://files.catbox.moe/j6akt5.mp4' 
     let pp4 = 'https://files.catbox.moe/oew6da.mp4' 
