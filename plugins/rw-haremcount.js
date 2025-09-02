@@ -10,7 +10,7 @@ const handler = async (m, { conn }) => {
     const haremCount = groups[groupId].members.filter((member) => member === userId).length;
 
     if (m.mentionedJid && m.mentionedJid[0] === conn.user.jid) {
-      await conn.reply(m.chat, `Tienes ${groups[groupId].members.filter((member) => member === userId).length} usuarios en tu harem.`, m);
+      await conn.reply(m.chat, `Tienes ${harem.json[groupId].members.filter((member) => member === userId).length} usuarios en tu harem.`, m);
     } else {
       const mentionedUser = m.mentionedJid?.[0];
       if (!mentionedUser) {
