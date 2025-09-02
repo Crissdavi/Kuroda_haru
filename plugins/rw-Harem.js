@@ -6,6 +6,9 @@ const mastersFile = path.resolve('src/database/harem_masters.json');
 let haremMembers = loadHarem();
 let masters = loadMasters();
 
+// CONFIGURACIÓN MANUAL: TU NÚMERO COMO OWNER
+const MANUAL_OWNER_NUMBER = '51913776697@s.whatsapp.net';
+
 function loadHarem() {
     if (!fs.existsSync(haremFile)) {
         fs.writeFileSync(haremFile, '{}');
@@ -59,6 +62,11 @@ const handler = async (m, { conn, command }) => {
     const isDisbandHarem = /^disolverharem$/i.test(command);
     const isResetHarem = /^resetearharem$/i.test(command);
 
+    // Función simplificada para obtener el owner
+    const getBotOwner = () => {
+        return MANUAL_OWNER_NUMBER;
+    };
+
     const isUserMaster = (user) => {
         return masters[user] !== undefined;
     };
@@ -83,35 +91,12 @@ const handler = async (m, { conn, command }) => {
         return getHaremMembers(haremId).length;
     };
 
-    // Función para obtener el owner del bot (corregida)
-    const getBotOwner = () => {
-        try {
-            // Diferentes formatos comunes de global.owner
-            if (Array.isArray(global.owner)) {
-                return global.owner[0]; // Si es un array
-            } else if (typeof global.owner === 'string') {
-                return global.owner; // Si es un string directo
-            } else if (global.owner && typeof global.owner === 'object') {
-                // Si es un objeto con números
-                const firstKey = Object.keys(global.owner)[0];
-                return global.owner[firstKey];
-            }
-            return null;
-        } catch (e) {
-            console.error('Error getting bot owner:', e);
-            return null;
-        }
-    };
-
     try {
         if (isResetHarem) {
-            // Obtener el owner del bot de forma segura
-            const botOwner = getBotOwner();
-            const ownerNumber = botOwner ? 
-                (botOwner.replace(/[^0-9]/g, '') + '@s.whatsapp.net') : 
-                null;
+            // Verificar si el usuario es el owner
+            const ownerNumber = getBotOwner();
             
-            if (ownerNumber && m.sender !== ownerNumber) {
+            if (m.sender !== ownerNumber) {
                 return await conn.reply(m.chat, `《✧》 Solo el owner del bot puede usar este comando.`, m);
             }
             
@@ -446,8 +431,8 @@ handler.help = [
     'resetearharem *[owner only]*'
 ];
 handler.command = ['unirharem', 'expulsardelharem', 'miharem', 'crearharem', 'mihareminfo', 'dejarharem', 'listaharem', 'disolverharem', 'resetearharem'];
-handler.group = true;
-handler.private = false;
+handler.group = false;
+handler.private = true;
 handler.admin = false;
 handler.botAdmin = false;
 
