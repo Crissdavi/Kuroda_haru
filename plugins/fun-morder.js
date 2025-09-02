@@ -18,9 +18,8 @@ let handler = async (m, { conn, usedPrefix }) => {
     let pp2 = 'https://sylphy.xyz/download/21x6yn.mp4' 
     let pp3 = 'https://sylphy.xyz/download/T1isds.mp4'
     let pp4 = 'https://sylphy.xyz/download/eH58rr.mp4'
-    let pp5 = 'https://files.catbox.moe/o31g5x.mp4'
-    let pp6 = 'https://files.catbox.moe/c43d18.mp4'
-    const videos = [pp, pp2, pp3, pp4, pp5, pp6];
+    let pp5 = 'https://sylphy.xyz/download/DXVWSi.mp4'
+    const videos = [pp, pp2, pp3, pp4, pp5];
     const video = videos[Math.floor(Math.random() * videos.length)];
     conn.sendMessage(m.chat, { video: { url: video }, gifPlayback: true, caption:str, mentions: [m.sender] },{ quoted: estilo })
     };
