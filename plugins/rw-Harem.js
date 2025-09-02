@@ -1,40 +1,51 @@
 import fs from 'fs';
+import path from 'path';
 
-const obtenerDatos = () => {
-    try {
-        return fs.existsSync('data.json') 
-            ? JSON.parse(fs.readFileSync('data.json', 'utf-8')) 
-            : { usuarios: {}, personajesReservados: [] };
-    } catch {
-        return { usuarios: {}, personajesReservados: [] };
+const groupsFile = path.resolve('src/database/harem.json');
+let groups = loadGroups();
+
+function loadGroups() {
+  return fs.existsSync(groupsFile) ? JSON.parse(fs.readFileSync(groupsFile, 'utf8')) : {};
+}
+
+function saveGroups() {
+  fs.writeFileSync(groupsFile, JSON.stringify(groups, null, 2));
+}
+
+const handler = async (m, { conn, command }) => {
+  const isUnirAharem = /^uniraharem|agregaraharem$/i.test(command);
+  const groupId = m.chat;
+
+  try {
+    if (isUnirAharem) {
+      const userToRecruit = m.quoted?.sender || m.mentionedJid?.[0];
+      if (!userToRecruit) {
+        throw new Error('Debes mencionar a alguien para agregarlo a tu harem.\n> Ejemplo » *.uniraharem @usuario*');
+      }
+
+      if (!groups[groupId]) {
+        groups[groupId] = { members: [] };
+      }
+
+      if (groups[groupId].members.includes(userToRecruit)) {
+        throw new Error('El usuario ya está en tu harem.');
+      }
+
+      groups[groupId].members.push(userToRecruit);
+      saveGroups();
+
+      await conn.reply(m.chat, `¡El usuario @${userToRecruit.split('@')[0]} se ha unido a tu harem!`, m, {
+        mentions: [userToRecruit],
+      });
     }
+  } catch (error) {
+    await conn.reply(m.chat, `Error: ${error.message}`, m);
+  }
 };
 
-const handler = async (m, { conn }) => {
-    const sender = m.sender;
-    const data = obtenerDatos();
-    const usuario = data.usuarios[sender];
-
-    if (!usuario || !usuario.characters || usuario.characters.length === 0) {
-        return await conn.sendMessage(m.chat, {
-            text: `@${sender.split('@')[0]}, no tienes personajes reclamados.`,
-            mentions: [sender]
-        });
-    }
-
-    const personajes = usuario.characters.map((p, i) => 
-        `*${i + 1}.* ${p.name}\n  🔑 ID: ${p.id}\n  💎 Valor: ${p.value}`
-    ).join('\n\n');
-
-    return await conn.sendMessage(m.chat, {
-        text: `@${sender.split('@')[0]}, estos son tus personajes reclamados:\n\n${personajes}`,
-        mentions: [sender]
-    });
-};
-
-handler.help = ['harem'];
-handler.tags = ['rw'];
-handler.command = ['harem', 'miswaifus'];
+handler.tags = ['fun'];
+handler.help = ['uniraharem *@usuario*', 'agregaraharem *@usuario*'];
+handler.command = ['uniraharem', 'agregaraharem'];
 handler.group = true;
 
 export default handler;
