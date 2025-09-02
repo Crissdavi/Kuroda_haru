@@ -16,7 +16,7 @@ let handler = async (m, { conn, usedPrefix }) => {
 
     let pp = 'https://sylphy.xyz/download/4tfYos.mp4' 
     let pp2 = 'https://sylphy.xyz/download/TdCaDT.mp4' 
-    let pp3 = 'https://files.catbox.moe/v7ldgq.mp4' 
+    let pp3 = 'https://sylphy.xyz/download/4vxKJj.mp4' 
     let pp4 = 'https://files.catbox.moe/uedd7l.mp4' 
     let pp5 = 'https://files.catbox.moe/5stubg.mp4' 
     let pp6 = 'https://files.catbox.moe/phaft3.mp4'
