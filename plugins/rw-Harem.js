@@ -2,7 +2,7 @@
 import fs from 'fs';
 import path from 'path';
 
-const recruitmentsFile = path.resolve('src/database/recruitments.json');
+const recruitmentsFile = path.resolve('src/database/harem.json');
 let pendingInvitations = {};
 let recruitments = loadRecruitments();
 const confirmations = {};
@@ -29,7 +29,7 @@ const handler = async (m, { conn, command, participants }) => {
             const recruiter = m.sender;
 
             if (!recruit) {
-                throw new Error('Debes mencionar a alguien para reclutarlo.\n> Ejemplo » *#reclutar @usuario*');
+                throw new Error('Debes mencionar a alguien para unirlo a tu harem.\n> Ejemplo » *#unirharem @usuario*');
             }
             
             if (userIsInGroup(recruit)) {
