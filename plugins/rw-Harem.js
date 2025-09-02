@@ -31,6 +31,7 @@ const handler = async (m, { conn, command, participants, groupMetadata }) => {
     const isBecomeMaster = /^convertirmemaestro$/i.test(command);
     const isMasterInfo = /^mimaestro$/i.test(command);
 
+    // Función corregida para verificar si un usuario está en el grupo
     const userIsInGroup = (user) => {
         return participants.some(participant => participant.id === user);
     };
@@ -40,9 +41,23 @@ const handler = async (m, { conn, command, participants, groupMetadata }) => {
     };
 
     const getGroupMaster = () => {
-        return Object.values(haremMembers).find(member => 
-            member.group === m.chat && member.role === 'maestro'
-        )?.user;
+        return Object.entries(haremMembers).find(([memberId, memberData]) => 
+            memberData.group === m.chat && memberData.role === 'maestro'
+        )?.[0]; // Retorna el ID del maestro
+    };
+
+    // Función para contar miembros REALES del harem actual (excluyendo no miembros)
+    const countHaremMembers = () => {
+        return Object.values(haremMembers).filter(member => 
+            member.group === m.chat && member.status === 'active'
+        ).length;
+    };
+
+    // Función para obtener miembros REALES del harem actual
+    const getHaremMembers = () => {
+        return Object.entries(haremMembers).filter(([memberId, memberData]) => 
+            memberData.group === m.chat && memberData.status === 'active'
+        );
     };
 
     try {
@@ -54,8 +69,9 @@ const handler = async (m, { conn, command, participants, groupMetadata }) => {
                 throw new Error('Debes mencionar a alguien para invitarlo a tu harén.\n> Ejemplo » *#unirharem @usuario*');
             }
             
+            // Verificación CORREGIDA: usar la función userIsInGroup
             if (userIsInGroup(recruit)) {
-                return await conn.reply(m.chat, `《✧》 ${conn.getName(recruit)} ya está en este harén.`, m);
+                return await conn.reply(m.chat, `《✧》 ${conn.getName(recruit)} ya está en este grupo.`, m);
             }
             
             if (inviter === recruit) throw new Error('¡No puedes invitarte a ti mismo a tu harén!');
@@ -63,6 +79,11 @@ const handler = async (m, { conn, command, participants, groupMetadata }) => {
             // Verificar si el invitador es maestro
             if (!isUserMaster(inviter)) {
                 throw new Error('Solo los maestros pueden invitar a otros a su harén.\nUsa *#convertirmemaestro* para convertirte en maestro.');
+            }
+
+            // Verificar si el usuario ya está en algún harem
+            if (haremMembers[recruit] && haremMembers[recruit].status === 'active') {
+                return await conn.reply(m.chat, `《✧》 ${conn.getName(recruit)} ya pertenece al harén de ${conn.getName(haremMembers[recruit].master)}.`, m);
             }
 
             pendingInvitations[inviter] = recruit;
@@ -89,8 +110,17 @@ const handler = async (m, { conn, command, participants, groupMetadata }) => {
                 throw new Error('Debes mencionar a alguien para expulsarlo del harén.\n> Ejemplo » *#expulsardelharem @usuario*');
             }
             
-            if (!userIsInGroup(userToExpel)) {
+            // Verificar si el usuario está en la base de datos del harem
+            if (!haremMembers[userToExpel] || haremMembers[userToExpel].status !== 'active') {
                 throw new Error(`${conn.getName(userToExpel)} no está en este harén.`);
+            }
+            
+            // Verificar si el usuario está en el grupo de WhatsApp
+            if (!userIsInGroup(userToExpel)) {
+                // Si no está en el grupo pero sí en la BD, limpiar registro
+                delete haremMembers[userToExpel];
+                saveHarem();
+                throw new Error(`${conn.getName(userToExpel)} no está en el grupo pero fue removido de la base de datos.`);
             }
             
             // Solo el maestro del harem puede expulsar
@@ -113,23 +143,30 @@ const handler = async (m, { conn, command, participants, groupMetadata }) => {
             // Mostrar información del harem actual
             const groupMaster = getGroupMaster();
             const masterName = groupMaster ? conn.getName(groupMaster) : "Ninguno";
+            const realMemberCount = countHaremMembers();
+            const haremMembersList = getHaremMembers();
             
             let haremInfo = `👑 *INFORMACIÓN DEL HARÉN* 👑\n\n`;
             haremInfo += `• Maestro: ${masterName}\n`;
-            haremInfo += `• Miembros: ${participants.length - 1}\n\n`;
-            haremInfo += `*Lista de miembros:*\n`;
+            haremInfo += `• Miembros registrados: ${realMemberCount}\n`;
+            haremInfo += `• Miembros en el grupo: ${participants.length - 1}\n\n`;
             
-            participants.forEach((p, index) => {
-                if (!p.id.endsWith('@s.whatsapp.net')) return;
+            if (realMemberCount > 0) {
+                haremInfo += `*Lista de miembros registrados:*\n`;
                 
-                if (p.id === groupMaster) {
-                    haremInfo += `👑 ${conn.getName(p.id)} (Maestro)\n`;
-                } else if (isUserMaster(p.id)) {
-                    haremInfo += `⭐ ${conn.getName(p.id)} (Maestro)\n`;
-                } else {
-                    haremInfo += `💖 ${conn.getName(p.id)}\n`;
-                }
-            });
+                haremMembersList.forEach(([memberId, memberData], index) => {
+                    const memberName = conn.getName(memberId);
+                    if (memberId === groupMaster) {
+                        haremInfo += `👑 ${memberName} (Maestro)\n`;
+                    } else if (isUserMaster(memberId)) {
+                        haremInfo += `⭐ ${memberName} (Maestro)\n`;
+                    } else {
+                        haremInfo += `💖 ${memberName}\n`;
+                    }
+                });
+            } else {
+                haremInfo += `*No hay miembros registrados en este harén.*\n`;
+            }
             
             haremInfo += `\nUsa *${process.env.PREFIX || '#'}unirharem @usuario* para invitar a alguien a tu harén.`;
             
@@ -150,6 +187,19 @@ const handler = async (m, { conn, command, participants, groupMetadata }) => {
             };
             saveMasters();
             
+            // Si es el primer maestro en este grupo, asignarlo como maestro del harén
+            const groupMaster = getGroupMaster();
+            if (!groupMaster) {
+                haremMembers[user] = {
+                    master: user,
+                    group: m.chat,
+                    joinDate: new Date().toISOString(),
+                    status: 'active',
+                    role: 'maestro'
+                };
+                saveHarem();
+            }
+            
             await conn.reply(m.chat, `🎉 ¡Felicidades ${conn.getName(user)}! Ahora eres un maestro y puedes crear tu propio harén. 👑\n\nUsa *${process.env.PREFIX || '#'}unirharem @usuario* para invitar miembros a tu harén.`, m);
             
         } else if (isMasterInfo) {
@@ -162,7 +212,7 @@ const handler = async (m, { conn, command, participants, groupMetadata }) => {
             const masterData = masters[user];
             const joinDate = new Date(masterData.since).toLocaleDateString();
             
-            // Contar miembros en el harem actual
+            // Contar miembros en el harem actual del maestro
             const memberCount = Object.values(haremMembers).filter(member => 
                 member.master === user && member.status === 'active'
             ).length;
@@ -228,6 +278,29 @@ handler.before = async (m) => {
         delete confirmations[m.sender];
     }
 };
+
+// Función para limpiar miembros que ya no están en grupos
+async function cleanupHaremMembers(conn) {
+    for (const [memberId, memberData] of Object.entries(haremMembers)) {
+        if (memberData.status === 'active') {
+            try {
+                const groupData = await conn.groupMetadata(memberData.group).catch(() => null);
+                if (!groupData || !groupData.participants.some(p => p.id === memberId)) {
+                    // Miembro ya no está en el grupo, marcarlo como inactivo
+                    haremMembers[memberId].status = 'inactive';
+                }
+            } catch (error) {
+                console.log('Error al verificar miembro:', error);
+            }
+        }
+    }
+    saveHarem();
+}
+
+// Ejecutar limpieza periódicamente (cada hora)
+setInterval(() => {
+    cleanupHaremMembers(conn);
+}, 3600000);
 
 handler.tags = ['group', 'harem'];
 handler.help = [
