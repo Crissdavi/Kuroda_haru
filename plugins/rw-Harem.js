@@ -1,5 +1,4 @@
-
-    import fs from 'fs';
+import fs from 'fs';
 import path from 'path';
 
 const haremFile = path.resolve('src/database/harem.json');
