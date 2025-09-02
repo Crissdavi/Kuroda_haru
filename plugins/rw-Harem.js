@@ -16,7 +16,7 @@ function saveRecruitments() {
 }
 
 const handler = async (m, { conn, command, participants }) => {
-    const isRecruit = /^reclutar$/i.test(command);
+    const isHarem = /^unirharem$/i.test(command);
     const isExpel = /^expulsar$/i.test(command);
 
     const userIsInGroup = (user) => {
@@ -36,7 +36,7 @@ const handler = async (m, { conn, command, participants }) => {
                 return await conn.reply(m.chat, `《✧》 ${conn.getName(recruit)} ya está en este grupo.`, m);
             }
             
-            if (recruiter === recruit) throw new Error('¡No puedes reclutarte a ti mismo!');
+            if (recruiter === recruit) throw new Error('¡No puedes unirte a ti mismo!');
 
             pendingInvitations[recruiter] = recruit;
             const recruiterName = conn.getName(recruiter);
@@ -120,6 +120,6 @@ handler.help = ['reclutar *@usuario*', 'expulsar *@usuario*'];
 handler.command = ['reclutar', 'expulsar'];
 handler.group = true;
 handler.admin = false; // reclutar no requiere admin, expulsar sí
-handler.botAdmin = true; // el bot necesita ser admin para agregar/expulsar
+handler.botAdmin = false; // el bot necesita ser admin para agregar/expulsar
 
 export default handler;
