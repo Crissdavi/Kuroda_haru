@@ -18,29 +18,24 @@ const handler = async (m, { conn }) => {
 
   try {
     if (!groups[groupId]) {
-      groups[groupId] = { members: [] };
+      groups[groupId] = {};
     }
 
-    // Agregar usuario al grupo si no existe
-    if (!groups[groupId].members.includes(userId)) {
-      groups[groupId].members.push(userId);
-      saveGroups();
+    if (!groups[groupId][userId]) {
+      groups[groupId][userId] = { harem: [] };
     }
 
-    const haremCount = groups[groupId].members.filter((member) => member === userId).length;
     const mentionedUser = m.mentionedJid?.[0];
 
     if (mentionedUser) {
-      // Agregar mencionado al grupo si no existe
-      if (!groups[groupId].members.includes(mentionedUser)) {
-        groups[groupId].members.push(mentionedUser);
+      if (!groups[groupId][userId].harem.includes(mentionedUser)) {
+        groups[groupId][userId].harem.push(mentionedUser);
         saveGroups();
       }
 
-      const mentionedUserHaremCount = groups[groupId].members.filter((member) => member === mentionedUser).length;
-      await conn.reply(m.chat, `El usuario @${mentionedUser.split('@')[0]} tiene ${mentionedUserHaremCount} usuarios en su harem.`, m, { mentions: [mentionedUser] });
+      await conn.reply(m.chat, `El usuario @${mentionedUser.split('@')[0]} ha sido agregado a tu harem.`, m, { mentions: [mentionedUser] });
     } else {
-      await conn.reply(m.chat, `Tienes ${haremCount} usuarios en tu harem.`, m);
+      await conn.reply(m.chat, `Tienes ${groups[groupId][userId].harem.length} usuarios en tu harem.`, m);
     }
   } catch (error) {
     await conn.reply(m.chat, `Error: ${error.message}`, m);
