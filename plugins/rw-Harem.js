@@ -4,10 +4,8 @@ import path from 'path';
 
 const haremFile = path.resolve('src/database/harem.json');
 const mastersFile = path.resolve('src/database/harem_masters.json');
-let pendingInvitations = {};
 let haremMembers = loadHarem();
 let masters = loadMasters();
-const confirmations = {};
 
 function loadHarem() {
     return fs.existsSync(haremFile) ? JSON.parse(fs.readFileSync(haremFile, 'utf8')) : {};
@@ -33,6 +31,7 @@ const handler = async (m, { conn, command }) => {
     const isMasterInfo = /^mihareminfo$/i.test(command);
     const isLeaveHarem = /^dejarharem$/i.test(command);
     const isHaremList = /^listaharem$/i.test(command);
+    const isDisbandHarem = /^disolverharem$/i.test(command);
 
     const isUserMaster = (user) => {
         return masters[user] !== undefined;
@@ -83,22 +82,26 @@ const handler = async (m, { conn, command }) => {
                 return await conn.reply(m.chat, `《✧》 ${conn.getName(recruit)} ya pertenece al harén de ${conn.getName(currentMaster)}.`, m);
             }
 
-            pendingInvitations[inviter] = recruit;
             const inviterName = conn.getName(inviter);
             const recruitName = conn.getName(recruit);
             
-            const confirmationMessage = `👑 ${inviterName} te ha invitado a unirte a su harén real. ${recruitName} ¿aceptas convertirte en miembro de su harén?\n\n*Debes Responder con:*\n> ✐"Si" » para aceptar y unirte\n> ✐"No" » para rechazar la invitación.`;
-            
-            await conn.reply(m.chat, confirmationMessage, m, { mentions: [recruit, inviter] });
-
-            confirmations[recruit] = {
+            // Añadir automáticamente al harén sin confirmación
+            haremMembers[recruit] = {
                 master: inviter,
                 haremId: inviterHaremId,
-                timeout: setTimeout(() => {
-                    conn.sendMessage(m.chat, { text: '*《✧》Se acabó el tiempo, la invitación al harén ha expirado.*' }, { quoted: m });
-                    delete confirmations[recruit];
-                }, 60000)
+                joinDate: new Date().toISOString(),
+                status: 'active',
+                role: 'miembro'
             };
+            saveHarem();
+
+            // Actualizar contador del maestro
+            if (masters[inviter]) {
+                masters[inviter].memberCount = countHaremMembers(inviterHaremId);
+                saveMasters();
+            }
+
+            await conn.reply(m.chat, `🌸 ¡${recruitName} se ha unido automáticamente al harén de ${inviterName}! 👑\n\n¡Bienvenida/o al harén real! ✨`, m, { mentions: [recruit, inviter] });
 
         } else if (isExpelFromHarem) {
             const userToExpel = m.quoted?.sender || m.mentionedJid?.[0];
@@ -120,6 +123,8 @@ const handler = async (m, { conn, command }) => {
                 throw new Error('Solo el maestro de este harén puede expulsar miembros.');
             }
             
+            const expelledName = conn.getName(userToExpel);
+            
             // Eliminar del registro del harem
             delete haremMembers[userToExpel];
             saveHarem();
@@ -130,7 +135,7 @@ const handler = async (m, { conn, command }) => {
                 saveMasters();
             }
             
-            await conn.reply(m.chat, `✐ ${conn.getName(userToExpel)} ha sido liberado del harén.`, m);
+            await conn.reply(m.chat, `✐ ${expelledName} ha sido expulsado del harén.`, m);
             
         } else if (isHaremInfo) {
             const user = m.sender;
@@ -148,7 +153,8 @@ const handler = async (m, { conn, command }) => {
             
             let haremInfo = `👑 *INFORMACIÓN DE TU HARÉN* 👑\n\n`;
             haremInfo += `• Maestro: ${masterName}\n`;
-            haremInfo += `• Miembros: ${memberCount}\n\n`;
+            haremInfo += `• Miembros: ${memberCount}\n`;
+            haremInfo += `• ID del harén: ${userHaremId}\n\n`;
             
             if (memberCount > 0) {
                 haremInfo += `*Lista de miembros:*\n`;
@@ -200,7 +206,7 @@ const handler = async (m, { conn, command }) => {
             saveMasters();
             saveHarem();
             
-            await conn.reply(m.chat, `🎉 ¡Felicidades ${conn.getName(user)}! Has creado tu propio harén. 👑\n\nUsa *${process.env.PREFIX || '#'}unirharem @usuario* para invitar miembros a tu harén.`, m);
+            await conn.reply(m.chat, `🎉 ¡Felicidades ${conn.getName(user)}! Has creado tu propio harén. 👑\n\n• ID de tu harén: ${haremId}\n• Usa *${process.env.PREFIX || '#'}unirharem @usuario* para invitar miembros.`, m);
             
         } else if (isMasterInfo) {
             const user = m.sender;
@@ -222,7 +228,8 @@ const handler = async (m, { conn, command }) => {
             masterInfo += `• #unirharem @usuario → Invitar a tu harén\n`;
             masterInfo += `• #expulsardelharem @usuario → Expulsar miembro\n`;
             masterInfo += `• #miharem → Ver información de tu harén\n`;
-            masterInfo += `• #listaharem → Ver todos los harenes`;
+            masterInfo += `• #listaharem → Ver todos los harenes\n`;
+            masterInfo += `• #disolverharem → Disolver tu harén (elimina todos los miembros)`;
             
             await conn.reply(m.chat, masterInfo, m);
             
@@ -238,7 +245,7 @@ const handler = async (m, { conn, command }) => {
             
             // Si es el maestro, no puede abandonar, debe disolver el harén
             if (user === groupMaster) {
-                return await conn.reply(m.chat, `《✧》 Eres el maestro de este harén. No puedes abandonarlo.\nSi quieres disolverlo, expulsa a todos los miembros primero.`, m);
+                return await conn.reply(m.chat, `《✧》 Eres el maestro de este harén. No puedes abandonarlo.\nUsa #disolverharem si quieres eliminar todo el harén.`, m);
             }
             
             // Eliminar del registro del harem
@@ -276,60 +283,68 @@ const handler = async (m, { conn, command }) => {
                 haremList += `*Harenes activos:*\n\n`;
                 
                 Object.values(allHarems).forEach((harem, index) => {
-                    haremList += `*${index + 1}.* ${harem.masterName} - ${harem.memberCount} miembros\n`;
+                    haremList += `*${index + 1}.* ${harem.masterName} - ${harem.memberCount} miembros (ID: ${harem.masterData?.haremId || 'N/A'})\n`;
                 });
                 
                 haremList += `\nUsa *${process.env.PREFIX || '#'}unirharem @usuario* para unirte a un harén.`;
             }
             
             await conn.reply(m.chat, haremList, m);
+            
+        } else if (isDisbandHarem) {
+            const user = m.sender;
+            
+            if (!isUserMaster(user)) {
+                return await conn.reply(m.chat, `《✧》 No eres maestro de ningún harén.`, m);
+            }
+            
+            const masterData = masters[user];
+            const haremId = masterData.haremId;
+            const memberCount = countHaremMembers(haremId);
+            
+            // Confirmación rápida
+            const confirmMessage = `¿Estás seguro de que quieres disolver tu harén (ID: ${haremId}) con ${memberCount} miembros?\n\nResponde *"si"* para confirmar o *"no"* para cancelar.`;
+            await conn.reply(m.chat, confirmMessage, m);
+            
+            // Esperar confirmación
+            let confirmed = false;
+            const collector = (response) => {
+                if (response.sender === user && /^s[ií]?$/i.test(response.text)) {
+                    confirmed = true;
+                    conn.off('message-new', collector);
+                } else if (response.sender === user && /^no?$/i.test(response.text)) {
+                    conn.off('message-new', collector);
+                }
+            };
+            
+            conn.on('message-new', collector);
+            
+            // Esperar 15 segundos por la respuesta
+            await new Promise(resolve => setTimeout(resolve, 15000));
+            conn.off('message-new', collector);
+            
+            if (confirmed) {
+                // Eliminar todos los miembros del harén
+                const members = getHaremMembers(haremId);
+                members.forEach(([memberId]) => {
+                    delete haremMembers[memberId];
+                });
+                
+                // Eliminar al maestro
+                delete masters[user];
+                
+                saveHarem();
+                saveMasters();
+                
+                await conn.reply(m.chat, `✐ Tu harén (ID: ${haremId}) ha sido disuelto correctamente. Todos los ${memberCount} miembros han sido liberados.`, m);
+            } else {
+                await conn.reply(m.chat, `《✧》 Operación cancelada. Tu harén (ID: ${haremId}) sigue activo.`, m);
+            }
         }
     } catch (error) {
         await conn.reply(m.chat, `《✧》 ${error.message}`, m);
     }
 }
-
-handler.before = async (m) => {
-    if (m.isBaileys) return;
-    if (!(m.sender in confirmations)) return;
-    if (!m.text) return;
-
-    const { master, haremId, timeout } = confirmations[m.sender];
-
-    if (/^No$/i.test(m.text)) {
-        clearTimeout(timeout);
-        delete confirmations[m.sender];
-        return conn.reply(m.chat, '*《✧》Han rechazado tu invitación al harén.*', m);
-    }
-
-    if (/^Si$/i.test(m.text)) {
-        try {
-            // Guardar la información del harem
-            haremMembers[m.sender] = {
-                master: master,
-                haremId: haremId,
-                joinDate: new Date().toISOString(),
-                status: 'active',
-                role: 'miembro'
-            };
-            saveHarem();
-
-            // Actualizar contador del maestro
-            if (masters[master]) {
-                masters[master].memberCount = countHaremMembers(haremId);
-                saveMasters();
-            }
-
-            conn.reply(m.chat, `🌸 ¡Bienvenida/o al harén real, ${conn.getName(m.sender)}! \n\nAhora formas parte del harén de ${conn.getName(master)}\n\n¡Que tu estadía esté llena de prosperidad y elegancia! 👑✨`, m, { mentions: [master, m.sender] });
-
-        } catch (error) {
-            conn.reply(m.chat, `《✧》 Error al unirte al harén: ${error.message}`, m);
-        }
-
-        clearTimeout(timeout);
-        delete confirmations[m.sender];
-    }
-};
 
 // Función auxiliar para contar miembros de un harén
 function countHaremMembers(haremId) {
@@ -346,12 +361,13 @@ handler.help = [
     'miharem',
     'mihareminfo',
     'dejarharem',
-    'listaharem'
+    'listaharem',
+    'disolverharem'
 ];
-handler.command = ['unirharem', 'expulsardelharem', 'miharem', 'crearharem', 'mihareminfo', 'dejarharem', 'listaharem'];
-handler.group = true; // Ya no necesita estar en grupo
-handler.private = false; // Funciona en chats privados
+handler.command = ['unirharem', 'expulsardelharem', 'miharem', 'crearharem', 'mihareminfo', 'dejarharem', 'listaharem', 'disolverharem'];
+handler.group = false;
+handler.private = true;
 handler.admin = false;
-handler.botAdmin = false; // Ya no necesita permisos de admin
+handler.botAdmin = false;
 
 export default handler;
