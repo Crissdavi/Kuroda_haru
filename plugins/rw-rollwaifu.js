@@ -27,9 +27,9 @@ const handlerHaremCount = async (m, { conn }) => {
   }
 };
 
-handlerHaremCount.tags = ['fun'];
-handlerHaremCount.help = ['haremcount'];
-handlerHaremCount.command = ['haremcount', 'cuentadeharem'];
-handlerHaremCount.group = true;
+handler.tags = ['fun'];
+handler.help = ['haremcount'];
+handler.command = ['haremcount', 'cuentadeharem'];
+handler.group = true;
 
 export { handlerHaremCount };
