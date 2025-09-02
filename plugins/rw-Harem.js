@@ -44,8 +44,8 @@ const handler = async (m, { conn, command }) => {
 };
 
 handler.tags = ['fun'];
-handler.help = ['uniraharem *@usuario*', 'agregaraharem *@usuario*'];
-handler.command = ['uniraharem', 'agregaraharem'];
+handler.help = ['unirharem *@usuario*', 'agregarharem *@usuario*'];
+handler.command = ['unirharem', 'agregarharem'];
 handler.group = true;
 
 export default handler;
