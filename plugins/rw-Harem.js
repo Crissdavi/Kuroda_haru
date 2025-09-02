@@ -1,3 +1,4 @@
+
 import fs from 'fs';
 import path from 'path';
 
@@ -12,44 +13,40 @@ function saveGroups() {
   fs.writeFileSync(groupsFile, JSON.stringify(groups, null, 2));
 }
 
-const handler = async (m, { conn }) => {
+const handler = async (m, { conn, command }) => {
+  const isUnirAharem = /^unirharem|agregarharem$/i.test(command);
   const groupId = m.chat;
-  const userId = m.sender;
 
   try {
-    if (!groups[groupId]) {
-      groups[groupId] = { members: [] };
-    }
-
-    // Agregar usuario al grupo si no existe
-    if (!groups[groupId].members.includes(userId)) {
-      groups[groupId].members.push(userId);
-      saveGroups();
-    }
-
-    const haremCount = groups[groupId].members.filter((member) => member === userId).length;
-    const mentionedUser = m.mentionedJid?.[0];
-
-    if (mentionedUser) {
-      // Agregar mencionado al grupo si no existe
-      if (!groups[groupId].members.includes(mentionedUser)) {
-        groups[groupId].members.push(mentionedUser);
-        saveGroups();
+    if (isUnirAharem) {
+      const userToRecruit = m.quoted?.sender || m.mentionedJid?.[0];
+      if (!userToRecruit) {
+        throw new Error('Debes mencionar a alguien para agregarlo a tu harem.\n> Ejemplo » *.unirharem @usuario*');
       }
 
-      const mentionedUserHaremCount = groups[groupId].members.filter((member) => member === mentionedUser).length;
-      await conn.reply(m.chat, `El usuario @${mentionedUser.split('@')[0]} tiene ${mentionedUserHaremCount} usuarios en su harem.`, m, { mentions: [mentionedUser] });
-    } else {
-      await conn.reply(m.chat, `Tienes ${haremCount} usuarios en tu harem.`, m);
+      if (!groups[groupId]) {
+        groups[groupId] = { members: [] };
+      }
+
+      if (groups[groupId].members.includes(userToRecruit)) {
+        throw new Error('El usuario ya está en tu harem.');
+      }
+
+      groups[groupId].members.push(userToRecruit);
+      saveGroups();
+
+      await conn.reply(m.chat, `¡El usuario @${userToRecruit.split('@')[0]} se ha unido a tu harem!`, m, {
+        mentions: [userToRecruit],
+      });
     }
   } catch (error) {
-    await conn.reply(m.chat, `Error: ${error.message}`, m);
+    await conn.reply(m.chat, `Error: ${error.message}`, m, null, rcanal);
   }
 };
 
 handler.tags = ['fun'];
-handler.help = ['haremcount'];
-handler.command = ['haremcount', 'cuentadeharem'];
+handler.help = ['unirharem *@usuario*', 'agregarharem *@usuario*'];
+handler.command = ['unirharem', 'agregarharem'];
 handler.group = true;
 
 export default handler;
