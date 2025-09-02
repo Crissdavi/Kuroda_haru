@@ -115,9 +115,9 @@ handler.before = async (m) => {
     }
 };
 
-handler.tags = ['group'];
-handler.help = ['reclutar *@usuario*', 'expulsar *@usuario*'];
-handler.command = ['reclutar', 'expulsar'];
+handler.tags = ['fun'];
+handler.help = ['unirharem *@usuario*', 'expulsar *@usuario*'];
+handler.command = ['unirharem', 'expulsar'];
 handler.group = true;
 handler.admin = false; // reclutar no requiere admin, expulsar sí
 handler.botAdmin = false; // el bot necesita ser admin para agregar/expulsar
