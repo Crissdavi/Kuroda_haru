@@ -349,8 +349,8 @@ handler.help = [
     'listaharem'
 ];
 handler.command = ['unirharem', 'expulsardelharem', 'miharem', 'crearharem', 'mihareminfo', 'dejarharem', 'listaharem'];
-handler.group = false; // Ya no necesita estar en grupo
-handler.private = true; // Funciona en chats privados
+handler.group = true; // Ya no necesita estar en grupo
+handler.private = false; // Funciona en chats privados
 handler.admin = false;
 handler.botAdmin = false; // Ya no necesita permisos de admin
 
