@@ -15,7 +15,7 @@ let handler = async (m, { conn, usedPrefix }) => {
     if (m.isGroup){
 
     let pp = 'https://sylphy.xyz/download/4tfYos.mp4' 
-    let pp2 = 'https://files.catbox.moe/fqf4ey.mp4' 
+    let pp2 = 'https://sylphy.xyz/download/TdCaDT.mp4' 
     let pp3 = 'https://files.catbox.moe/v7ldgq.mp4' 
     let pp4 = 'https://files.catbox.moe/uedd7l.mp4' 
     let pp5 = 'https://files.catbox.moe/5stubg.mp4' 
