@@ -1,4 +1,4 @@
-const handlerHaremCount = async (m, { conn }) => {
+const handler = async (m, { conn }) => {
   const groupId = m.chat;
   const userId = m.sender;
 
@@ -32,4 +32,4 @@ handler.help = ['haremcount'];
 handler.command = ['haremcount', 'cuentadeharem'];
 handler.group = true;
 
-export { handlerHaremCount };
+export default handler
