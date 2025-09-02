@@ -24,34 +24,34 @@ const handler = async (m, { conn, command, participants }) => {
     };
 
     try {
-        if (isRecruit) {
+        if (isHarem) {
             const recruit = m.quoted?.sender || m.mentionedJid?.[0];
             const recruiter = m.sender;
 
-            if (!recruit) {
+            if (!reharem) {
                 throw new Error('Debes mencionar a alguien para unirlo a tu harem.\n> Ejemplo » *#unirharem @usuario*');
             }
             
-            if (userIsInGroup(recruit)) {
-                return await conn.reply(m.chat, `《✧》 ${conn.getName(recruit)} ya está en este grupo.`, m);
+            if (userIsInGroup(harem)) {
+                return await conn.reply(m.chat, `《✧》 ${conn.getName(harem)} ya está en este grupo.`, m);
             }
             
-            if (recruiter === recruit) throw new Error('¡No puedes unirte a ti mismo!');
+            if (recruiter === harem) throw new Error('¡No puedes unirte a ti mismo!');
 
             pendingInvitations[recruiter] = recruit;
             const recruiterName = conn.getName(recruiter);
-            const recruitName = conn.getName(recruit);
+            const haremName = conn.getName(harem);
             
-            const confirmationMessage = `🎯 ${recruiterName} te ha invitado a unirte a este grupo. ${recruitName} ¿aceptas la invitación?\n\n*Debes Responder con:*\n> ✐"Si" » para aceptar\n> ✐"No" » para rechazar.`;
+            const confirmationMessage = `🎯 ${recruiterName} te ha invitado a unirte a este grupo. ${haremName} ¿aceptas la invitación?\n\n*Debes Responder con:*\n> ✐"Si" » para aceptar\n> ✐"No" » para rechazar.`;
             
-            await conn.reply(m.chat, confirmationMessage, m, { mentions: [recruit, recruiter] });
+            await conn.reply(m.chat, confirmationMessage, m, { mentions: [harem, recruiter] });
 
-            confirmations[recruit] = {
+            confirmations[harem] = {
                 recruiter,
                 groupId: m.chat,
                 timeout: setTimeout(() => {
                     conn.sendMessage(m.chat, { text: '*《✧》Se acabó el tiempo, no se obtuvo respuesta. La invitación ha expirado.*' }, { quoted: m });
-                    delete confirmations[recruit];
+                    delete confirmations[harem];
                 }, 60000)
             };
 
