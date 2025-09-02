@@ -14,7 +14,7 @@ let handler = async (m, { conn, usedPrefix }) => {
     let str = `${name2} está enojado/a con ${name}`.trim();
     if (m.isGroup){
 
-    let pp = 'https://files.catbox.moe/2aedd3.mp4' 
+    let pp = 'https://sylphy.xyz/download/4tfYos.mp4' 
     let pp2 = 'https://files.catbox.moe/fqf4ey.mp4' 
     let pp3 = 'https://files.catbox.moe/v7ldgq.mp4' 
     let pp4 = 'https://files.catbox.moe/uedd7l.mp4' 
