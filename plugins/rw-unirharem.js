@@ -8,7 +8,7 @@ let harem = JSON.parse(fs.readFileSync(haremFile));
 let masters = JSON.parse(fs.readFileSync(mastersFile));
 
 export default {
-  command: /^\.unirharem/i,
+handler.command: /^\.unirharem/i,
   handler: async (m, { conn }) => {
     let mentionedJid = m.mentionedJid && m.mentionedJid[0]
       ? m.mentionedJid[0]
