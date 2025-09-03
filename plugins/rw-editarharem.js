@@ -47,7 +47,7 @@ const handler = async (m, { conn, args }) => {
 };
 
 handler.help = ["editarharem <id> <nuevo_nombre>"];
-handler.tags = ["harem"];
+handler.tags = ["rw"];
 handler.command = /^editarharem$/i;
 
 export default handler;
