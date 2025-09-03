@@ -1,40 +1,72 @@
-let handler = async (m, { conn, text }) => {
-  if (!text) throw `Debes especificar el nombre del harem que quieres disolver.`
+// plugins/harem/disolverharem.js
+import fs from "fs";
+import path from "path";
 
-  let confirmMsg = await conn.reply(
+const haremFile = path.resolve("src/database/harem.json");
+const mastersFile = path.resolve("src/database/harem_masters.json");
+
+function loadHarem() {
+  if (!fs.existsSync(haremFile)) return {};
+  return JSON.parse(fs.readFileSync(haremFile, "utf8"));
+}
+
+function loadMasters() {
+  if (!fs.existsSync(mastersFile)) return {};
+  return JSON.parse(fs.readFileSync(mastersFile, "utf8"));
+}
+
+function saveHarem(data) {
+  fs.writeFileSync(haremFile, JSON.stringify(data, null, 2));
+}
+
+function saveMasters(data) {
+  fs.writeFileSync(mastersFile, JSON.stringify(data, null, 2));
+}
+
+const handler = async (m, { conn, args }) => {
+  const haremMembers = loadHarem();
+  const masters = loadMasters();
+  const user = m.sender;
+
+  const haremId = args[0];
+  if (!haremId) {
+    return conn.reply(
+      m.chat,
+      "《✧》 Debes indicar la *ID del harén* que quieres disolver.\n> Ejemplo » *.disolverharem harem123*",
+      m
+    );
+  }
+
+  if (!masters[user] || masters[user].haremId !== haremId) {
+    return conn.reply(
+      m.chat,
+      "《✧》 Solo el maestro de este harén puede disolverlo.",
+      m
+    );
+  }
+
+  // eliminar miembros del harem
+  Object.keys(haremMembers).forEach((member) => {
+    if (haremMembers[member].haremId === haremId) {
+      delete haremMembers[member];
+    }
+  });
+
+  // eliminar al maestro
+  delete masters[user];
+
+  saveHarem(haremMembers);
+  saveMasters(masters);
+
+  return conn.reply(
     m.chat,
-    `⚠️ ¿Seguro que deseas disolver el harem *${text}*?\n\nResponde a este mensaje con *sí* o *no*.`,
+    `《✧》 El harén con ID *${haremId}* ha sido disuelto exitosamente.`,
     m
-  )
+  );
+};
 
-  // Guardamos el estado temporal
-  conn.haremConfirm = conn.haremConfirm || {}
-  conn.haremConfirm[confirmMsg.key.id] = {
-    name: text,
-    user: m.sender
-  }
-}
+handler.help = ["disolverharem <id>"];
+handler.tags = ["harem"];
+handler.command = /^disolverharem$/i;
 
-handler.before = async (m, { conn }) => {
-  if (!m.quoted) return !0
-  if (!conn.haremConfirm) return !0
-
-  let data = conn.haremConfirm[m.quoted.id]
-  if (!data) return !0
-  if (m.sender !== data.user) return !0
-
-  if (/^s(i|í)$/i.test(m.text)) {
-    // Acción al confirmar
-    await m.reply(`✅ El harem *${data.name}* ha sido disuelto.`)
-    // Aquí borras el harem de la DB
-    delete conn.haremConfirm[m.quoted.id]
-  } else if (/^no$/i.test(m.text)) {
-    await m.reply(`❎ Se canceló la disolución del harem.`)
-    delete conn.haremConfirm[m.quoted.id]
-  } else {
-    await m.reply(`Responde únicamente con *sí* o *no*.`)
-  }
-}
-
-handler.command = /^disolverharem$/i
-export default handler
+export default handler;
