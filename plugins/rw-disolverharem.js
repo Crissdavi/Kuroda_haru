@@ -13,8 +13,10 @@ function saveJSON(file, data) {
   fs.writeFileSync(file, JSON.stringify(data, null, 2))
 }
 
+// memoria temporal de confirmaciones
+let confirmaciones = {}
+
 let handler = async (m, { conn, args }) => {
-  let harem = loadJSON(haremFile)
   let masters = loadJSON(mastersFile)
   const user = m.sender
   const haremId = args[0]
@@ -32,40 +34,33 @@ let handler = async (m, { conn, args }) => {
     return conn.reply(m.chat, "⚠️ Solo puedes disolver tu propio harén.", m)
   }
 
-  // Crear botones
-  const buttons = [
-    { buttonId: `confirmarDisolver_${haremId}`, buttonText: { displayText: "✅ Confirmar" }, type: 1 },
-    { buttonId: "cancelarDisolver", buttonText: { displayText: "❌ Cancelar" }, type: 1 },
-  ]
-
-  const buttonMessage = {
-    text: `⚠️ Estás a punto de disolver tu harén (ID: ${haremId}).\n\n¿Quieres continuar?`,
-    footer: "Sistema de Harén",
-    buttons,
-    headerType: 1,
-  }
-
-  await conn.sendMessage(m.chat, buttonMessage, { quoted: m })
+  confirmaciones[user] = { haremId, chat: m.chat }
+  return conn.reply(
+    m.chat,
+    `⚠️ Estás a punto de disolver tu harén (ID: ${haremId}).\n\nEscribe *si* para confirmar o *no* para cancelar.`,
+    m
+  )
 }
 
 handler.command = /^disolverharem$/i
 export default handler
 
-// --- Handler de los botones ---
+// --- confirmación escrita ---
 export async function before(m, { conn }) {
-  if (!m.message?.buttonsResponseMessage) return
-  const buttonId = m.message.buttonsResponseMessage.selectedButtonId
-  const sender = m.sender
+  const user = m.sender
+  if (!confirmaciones[user]) return false
+  const { haremId, chat } = confirmaciones[user]
 
-  let harem = loadJSON(haremFile)
-  let masters = loadJSON(mastersFile)
+  if (m.chat !== chat) return false
+  const respuesta = m.text?.trim().toLowerCase()
 
-  if (buttonId.startsWith("confirmarDisolver_")) {
-    const haremId = buttonId.split("_")[1]
+  if (respuesta === "si") {
+    let harem = loadJSON(haremFile)
+    let masters = loadJSON(mastersFile)
 
-    if (!masters[sender]) return
-    if (masters[sender].haremId !== haremId) {
-      return conn.reply(m.chat, "⚠️ Solo puedes disolver tu propio harén.", m)
+    if (!masters[user] || masters[user].haremId !== haremId) {
+      delete confirmaciones[user]
+      return conn.reply(chat, "⚠️ Ya no eres maestro de ese harén.", m)
     }
 
     // eliminar miembros
@@ -74,15 +69,19 @@ export async function before(m, { conn }) {
         delete harem[u]
       }
     }
-    delete masters[sender]
+    delete masters[user]
 
     saveJSON(haremFile, harem)
     saveJSON(mastersFile, masters)
 
-    return conn.reply(m.chat, `✅ Tu harén (ID: ${haremId}) ha sido disuelto.`, m)
+    delete confirmaciones[user]
+    return conn.reply(chat, `✅ Tu harén (ID: ${haremId}) ha sido disuelto.`, m)
   }
 
-  if (buttonId === "cancelarDisolver") {
-    return conn.reply(m.chat, "❌ Has cancelado la disolución del harén.", m)
+  if (respuesta === "no") {
+    delete confirmaciones[user]
+    return conn.reply(chat, "❌ Has cancelado la disolución del harén.", m)
   }
+
+  return false
 }
