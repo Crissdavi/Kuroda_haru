@@ -44,6 +44,6 @@ const handlerUnir = async (m, { conn }) => {
 
 handler.tags = ['harem'];
 handler.help = ['infoharem'];
-handler.command = ['infoharem'];
+handler.command = ['infoharem', 'miharem'];
 
 export default handler;
