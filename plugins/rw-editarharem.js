@@ -2,7 +2,7 @@
 import fs from "fs";
 import path from "path";
 
-const mastersFile = path.resolve("src/database/harem_masters.json");
+const mastersFile = "./src/database/harem_masters.json";
 
 function loadMasters() {
   if (!fs.existsSync(mastersFile)) return {};
