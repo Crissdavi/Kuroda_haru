@@ -3,8 +3,6 @@ import path from 'path';
 
 const haremsFile = path.resolve('src/database/harems.json');
 let harems = loadHarems();
-// Almacenar solicitudes de eliminación pendientes
-const pendingDeletions = new Map();
 
 function loadHarems() {
   try {
@@ -25,40 +23,9 @@ function saveHarems() {
 
 const handler = async (m, { conn }) => {
   const usuario = m.sender;
-  const texto = m.text.toLowerCase().trim();
   
   // Cargar datos frescos
   harems = loadHarems();
-
-  // Verificar si hay una confirmación pendiente
-  if (pendingDeletions.has(usuario)) {
-        const isHarems = /^confirmar$/i.test(command);
- {
-      // CONFIRMAR eliminación
-      const haremInfo = pendingDeletions.get(usuario);
-      delete harems[usuario];
-      saveHarems();
-      pendingDeletions.delete(usuario);
-      
-      return await conn.reply(m.chat, 
-        `🗑️ *HAREM ELIMINADO*\n\n✧ Tu harem ha sido eliminado permanentemente.\n✧ Miembros liberados: ${haremInfo.miembrosCount}\n\n✅ Ya no eres maestro de ningún harem.`,
-        m
-      );
-    }
-    const isHarems = /^negar$/i.test(command);
- {
-      // NEGAR eliminación
-      pendingDeletions.delete(usuario);
-      return await conn.reply(m.chat, '❌ Eliminación cancelada. Tu harem sigue activo.', m);
-    }
-    else {
-      // Mensaje recordatorio
-      return await conn.reply(m.chat, 
-        `⚠️ *ESPERANDO CONFIRMACIÓN*\n\n¿Quieres eliminar tu harem?\n✧ *Miembros afectados:* ${pendingDeletions.get(usuario).miembrosCount}\n\nEscribe *confirmar* para eliminar o *negar* para cancelar.`,
-        m
-      );
-    }
-  }
 
   // Verificar si el usuario tiene un harem
   if (!harems[usuario]) {
@@ -70,23 +37,16 @@ const handler = async (m, { conn }) => {
     return await conn.reply(m.chat, '✧ Solo el maestro del harem puede eliminarlo.', m);
   }
 
-  // Guardar solicitud de eliminación pendiente
+  // Obtener información antes de eliminar
   const miembrosCount = harems[usuario].miembros.length;
-  pendingDeletions.set(usuario, {
-    timestamp: Date.now(),
-    miembrosCount: miembrosCount
-  });
+  const haremCreado = harems[usuario].creado ? new Date(harems[usuario].creado).toLocaleDateString() : 'fecha desconocida';
 
-  // Limpiar solicitudes antiguas (mayores a 5 minutos)
-  const now = Date.now();
-  for (const [user, data] of pendingDeletions.entries()) {
-    if (now - data.timestamp > 5 * 60 * 1000) { // 5 minutos
-      pendingDeletions.delete(user);
-    }
-  }
+  // Eliminar el harem directamente
+  delete harems[usuario];
+  saveHarems();
 
   await conn.reply(m.chat, 
-    `⚠️ *CONFIRMACIÓN REQUERIDA*\n\n¿Estás seguro de que quieres eliminar tu harem?\n✧ *Miembros afectados:* ${miembrosCount}\n\nEscribe *confirmar* para proceder o *negar* para cancelar.`,
+    `🗑️ *HAREM ELIMINADO*\n\n✧ Harem creado el ${haremCreado} eliminado.\n✧ Miembros liberados: ${miembrosCount}\n\n✅ Ya no eres maestro de ningún harem.`,
     m
   );
 };
@@ -95,4 +55,4 @@ handler.tags = ['harem'];
 handler.help = ['eliminarharem'];
 handler.command = ['eliminarharem'];
 
-export default handler; 
+export default handler;
