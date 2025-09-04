@@ -26,10 +26,22 @@ const handler = async (m, { conn, command }) => {
 
             const harem = harems[user];
             
-            // Formatear lista de miembros con etiquetas
-            const membersList = harem.members.map(member => {
-                return `👤 @${member.split('@')[0]} • ${conn.getName(member) || 'Usuario'}`;
-            }).join('\n');
+            // Separar líder y miembros normales
+            const leader = harem.members.find(member => member === harem.creator);
+            const normalMembers = harem.members.filter(member => member !== harem.creator);
+            
+            // Formatear líder
+            const leaderInfo = `👑 *Líder:* @${leader.split('@')[0]} • ${conn.getName(leader) || 'Líder'}\n`;
+            
+            // Formatear miembros normales
+            let membersList = '';
+            if (normalMembers.length > 0) {
+                membersList = normalMembers.map(member => {
+                    return `👤 @${member.split('@')[0]} • ${conn.getName(member) || 'Usuario'}`;
+                }).join('\n');
+            } else {
+                membersList = '🌟 *No hay otros miembros aún*';
+            }
 
             // Crear mensaje con diseño cool
             const haremInfo = `
@@ -38,9 +50,9 @@ const handler = async (m, { conn, command }) => {
 ╚═══════════════════════════╝
 
 🎌 *Nombre:* ${harem.name}
-👑 *Líder:* @${harem.creator.split('@')[0]}
+${leaderInfo}
 📅 *Creado:* ${new Date(harem.createdAt).toLocaleDateString()}
-👥 *Miembros:* ${harem.members.length}
+👥 *Total de miembros:* ${harem.members.length}
 
 ╔═══════════════════════════╗
           🎎 *MIEMBROS* 🎎
