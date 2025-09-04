@@ -1,17 +1,18 @@
-// plugins/harem/resetearharem.js
-import fs from "fs"
-import path from "path"
+import { saveHarem, saveMasters } from "../../harem/storage.js";
 
-const haremFile = "./src/database/harem.json";
-const mastersFile = "./src/database/harem_masters.json";
+const handler = async (m, { conn, isOwner }) => {
+  if (!isOwner) {
+    return conn.reply(m.chat, "❌ Solo el dueño del bot puede usar este comando.", m);
+  }
 
-function saveJSON(file, data) { fs.writeFileSync(file, JSON.stringify(data, null, 2)) }
+  saveHarem({});
+  saveMasters({});
 
-let handler = async (m, { conn }) => {
-  saveJSON(haremFile, {})
-  saveJSON(mastersFile, {})
-  conn.reply(m.chat, "🗑️ Se han reseteado todos los harems.", m)
-}
+  conn.reply(m.chat, "🗑️ Todos los harenes han sido reseteados.", m);
+};
 
-handler.command = /^resetearharem$/i
-export default handler
+handler.help = ["resetearharem"];
+handler.tags = ["harem"];
+handler.command = /^resetearharem$/i;
+
+export default handler;
