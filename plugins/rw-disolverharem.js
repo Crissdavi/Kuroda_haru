@@ -1,72 +1,25 @@
-// plugins/harem/disolverharem.js
-import fs from "fs";
-import path from "path";
+import { loadHarem, updateHarem, loadMasters, updateMasters } from "../../harem/storage.js"
 
-const haremFile = "./src/database/harem.json");
-const mastersFile = "./src/database/harem_masters.json";
+let handler = async (m, { text }) => {
+  const harems = loadHarem()
+  const masters = loadMasters()
+  const haremId = text?.trim()
 
-function loadHarem() {
-  if (!fs.existsSync(haremFile)) return {};
-  return JSON.parse(fs.readFileSync(haremFile, "utf8"));
-}
+  if (!haremId) return m.reply("⚠️ Debes indicar la ID del harem que quieres disolver.")
+  if (!harems[haremId]) return m.reply("❌ No existe ningún harem con esa ID.")
 
-function loadMasters() {
-  if (!fs.existsSync(mastersFile)) return {};
-  return JSON.parse(fs.readFileSync(mastersFile, "utf8"));
-}
-
-function saveHarem(data) {
-  fs.writeFileSync(haremFile, JSON.stringify(data, null, 2));
-}
-
-function saveMasters(data) {
-  fs.writeFileSync(mastersFile, JSON.stringify(data, null, 2));
-}
-
-const handler = async (m, { conn, args }) => {
-  const haremMembers = loadHarem();
-  const masters = loadMasters();
-  const user = m.sender;
-
-  const haremId = args[0];
-  if (!haremId) {
-    return conn.reply(
-      m.chat,
-      "《✧》 Debes indicar la *ID del harén* que quieres disolver.\n> Ejemplo » *.disolverharem harem123*",
-      m
-    );
+  if (harems[haremId].master !== m.sender) {
+    return m.reply("❌ Solo el maestro de este harem puede disolverlo.")
   }
 
-  if (!masters[user] || masters[user].haremId !== haremId) {
-    return conn.reply(
-      m.chat,
-      "《✧》 Solo el maestro de este harén puede disolverlo.",
-      m
-    );
-  }
+  delete harems[haremId]
+  delete masters[m.sender]
 
-  // eliminar miembros del harem
-  Object.keys(haremMembers).forEach((member) => {
-    if (haremMembers[member].haremId === haremId) {
-      delete haremMembers[member];
-    }
-  });
+  updateHarem(harems)
+  updateMasters(masters)
 
-  // eliminar al maestro
-  delete masters[user];
+  m.reply(`✅ El harem *${haremId}* ha sido disuelto.`)
+}
 
-  saveHarem(haremMembers);
-  saveMasters(masters);
-
-  return conn.reply(
-    m.chat,
-    `《✧》 El harén con ID *${haremId}* ha sido disuelto exitosamente.`,
-    m
-  );
-};
-
-handler.help = ["disolverharem <id>"];
-handler.tags = ["harem"];
-handler.command = /^disolverharem$/i;
-
+handler.command = /^disolverharem$/i
 export default handler;
