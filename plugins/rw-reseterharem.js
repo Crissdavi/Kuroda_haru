@@ -2,8 +2,8 @@
 import fs from "fs"
 import path from "path"
 
-const haremFile = path.resolve("src/database/harem.json")
-const mastersFile = path.resolve("src/database/harem_masters.json")
+const haremFile = "./src/database/harem.json";
+const mastersFile = "./src/database/harem_masters.json";
 
 function saveJSON(file, data) { fs.writeFileSync(file, JSON.stringify(data, null, 2)) }
 
