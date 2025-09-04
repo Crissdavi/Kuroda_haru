@@ -1,45 +1,91 @@
-// src/plugins/harem/unirharem.js
-import { loadHarems, saveHarems } from "../../harem/storage.js";
+import fs from 'fs';
+import path from 'path';
 
-const handler = async (m, { conn }) => {
-  const harems = loadHarems();
-  const masterId = m.sender;
+const haremFile = path.resolve('src/database/harem.json');
+let harems = loadHarems();
 
-  // Harem del maestro
-  const entry = Object.entries(harems).find(
-    ([, h]) => h.master === masterId && h.status === "active"
-  );
-  if (!entry) return conn.reply(m.chat, "❌ No eres maestro de ningún harén activo.", m);
+function loadHarems() {
+    return fs.existsSync(haremFile) ? JSON.parse(fs.readFileSync(haremFile, 'utf8')) : {};
+}
 
-  const [haremId, harem] = entry;
+function saveHarems() {
+    fs.writeFileSync(haremFile, JSON.stringify(harems, null, 2));
+}
 
-  const target =
-    (m.mentionedJid && m.mentionedJid[0]) ||
-    (m.quoted && m.quoted.sender) ||
-    null;
+const handler = async (m, { conn, command, text }) => {
+    const isCreate = /^crearharem$/i.test(command);
+    const isJoin = /^unirharem$/i.test(command);
 
-  if (!target) return conn.reply(m.chat, "⚠️ Menciona o responde a alguien: *.unirharem @usuario*", m);
-  if (target === masterId) return conn.reply(m.chat, "❌ Ya eres el maestro, no necesitas unirte.", m);
+    try {
+        if (isCreate) {
+            const haremName = text.trim();
+            const creator = m.sender;
 
-  // Ya pertenece a algún harén (como miembro o maestro)
-  const alreadyIn = Object.values(harems).some(h =>
-    h.master === target || (h.members && h.members[target])
-  );
-  if (alreadyIn) return conn.reply(m.chat, "❌ Ese usuario ya pertenece a un harén.", m);
+            if (!haremName) {
+                throw new Error('Debes poner un nombre para tu harem.\n> Ejemplo » *#crearharem MiGrupoDeAmigos*');
+            }
 
-  harem.members[target] = { role: "miembro", joinDate: new Date().toISOString(), status: "active" };
-  saveHarems(harems);
+            // Verificar si ya es creador de algún harem
+            const existingHarem = Object.values(harems).find(harem => harem.creator === creator);
+            if (existingHarem) {
+                return await conn.reply(m.chat, `《✧》 Ya eres el líder del harem *${existingHarem.name}*\n> Solo puedes crear un harem como líder`, m);
+            }
 
-  conn.reply(
-    m.chat,
-    `✅ @${target.split("@")[0]} fue añadido al harén *${harem.name}*.`,
-    m,
-    { mentions: [target] }
-  );
-};
+            // Crear nuevo harem
+            const newHarem = {
+                id: Date.now().toString(),
+                name: haremName,
+                creator: creator,
+                members: [creator],
+                createdAt: new Date().toISOString(),
+                address: ''
+            };
 
-handler.help = ["unirharem @usuario (o respondiendo)"];
-handler.tags = ["harem"];
-handler.command = /^unirharem$/i;
+            harems[creator] = newHarem;
+            saveHarems();
+
+            await conn.reply(m.chat, `♡ ¡Harem creado exitosamente! •(=^●ω●^=)•\n\n*Nombre:* ${haremName}\n*Líder:* ${conn.getName(creator)}\n*ID:* ${newHarem.id}\n\n> Usa *#unirharem @usuario* para agregar amigos`, m);
+
+        } else if (isJoin) {
+            const targetUser = m.quoted?.sender || m.mentionedJid?.[0];
+            const inviter = m.sender;
+
+            if (!targetUser) {
+                throw new Error('Debes mencionar a alguien para unirlo a tu harem.\n> Ejemplo » *#unirharem @usuario*');
+            }
+
+            // Verificar que el invitador tiene harem
+            if (!harems[inviter]) {
+                throw new Error('Primero debes crear un harem con #crearharem');
+            }
+
+            const harem = harems[inviter];
+
+            // Verificar que el invitador es el líder
+            if (harem.creator !== inviter) {
+                throw new Error('Solo el líder del harem puede agregar miembros');
+            }
+
+            // Verificar si el usuario ya está en el harem
+            if (harem.members.includes(targetUser)) {
+                throw new Error(`${conn.getName(targetUser)} ya está en tu harem`);
+            }
+
+            // Agregar usuario al harem
+            harem.members.push(targetUser);
+            harems[targetUser] = harem; // Crear referencia para el nuevo miembro
+            saveHarems();
+
+            await conn.reply(m.chat, `✅ *${conn.getName(targetUser)}* se ha unido al harem *${harem.name}*\n\n*Miembros totales:* ${harem.members.length}`, m, { mentions: [targetUser] });
+        }
+    } catch (error) {
+        await conn.reply(m.chat, `《✧》 ${error.message}`, m);
+    }
+}
+
+handler.tags = ['group'];
+handler.help = ['crearharem *nombre*', 'unirharem *@usuario*'];
+handler.command = ['crearharem', 'unirharem'];
+handler.group = true;
 
 export default handler;
