@@ -19,7 +19,6 @@ const handler = async (m, { conn, command }) => {
         if (isMyHarem) {
             const user = m.sender;
 
-            // Verificar si el usuario pertenece a algún harem
             if (!harems[user]) {
                 throw new Error('❌ *No perteneces a ningún harem*\n> Crea uno con #crearharem o únete con #unirharem');
             }
@@ -33,14 +32,13 @@ const handler = async (m, { conn, command }) => {
             // Formatear líder
             const leaderInfo = `👑 *Líder:* @${leader.split('@')[0]} • ${conn.getName(leader) || 'Líder'}\n`;
             
-            // Limitar a 5 miembros mostrados (incluyendo cálculo correcto)
-            const totalNormalMembers = normalMembers.length;
+            // CORRECCIÓN: Calcular miembros restantes correctamente
             const membersToShow = normalMembers.slice(0, 5);
-            const remainingMembers = totalNormalMembers - 5;
+            const remainingMembers = normalMembers.length - membersToShow.length; // ← ESTA ES LA CORRECCIÓN
             
             // Formatear miembros mostrados
             let membersList = '';
-            if (membersToShow.length > 0) {
+            if (normalMembers.length > 0) {
                 membersList = membersToShow.map(member => {
                     return `👤 @${member.split('@')[0]} • ${conn.getName(member) || 'Usuario'}`;
                 }).join('\n');
@@ -48,13 +46,13 @@ const handler = async (m, { conn, command }) => {
                 membersList = '🌟 *No hay otros miembros aún*';
             }
 
-            // Agregar mensaje de miembros restantes si hay más de 5
+            // Agregar mensaje de miembros restantes SI HAY MÁS DE 5
             let remainingText = '';
             if (remainingMembers > 0) {
                 remainingText = `\n📋 *Y ${remainingMembers} miembro(s) más...*`;
             }
 
-            // Crear mensaje con diseño cool
+            // Crear mensaje
             const haremInfo = `
 ╔═══════════════════════════╗
        🏯 *INFORMACIÓN DEL HAREM* 🏯
@@ -73,7 +71,7 @@ ${membersList}${remainingText}
             `;
 
             await conn.reply(m.chat, haremInfo, m, {
-                mentions: harem.members // Etiqueta a todos los miembros
+                mentions: harem.members
             });
 
         }
