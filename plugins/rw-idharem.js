@@ -1,14 +1,18 @@
-import { loadMasters } from "../../harem/storage.js"
+import { loadMasters } from "../../harem/storage.js";
 
-let handler = async (m) => {
-  const masters = loadMasters()
-  const masterId = m.sender
+const handler = async (m, { conn }) => {
+  const masterId = m.sender;
+  let masters = loadMasters();
 
-  const haremId = masters[masterId]
-  if (!haremId) return m.reply("❌ No eres maestro de ningún harem.")
+  if (!masters[masterId] || masters[masterId].status !== "active") {
+    return conn.reply(m.chat, "❌ No eres maestro de ningún harén activo.", m);
+  }
 
-  m.reply(`${haremId}`)
-}
+  conn.reply(m.chat, `${masters[masterId].haremId}`, m);
+};
 
-handler.command = /^idharem$/i
-export default handler
+handler.help = ["idharem"];
+handler.tags = ["harem"];
+handler.command = /^idharem$/i;
+
+export default handler;
