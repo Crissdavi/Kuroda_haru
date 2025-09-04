@@ -1,37 +1,76 @@
-// src/plugins/harem/mihareminfo.js
-import { loadHarems } from "../../harem/storage.js";
+import fs from 'fs';
+import path from 'path';
+
+const haremFile = path.resolve('src/database/harem.json');
+
+function loadHarems() {
+    return fs.existsSync(haremFile) ? JSON.parse(fs.readFileSync(haremFile, 'utf8')) : {};
+}
 
 const handler = async (m, { conn }) => {
-  const harems = loadHarems();
-  const userId = m.sender;
+    const harems = loadHarems();
+    const userId = m.sender;
 
-  const entry = Object.entries(harems).find(
-    ([, h]) => (h.members && h.members[userId]) || h.master === userId
-  );
-  if (!entry) return conn.reply(m.chat, "❌ No perteneces a ningún harén.", m);
+    // Buscar el harem del usuario
+    const haremEntry = Object.entries(harems).find(([, h]) => 
+        h.members && h.members.includes(userId)
+    );
+    
+    if (!haremEntry) {
+        return conn.reply(m.chat, '❌ *No perteneces a ningún harem*\n> Crea uno con #crearharem o únete con #unirharem', m);
+    }
 
-  const [, h] = entry;
-  const members = Object.keys(h.members || {});
-  let text = `📚 *Información de tu harén*\n\n`;
-  text += `🏷️ Nombre: *${h.name}*\n`;
-  text += `👑 Maestro: @${h.master.split("@")[0]}\n`;
-  text += `👥 Miembros: ${members.length}\n\n`;
+    const [, harem] = haremEntry;
+    
+    // Separar líder y miembros normales
+    const leader = harem.creator;
+    const normalMembers = harem.members.filter(member => member !== leader);
+    
+    // Limitar a 5 miembros mostrados
+    const membersToShow = normalMembers.slice(0, 5);
+    const remainingMembers = normalMembers.length - membersToShow.length;
 
-  if (members.length) {
-    text += `*Miembros:*\n`;
-    members.forEach((u, i) => {
-      const r = h.members[u]?.role || "miembro";
-      text += `${i + 1}. @${u.split("@")[0]} — ${r}\n`;
+    // Construir el mensaje
+    let text = `
+╔═══════════════════════════╗
+       🏯 *INFORMACIÓN DEL HAREM* 🏯
+╚═══════════════════════════╝
+
+🎌 *Nombre:* ${harem.name}
+👑 *Líder:* @${leader.split('@')[0]}
+📅 *Creado:* ${new Date(harem.createdAt).toLocaleDateString()}
+👥 *Miembros:* ${harem.members.length}
+
+╔═══════════════════════════╗
+          🎎 *MIEMBROS* 🎎
+╚═══════════════════════════╝
+`;
+
+    // Mostrar miembros (máximo 5)
+    if (normalMembers.length > 0) {
+        membersToShow.forEach((member, index) => {
+            text += `👤 @${member.split('@')[0]} • ${conn.getName(member) || 'Usuario'}\n`;
+        });
+        
+        // Mostrar mensaje de miembros restantes
+        if (remainingMembers > 0) {
+            text += `\n📋 *Y ${remainingMembers} miembro(s) más...*`;
+        }
+    } else {
+        text += '🌟 *No hay otros miembros aún*';
+    }
+
+    // Preparar menciones (todos los miembros)
+    const allMentions = [leader, ...normalMembers];
+
+    conn.reply(m.chat, text.trim(), m, {
+        mentions: allMentions
     });
-  }
-
-  conn.reply(m.chat, text.trim(), m, {
-    mentions: [h.master, ...members]
-  });
 };
 
-handler.help = ["mihareminfo"];
-handler.tags = ["harem"];
-handler.command = /^mihareminfo$/i;
+handler.tags = ['group'];
+handler.help = ['miharem'];
+handler.command = ['miharem'];
+handler.group = true;
 
 export default handler;
