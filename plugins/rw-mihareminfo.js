@@ -40,15 +40,11 @@ const handler = async (m, { conn }) => {
     const members = Object.values(harems).filter(
       (member) => member.haremId === masterData.haremId && member.status === "active"
     );
-    text += `👑 Eres maestro del harén:\n- ID: ${masterData.haremId}\n- Nombre: ${
-      masterData.name || masterData.haremId
-    }\n- Miembros: ${members.length}\n`;
+    text += `👑 *Eres maestro del harén:*\n- Nombre: ${masterData.name || "Sin nombre"}\n- Miembros: ${members.length}\n`;
   } else if (haremData) {
     const master = haremData.master;
     const masterInfo = masters[master];
-    text += `👥 Eres miembro del harén:\n- ID: ${haremData.haremId}\n- Maestro: @${
-      master.split("@")[0]
-    }\n- Nombre: ${masterInfo?.name || haremData.haremId}\n`;
+    text += `👥 *Eres miembro del harén:*\n- Maestro: @${master.split("@")[0]}\n- Nombre: ${masterInfo?.name || "Sin nombre"}\n`;
   }
 
   conn.reply(m.chat, text.trim(), m, {
@@ -56,8 +52,8 @@ const handler = async (m, { conn }) => {
   });
 };
 
-handler.help = ["miharem"];
+handler.help = ["mihareminfo"];
 handler.tags = ["harem"];
-handler.command = /^miharem$/i;
+handler.command = /^mihareminfo$/i;
 
 export default handler;
