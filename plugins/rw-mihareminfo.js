@@ -56,8 +56,8 @@ const handler = async (m, { conn }) => {
   });
 };
 
-handler.help = ["mihareminfo"];
+handler.help = ["miharem"];
 handler.tags = ["harem"];
-handler.command = /^mihareminfo$/i;
+handler.command = /^miharem$/i;
 
 export default handler;
