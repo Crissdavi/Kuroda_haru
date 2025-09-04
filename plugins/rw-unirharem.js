@@ -1,33 +1,44 @@
-import { loadHarems, saveHarems } from "../harem/storage.js";
+// src/plugins/harem/unirharem.js
+import { loadHarems, saveHarems } from "../../harem/storage.js";
 
-const handler = async (m, { conn, args }) => {
+const handler = async (m, { conn }) => {
   const harems = loadHarems();
   const masterId = m.sender;
 
-  if (!harems[masterId]) {
-    return conn.reply(m.chat, "❌ No eres maestro de ningún harén.", m);
-  }
+  // Harem del maestro
+  const entry = Object.entries(harems).find(
+    ([, h]) => h.master === masterId && h.status === "active"
+  );
+  if (!entry) return conn.reply(m.chat, "❌ No eres maestro de ningún harén activo.", m);
 
-  const user = m.mentionedJid[0] || (m.quoted && m.quoted.sender);
-  if (!user) return conn.reply(m.chat, "⚠️ Menciona o responde a alguien para unirlo.", m);
+  const [haremId, harem] = entry;
 
-  const harem = harems[masterId];
+  const target =
+    (m.mentionedJid && m.mentionedJid[0]) ||
+    (m.quoted && m.quoted.sender) ||
+    null;
 
-  // verificar si ya está en un harén
-  const already = Object.values(harems).some(h => h.members.includes(user) || h.master === user);
-  if (already) {
-    return conn.reply(m.chat, "❌ Ese usuario ya pertenece a un harén o es maestro.", m);
-  }
+  if (!target) return conn.reply(m.chat, "⚠️ Menciona o responde a alguien: *.unirharem @usuario*", m);
+  if (target === masterId) return conn.reply(m.chat, "❌ Ya eres el maestro, no necesitas unirte.", m);
 
-  harem.members.push(user);
+  // Ya pertenece a algún harén (como miembro o maestro)
+  const alreadyIn = Object.values(harems).some(h =>
+    h.master === target || (h.members && h.members[target])
+  );
+  if (alreadyIn) return conn.reply(m.chat, "❌ Ese usuario ya pertenece a un harén.", m);
+
+  harem.members[target] = { role: "miembro", joinDate: new Date().toISOString(), status: "active" };
   saveHarems(harems);
 
-  conn.reply(m.chat, `👤 @${user.split("@")[0]} fue añadido al harén *${harem.name}* ✅`, m, {
-    mentions: [user],
-  });
+  conn.reply(
+    m.chat,
+    `✅ @${target.split("@")[0]} fue añadido al harén *${harem.name}*.`,
+    m,
+    { mentions: [target] }
+  );
 };
 
-handler.help = ["unirharem @user"];
+handler.help = ["unirharem @usuario (o respondiendo)"];
 handler.tags = ["harem"];
 handler.command = /^unirharem$/i;
 
