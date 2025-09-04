@@ -1,38 +1,37 @@
-import { loadHarems, saveHarems } from "../harem/storage.js";
+// src/plugins/harem/crearharem.js
+import { loadHarems, saveHarems } from "../../harem/storage.js";
 
-const handler = async (m, { args, conn }) => {
+const handler = async (m, { conn, args }) => {
   const harems = loadHarems();
   const masterId = m.sender;
 
-  if (harems[masterId]) {
-    return conn.reply(m.chat, "❌ Ya tienes un harén creado.", m);
-  }
+  // Ya es maestro de un harem activo
+  const hasHarem = Object.entries(harems).find(
+    ([, h]) => h.master === masterId && h.status === "active"
+  );
+  if (hasHarem) return conn.reply(m.chat, "❌ Ya tienes un harén activo.", m);
 
-  const haremName = args.join(" ").trim();
-  if (!haremName) {
-    return conn.reply(m.chat, "⚠️ Usa: *.crearharem <nombre>*", m);
-  }
+  const name = args.join(" ").trim();
+  if (!name) return conn.reply(m.chat, "⚠️ Usa: *.crearharem <nombre_del_harén>*", m);
 
-  // evitar nombres repetidos
-  const existsName = Object.values(harems).some(h => h.name.toLowerCase() === haremName.toLowerCase());
-  if (existsName) {
-    return conn.reply(m.chat, "❌ Ese nombre de harén ya está en uso.", m);
-  }
+  // Nombre único (en todo el archivo, activos o no)
+  const nameUsed = Object.values(harems).some(h => (h.name || "").toLowerCase() === name.toLowerCase());
+  if (nameUsed) return conn.reply(m.chat, "❌ Ese nombre de harén ya está en uso.", m);
 
-  const haremId = "harem_" + Math.random().toString(36).substring(2, 10);
+  const haremId = "harem_" + Math.random().toString(36).slice(2, 10);
 
-  harems[masterId] = {
-    haremId,
+  harems[haremId] = {
+    name,
     master: masterId,
-    name: haremName,
-    members: [],
-    createdAt: Date.now(),
     status: "active",
+    createdAt: new Date().toISOString(),
+    members: {
+      [masterId]: { role: "maestro", joinDate: new Date().toISOString(), status: "active" }
+    }
   };
 
   saveHarems(harems);
-
-  conn.reply(m.chat, `✅ Harén *${haremName}* creado con éxito.\nID: ${haremId}`, m);
+  conn.reply(m.chat, `✅ Harén *${name}* creado.`, m);
 };
 
 handler.help = ["crearharem <nombre>"];
