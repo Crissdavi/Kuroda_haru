@@ -1,68 +1,35 @@
-// plugins/harem/listarharem.js
-import fs from "fs";
-import path from "path";
+import { loadHarem, loadMasters } from "../../harem/storage.js";
 
-const haremFile = path.resolve("src/database/harem.json");
-const mastersFile = path.resolve("src/database/harem_masters.json");
+const handler = async (m, { conn }) => {
+  const masterId = m.sender;
+  let harems = loadHarem();
+  let masters = loadMasters();
 
-function loadHarem() {
-  if (!fs.existsSync(haremFile)) return {};
-  return JSON.parse(fs.readFileSync(haremFile, "utf8"));
-}
-
-function loadMasters() {
-  if (!fs.existsSync(mastersFile)) return {};
-  return JSON.parse(fs.readFileSync(mastersFile, "utf8"));
-}
-
-const handler = async (m, { conn, args }) => {
-  const haremId = args[0];
-  if (!haremId) {
-    return conn.reply(
-      m.chat,
-      "《✧》 Uso correcto:\n> *.listarharem <id>*",
-      m
-    );
+  if (!masters[masterId] || masters[masterId].status !== "active") {
+    return conn.reply(m.chat, "❌ No eres maestro de ningún harén activo.", m);
   }
 
-  const haremMembers = loadHarem();
-  const masters = loadMasters();
-  const masterEntry = Object.entries(masters).find(
-    ([, data]) => data.haremId === haremId
+  const haremId = masters[masterId].haremId;
+  const members = Object.entries(harems).filter(
+    ([, data]) => data.haremId === haremId && data.status === "active"
   );
 
-  if (!masterEntry) {
-    return conn.reply(m.chat, "《✧》 No existe ningún harén con esa ID.", m);
-  }
-
-  const [masterId, masterData] = masterEntry;
-  const haremName = masterData.name && masterData.name.trim() !== "" 
-    ? masterData.name 
-    : masterData.haremId;
-
-  const members = Object.entries(haremMembers)
-    .filter(([, m]) => m.haremId === haremId && m.status === "active")
-    .map(([id]) => id);
-
-  let text = `👑 *Harén*: ${haremName}\n`;
-  text += `👑 Maestro: @${masterId.split("@")[0]}\n`;
-  text += `👥 Miembros (${members.length}):\n`;
-
   if (members.length === 0) {
-    text += "— (Vacío)\n";
-  } else {
-    members.forEach((m, i) => {
-      text += ` ${i + 1}. @${m.split("@")[0]}\n`;
-    });
+    return conn.reply(m.chat, "👥 Tu harén está vacío.", m);
   }
 
-  await conn.reply(m.chat, text.trim(), m, {
-    mentions: [masterId, ...members],
+  let text = `👑 *Miembros del harén*\nID: ${haremId}\n\n`;
+  members.forEach(([user], index) => {
+    text += `${index + 1}. @${user.split("@")[0]}\n`;
+  });
+
+  conn.reply(m.chat, text.trim(), m, {
+    mentions: members.map(([u]) => u),
   });
 };
 
-handler.help = ["listarharem <id>"];
+handler.help = ["listaharem"];
 handler.tags = ["harem"];
-handler.command = /^listarharem$/i;
+handler.command = /^listaharem$/i;
 
 export default handler;
