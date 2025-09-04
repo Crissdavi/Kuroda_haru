@@ -2,8 +2,8 @@
 import fs from "fs";
 import path from "path";
 
-const haremFile = "./src/database/harem.json");
-const mastersFile = "./src/database/harem_masters.json");
+const haremFile = "./src/database/harem.json";
+const mastersFile = "./src/database/harem_masters.json";
 
 function loadHarem() {
   if (!fs.existsSync(haremFile)) return {};
