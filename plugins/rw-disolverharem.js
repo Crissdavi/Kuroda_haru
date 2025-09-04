@@ -1,38 +1,24 @@
-import { loadHarem, saveHarem, loadMasters, saveMasters } from "../../harem/storage.js";
+// src/plugins/harem/disolverharem.js
+import { loadHarems, saveHarems } from "../../harem/storage.js";
 
-const handler = async (m, { conn, args }) => {
+const handler = async (m, { conn }) => {
+  const harems = loadHarems();
   const masterId = m.sender;
-  const haremId = args[0];
 
-  if (!haremId) {
-    return conn.reply(m.chat, "⚠️ Debes escribir la ID de tu harén.\nEjemplo: *.disolverharem harem_1234*", m);
-  }
+  const entry = Object.entries(harems).find(
+    ([, h]) => h.master === masterId && h.status === "active"
+  );
+  if (!entry) return conn.reply(m.chat, "❌ No tienes un harén activo para disolver.", m);
 
-  let harems = loadHarem();
-  let masters = loadMasters();
+  const [haremId, harem] = entry;
 
-  if (!masters[masterId] || masters[masterId].status !== "active") {
-    return conn.reply(m.chat, "❌ No eres maestro de ningún harén activo.", m);
-  }
+  delete harems[haremId];
+  saveHarems(harems);
 
-  if (masters[masterId].haremId !== haremId) {
-    return conn.reply(m.chat, "⚠️ Solo puedes disolver tu propio harén.", m);
-  }
-
-  // Eliminar a todos los miembros de ese harem
-  Object.keys(harems).forEach((u) => {
-    if (harems[u].haremId === haremId) delete harems[u];
-  });
-
-  delete masters[masterId];
-
-  saveHarem(harems);
-  saveMasters(masters);
-
-  conn.reply(m.chat, `💔 El harén *${haremId}* ha sido disuelto.`, m);
+  conn.reply(m.chat, `💔 Tu harén *${harem.name}* fue disuelto.`, m);
 };
 
-handler.help = ["disolverharem <id>"];
+handler.help = ["disolverharem"];
 handler.tags = ["harem"];
 handler.command = /^disolverharem$/i;
 
