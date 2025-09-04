@@ -1,15 +1,13 @@
-// src/plugins/harem/idharem.js
-import { loadMasters } from './storage.js'
+import { loadMasters } from "../../harem/storage.js"
 
-const handler = async (m, { conn }) => {
+let handler = async (m) => {
   const masters = loadMasters()
-  const user = m.sender
+  const masterId = m.sender
 
-  if (!masters[user] || !masters[user].haremId) {
-    return conn.reply(m.chat, 'No eres maestro de ningún harén', m)
-  }
+  const haremId = masters[masterId]
+  if (!haremId) return m.reply("❌ No eres maestro de ningún harem.")
 
-  return conn.reply(m.chat, masters[user].haremId, m)
+  m.reply(`${haremId}`)
 }
 
 handler.command = /^idharem$/i
