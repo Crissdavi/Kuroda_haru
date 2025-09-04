@@ -1,26 +1,33 @@
-import { loadHarems } from "../harem/storage.js";
+// src/plugins/harem/mihareminfo.js
+import { loadHarems } from "../../harem/storage.js";
 
 const handler = async (m, { conn }) => {
   const harems = loadHarems();
   const userId = m.sender;
 
-  // encontrar en qué harem está
-  const harem = Object.values(harems).find(
-    h => h.master === userId || h.members.includes(userId)
+  const entry = Object.entries(harems).find(
+    ([, h]) => (h.members && h.members[userId]) || h.master === userId
   );
+  if (!entry) return conn.reply(m.chat, "❌ No perteneces a ningún harén.", m);
 
-  if (!harem) {
-    return conn.reply(m.chat, "❌ No perteneces a ningún harén.", m);
+  const [, h] = entry;
+  const members = Object.keys(h.members || {});
+  let text = `📚 *Información de tu harén*\n\n`;
+  text += `🏷️ Nombre: *${h.name}*\n`;
+  text += `👑 Maestro: @${h.master.split("@")[0]}\n`;
+  text += `👥 Miembros: ${members.length}\n\n`;
+
+  if (members.length) {
+    text += `*Miembros:*\n`;
+    members.forEach((u, i) => {
+      const r = h.members[u]?.role || "miembro";
+      text += `${i + 1}. @${u.split("@")[0]} — ${r}\n`;
+    });
   }
 
-  const isMaster = harem.master === userId;
-
-  let text = `📖 Estás en el harén: *${harem.name || harem.haremId}*\n`;
-  text += `👑 Maestro: @${harem.master.split("@")[0]}\n`;
-  text += `👥 Miembros: ${harem.members.length}\n`;
-  text += `📌 Rol: ${isMaster ? "Maestro" : "Miembro"}`;
-
-  conn.reply(m.chat, text, m, { mentions: [harem.master, ...harem.members] });
+  conn.reply(m.chat, text.trim(), m, {
+    mentions: [h.master, ...members]
+  });
 };
 
 handler.help = ["mihareminfo"];
