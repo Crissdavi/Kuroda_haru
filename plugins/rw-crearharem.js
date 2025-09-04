@@ -2,8 +2,8 @@
 import fs from "fs"
 import path from "path"
 
-const haremFile = path.resolve("src/database/harem.json")
-const mastersFile = path.resolve("src/database/harem_masters.json")
+const haremFile = "./src/database/harem.json";
+const mastersFile = "./src/database/harem_masters.json";
 
 function loadJSON(file) {
   if (!fs.existsSync(file)) fs.writeFileSync(file, "{}")
