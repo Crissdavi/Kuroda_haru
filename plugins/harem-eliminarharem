@@ -93,4 +93,4 @@ handler.tags = ['harem'];
 handler.help = ['eliminarharem'];
 handler.command = ['eliminarharem'];
 
-export default handler;
+export default handler; 
