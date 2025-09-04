@@ -1,20 +1,28 @@
-import { loadHarem, updateHarem, loadMasters } from "../../harem/storage.js"
+import { loadMasters, saveMasters } from "../../harem/storage.js";
 
-let handler = async (m, { text }) => {
-  const masters = loadMasters()
-  const harems = loadHarem()
+const handler = async (m, { conn, args }) => {
+  const masterId = m.sender;
+  const newName = args.join(" ");
 
-  const masterId = m.sender
-  const haremId = masters[masterId]
+  if (!newName) {
+    return conn.reply(m.chat, "⚠️ Debes escribir un nuevo nombre para tu harén.", m);
+  }
 
-  if (!haremId) return m.reply("❌ No eres maestro de ningún harem.")
-  if (!text) return m.reply("⚠️ Debes escribir el nuevo nombre del harem.")
+  let masters = loadMasters();
 
-  harems[haremId].name = text
-  updateHarem(harems)
+  if (!masters[masterId] || masters[masterId].status !== "active") {
+    return conn.reply(m.chat, "❌ No eres maestro de ningún harén activo.", m);
+  }
 
-  m.reply(`✅ El harem ahora se llama: *${text}*`)
-}
+  masters[masterId].name = newName;
 
-handler.command = /^editarharem$/i
-export default handler
+  saveMasters(masters);
+
+  conn.reply(m.chat, `✅ Tu harén ahora se llama: *${newName}*`, m);
+};
+
+handler.help = ["editharem <nombre>"];
+handler.tags = ["harem"];
+handler.command = /^editharem$/i;
+
+export default handler;
