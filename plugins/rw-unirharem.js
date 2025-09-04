@@ -1,70 +1,61 @@
-// src/plugins/harem/unirharem.js
 import { loadHarem, saveHarem, loadMasters, saveMasters } from "../../harem/storage.js";
 
-let haremMembers = loadHarem();
-let masters = loadMasters();
+const handler = async (m, { conn, args }) => {
+  const masterId = m.sender;
+  const mentionedUser = m.mentionedJid?.[0] || (m.quoted && m.quoted.sender);
 
-const handler = async (m, { conn }) => {
-    const inviter = m.sender;
-    const recruit = m.quoted?.sender || m.mentionedJid?.[0];
+  if (!mentionedUser) {
+    return conn.reply(m.chat, "⚠️ Debes etiquetar o responder al usuario que quieres unir.", m);
+  }
 
-    if (!recruit) {
-        return await conn.reply(m.chat, "✧ Debes mencionar o responder a alguien para invitarlo a tu harén.\n\nEjemplo: *.unirharem @usuario*", m);
-    }
+  let harems = loadHarem();
+  let masters = loadMasters();
 
-    if (inviter === recruit) {
-        return await conn.reply(m.chat, "✧ No puedes invitarte a ti mismo a tu propio harén.", m);
-    }
+  // Revisar que el maestro tenga un harem activo
+  if (!masters[masterId] || masters[masterId].status !== "active") {
+    return conn.reply(m.chat, "❌ No eres maestro de ningún harén activo.", m);
+  }
 
-    // Verificar si el invitador es maestro
-    if (!masters[inviter]) {
-        return await conn.reply(m.chat, "✧ Solo los maestros con harén pueden invitar.\nUsa *.crearharem* primero.", m);
-    }
+  const haremId = masters[masterId].haremId;
 
-    const inviterHaremId = masters[inviter].haremId;
+  // Revisar que el usuario no sea ya maestro
+  if (masters[mentionedUser] && masters[mentionedUser].status === "active") {
+    return conn.reply(m.chat, "⚠️ Ese usuario ya es maestro de otro harén.", m);
+  }
 
-    // Verificar si el reclutado ya pertenece a un harén
-    if (haremMembers[recruit] && haremMembers[recruit].status === "active") {
-        const currentHaremId = haremMembers[recruit].haremId;
-        const currentMaster = Object.keys(masters).find(masterId => masters[masterId].haremId === currentHaremId);
+  // Revisar que el usuario no pertenezca a otro harem
+  if (harems[mentionedUser] && harems[mentionedUser].status === "active") {
+    return conn.reply(m.chat, "⚠️ Ese usuario ya pertenece a un harén.", m);
+  }
 
-        return await conn.reply(
-            m.chat,
-            `✧ ${conn.getName(recruit)} ya pertenece al harén de ${conn.getName(currentMaster)}.`,
-            m,
-            { mentions: [recruit, currentMaster] }
-        );
-    }
+  // Agregar al usuario al harem
+  harems[mentionedUser] = {
+    master: masterId,
+    haremId: haremId,
+    group: m.chat,
+    joinDate: new Date().toISOString(),
+    status: "active",
+    role: "miembro"
+  };
 
-    // Verificar si ya es maestro
-    if (masters[recruit]) {
-        return await conn.reply(m.chat, `✧ ${conn.getName(recruit)} ya es maestro de su propio harén y no puede ser reclutado.`, m);
-    }
+  // Aumentar el contador de miembros del maestro
+  masters[masterId].memberCount =
+    (masters[masterId].memberCount || 1) + 1;
 
-    // Añadir automáticamente al harén
-    haremMembers[recruit] = {
-        master: inviter,
-        haremId: inviterHaremId,
-        joinDate: new Date().toISOString(),
-        status: "active",
-        role: "miembro"
-    };
-    saveHarem();
+  // Guardar cambios
+  saveHarem(harems);
+  saveMasters(masters);
 
-    // Actualizar contador del maestro
-    masters[inviter].memberCount = Object.values(haremMembers).filter(m => m.haremId === inviterHaremId && m.status === "active").length;
-    saveMasters();
-
-    await conn.reply(
-        m.chat,
-        `🌸 ¡${conn.getName(recruit)} se ha unido automáticamente al harén de ${conn.getName(inviter)}! 👑`,
-        m,
-        { mentions: [recruit, inviter] }
-    );
+  return conn.reply(
+    m.chat,
+    `👥 @${mentionedUser.split("@")[0]} ahora forma parte del harén de @${masterId.split("@")[0]} ✨`,
+    m,
+    { mentions: [mentionedUser, masterId] }
+  );
 };
 
-handler.command = ["unirharem"];
-handler.help = ["unirharem @usuario"];
+handler.help = ["unirharem @user"];
 handler.tags = ["harem"];
+handler.command = /^unirharem$/i;
 
 export default handler;
