@@ -32,18 +32,14 @@ const handler = async (m, { conn }) => {
 
     // Construir el mensaje
     let text = `
-╔═══════════════════════════╗
        🏯 *INFORMACIÓN DEL HAREM* 🏯
-╚═══════════════════════════╝
 
 🎌 *Nombre:* ${harem.name}
 👑 *Líder:* @${leader.split('@')[0]}
 📅 *Creado:* ${new Date(harem.createdAt).toLocaleDateString()}
 👥 *Miembros:* ${harem.members.length}
 
-╔═══════════════════════════╗
           🎎 *MIEMBROS* 🎎
-╚═══════════════════════════╝
 `;
 
     // Mostrar miembros (máximo 5)
