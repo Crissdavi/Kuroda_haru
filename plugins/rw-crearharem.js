@@ -1,35 +1,22 @@
-// plugins/harem/crearharem.js
-import fs from "fs"
-import path from "path"
+import { loadHarem, updateHarem, loadMasters, updateMasters } from "../../harem/storage.js"
+import crypto from "crypto"
 
-const haremFile = "./src/database/harem.json";
-const mastersFile = "./src/database/harem_masters.json";
+let handler = async (m, { text }) => {
+  const harems = loadHarem()
+  const masters = loadMasters()
 
-function loadJSON(file) {
-  if (!fs.existsSync(file)) fs.writeFileSync(file, "{}")
-  return JSON.parse(fs.readFileSync(file, "utf8"))
-}
-function saveJSON(file, data) {
-  fs.writeFileSync(file, JSON.stringify(data, null, 2))
-}
-
-let handler = async (m, { conn }) => {
-  let harem = loadJSON(haremFile)
-  let masters = loadJSON(mastersFile)
-  const user = m.sender
-
-  if (masters[user]) {
-    return conn.reply(m.chat, "《✧》 ¡Ya eres maestro de un harén!", m)
+  if (masters[m.sender]) {
+    return m.reply("❌ Ya tienes un harem creado.")
   }
 
-  const haremId = "harem_" + Math.random().toString(36).slice(2, 9)
-  masters[user] = { haremId, since: Date.now(), status: "active" }
-  harem[user] = { haremId, role: "maestro", status: "active", joinDate: Date.now() }
+  const id = crypto.randomUUID()
+  harems[id] = { id, name: text || null, master: m.sender, users: [] }
+  masters[m.sender] = id
 
-  saveJSON(haremFile, harem)
-  saveJSON(mastersFile, masters)
+  updateHarem(harems)
+  updateMasters(masters)
 
-  conn.reply(m.chat, `🎉 Has creado tu harén con ID: ${haremId}`, m)
+  m.reply(`✅ Harem creado con ID: *${id}*`)
 }
 
 handler.command = /^crearharem$/i
