@@ -2,7 +2,7 @@
 import fs from "fs"
 import path from "path"
 
-const haremFile = "./src/database/harem.json"
+const haremFile = "./src/database/harem.json";
 
 function loadJSON(file) { if (!fs.existsSync(file)) fs.writeFileSync(file, "{}"); return JSON.parse(fs.readFileSync(file, "utf8")) }
 
