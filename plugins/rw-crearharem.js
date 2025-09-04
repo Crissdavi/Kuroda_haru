@@ -34,8 +34,9 @@ const handler = async (m, { conn, args }) => {
   conn.reply(m.chat, `✅ Harén *${name}* creado.`, m);
 };
 
-handler.help = ["crearharem <nombre>"];
-handler.tags = ["harem"];
-handler.command = /^crearharem$/i;
+handler.help = ['crearharem @tag'];
+handler.tags = ['harem'];
+handler.command = ['crearharem'];
+handler.group = true;
 
 export default handler;
