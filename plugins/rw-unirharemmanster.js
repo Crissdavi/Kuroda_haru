@@ -1,104 +1,76 @@
-// src/plugins/harem/unirharemmaestro.js
 import { loadHarem, saveHarem, loadMasters, saveMasters } from "../../harem/storage.js";
 
-let haremMembers = loadHarem();
-let masters = loadMasters();
+const handler = async (m, { conn, args }) => {
+  const userId = m.sender;
+  const masterId = m.mentionedJid?.[0] || (m.quoted && m.quoted.sender);
 
-// Guardamos solicitudes temporales en memoria
-let joinRequests = {};
+  if (!masterId) {
+    return conn.reply(m.chat, "⚠️ Debes mencionar al maestro del harén al que quieres unirte.", m);
+  }
 
-const handler = async (m, { conn }) => {
-    const requester = m.sender;
-    const targetMaster = m.quoted?.sender || m.mentionedJid?.[0];
+  let harems = loadHarem();
+  let masters = loadMasters();
 
-    if (!targetMaster) {
-        return await conn.reply(m.chat, "✧ Debes mencionar o responder al maestro del harén al que quieres unirte.\n\nEjemplo: *.unirharemmaestro @maestro*", m);
-    }
+  if (!masters[masterId] || masters[masterId].status !== "active") {
+    return conn.reply(m.chat, "❌ Ese usuario no es maestro de un harén activo.", m);
+  }
 
-    if (requester === targetMaster) {
-        return await conn.reply(m.chat, "✧ No puedes solicitar unirte a tu propio harén.", m);
-    }
+  if (harems[userId] && harems[userId].status === "active") {
+    return conn.reply(m.chat, "⚠️ Ya perteneces a un harén, no puedes unirte a otro.", m);
+  }
 
-    // Verificar si el objetivo es maestro
-    if (!masters[targetMaster]) {
-        return await conn.reply(m.chat, "✧ Esa persona no es maestro de ningún harén.", m);
-    }
+  if (masters[userId] && masters[userId].status === "active") {
+    return conn.reply(m.chat, "⚠️ Eres maestro de un harén, no puedes unirte a otro.", m);
+  }
 
-    const targetHaremId = masters[targetMaster].haremId;
+  // Avisar al maestro
+  conn.reply(
+    masterId,
+    `📩 @${userId.split("@")[0]} quiere unirse a tu harén.\nResponde con *sí* o *no*.`,
+    m,
+    { mentions: [userId] }
+  );
 
-    // Verificar si el solicitante ya está en un harén
-    if (haremMembers[requester] && haremMembers[requester].status === "active") {
-        return await conn.reply(m.chat, "✧ Ya perteneces a un harén. No puedes solicitar unirte a otro.", m);
-    }
+  // Esperar respuesta
+  const confirmation = await conn.waitForMessage({
+    sender: masterId,
+    filter: (msg) => /^sí$|^no$/i.test(msg.text),
+    timeout: 30000,
+  });
 
-    // Verificar si ya es maestro
-    if (masters[requester]) {
-        return await conn.reply(m.chat, "✧ Ya eres maestro de un harén y no puedes unirte a otro.", m);
-    }
+  if (!confirmation) {
+    return conn.reply(m.chat, "⌛ El maestro no respondió a tiempo.", m);
+  }
 
-    // Guardar la solicitud en memoria
-    joinRequests[requester] = targetMaster;
+  if (/^no$/i.test(confirmation.text)) {
+    return conn.reply(m.chat, "❌ El maestro rechazó tu solicitud.", m);
+  }
 
-    await conn.reply(
-        m.chat,
-        `✧ ${conn.getName(requester)} quiere unirse a tu harén 👑\nResponde con *sí* o *no* en los próximos 30 segundos.`,
-        m,
-        { mentions: [requester, targetMaster] }
-    );
+  // Agregar al harem
+  harems[userId] = {
+    master: masterId,
+    haremId: masters[masterId].haremId,
+    group: m.chat,
+    joinDate: new Date().toISOString(),
+    status: "active",
+    role: "miembro",
+  };
 
-    // Escuchar la respuesta del maestro
-    const confirmation = await new Promise(resolve => {
-        conn.ev.on("messages.upsert", function onMessage({ messages }) {
-            const msg = messages[0];
-            if (!msg.message || msg.key.fromMe) return;
+  masters[masterId].memberCount = (masters[masterId].memberCount || 1) + 1;
 
-            const text = (msg.message.conversation || msg.message.extendedTextMessage?.text || "").trim().toLowerCase();
+  saveHarem(harems);
+  saveMasters(masters);
 
-            if (msg.key.participant === targetMaster || msg.key.remoteJid === targetMaster) {
-                if (text === "sí" || text === "si") {
-                    conn.ev.off("messages.upsert", onMessage);
-                    resolve(true);
-                } else if (text === "no") {
-                    conn.ev.off("messages.upsert", onMessage);
-                    resolve(false);
-                }
-            }
-        });
-
-        // Expira a los 30 segundos
-        setTimeout(() => resolve(null), 30000);
-    });
-
-    if (confirmation === true) {
-        // Aceptado
-        haremMembers[requester] = {
-            master: targetMaster,
-            haremId: targetHaremId,
-            joinDate: new Date().toISOString(),
-            status: "active",
-            role: "miembro"
-        };
-        saveHarem();
-
-        masters[targetMaster].memberCount = Object.values(haremMembers).filter(m => m.haremId === targetHaremId && m.status === "active").length;
-        saveMasters();
-
-        await conn.reply(m.chat, `🌸 ${conn.getName(requester)} ha sido aceptado en el harén de ${conn.getName(targetMaster)} 👑`, m, {
-            mentions: [requester, targetMaster],
-        });
-    } else if (confirmation === false) {
-        await conn.reply(m.chat, `✧ ${conn.getName(targetMaster)} ha rechazado la solicitud de ${conn.getName(requester)}.`, m, {
-            mentions: [requester, targetMaster],
-        });
-    } else {
-        await conn.reply(m.chat, "⏳ La solicitud ha expirado. No hubo respuesta del maestro.", m);
-    }
-
-    delete joinRequests[requester];
+  conn.reply(
+    m.chat,
+    `🎉 @${userId.split("@")[0]} ahora forma parte del harén de @${masterId.split("@")[0]} ✨`,
+    m,
+    { mentions: [userId, masterId] }
+  );
 };
 
-handler.command = ["unirharemmaestro"];
 handler.help = ["unirharemmaestro @maestro"];
 handler.tags = ["harem"];
+handler.command = /^unirharemmaestro$/i;
 
 export default handler;
