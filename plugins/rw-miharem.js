@@ -33,14 +33,24 @@ const handler = async (m, { conn, command }) => {
             // Formatear líder
             const leaderInfo = `👑 *Líder:* @${leader.split('@')[0]} • ${conn.getName(leader) || 'Líder'}\n`;
             
-            // Formatear miembros normales
+            // Limitar a 5 miembros normales mostrados
+            const membersToShow = normalMembers.slice(0, 5);
+            const remainingMembers = normalMembers.length - 5;
+            
+            // Formatear miembros mostrados
             let membersList = '';
-            if (normalMembers.length > 0) {
-                membersList = normalMembers.map(member => {
+            if (membersToShow.length > 0) {
+                membersList = membersToShow.map(member => {
                     return `👤 @${member.split('@')[0]} • ${conn.getName(member) || 'Usuario'}`;
                 }).join('\n');
             } else {
                 membersList = '🌟 *No hay otros miembros aún*';
+            }
+
+            // Agregar mensaje de miembros restantes si hay más de 5
+            let remainingText = '';
+            if (remainingMembers > 0) {
+                remainingText = `\n📋 *Y ${remainingMembers} miembro(s) más...*`;
             }
 
             // Crear mensaje con diseño cool
@@ -58,11 +68,7 @@ ${leaderInfo}
           🎎 *MIEMBROS* 🎎
 ╚═══════════════════════════╝
 
-${membersList}
-
-╔═══════════════════════════╗
-   🌸 *¡El círculo está completo!* 🌸
-╚═══════════════════════════╝
+${membersList}${remainingText}
             `;
 
             await conn.reply(m.chat, haremInfo, m, {
