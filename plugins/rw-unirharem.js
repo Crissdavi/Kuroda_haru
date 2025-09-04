@@ -1,18 +1,18 @@
 //import fs from 'fs';
-import path from 'path';
+//import path from 'path';
 
-const haremsFile = path.resolve('src/database/harems.json');
+//const haremsFile = path.resolve('src/database/harems.json');
 let harems = loadHarems();
 
-function loadHarems() {
+//function loadHarems() {
   return fs.existsSync(haremsFile) ? JSON.parse(fs.readFileSync(haremsFile, 'utf8')) : {};
 }
 
-function saveHarems() {
+//function saveHarems() {
   fs.writeFileSync(haremsFile, JSON.stringify(harems, null, 2));
 }
 
-const handler = async (m, { conn }) => {
+//const handler = async (m, { conn }) => {
   const maestro = m.sender;
   const miembro = m.mentionedJid?.[0];
 
