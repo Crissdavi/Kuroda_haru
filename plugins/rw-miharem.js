@@ -33,9 +33,10 @@ const handler = async (m, { conn, command }) => {
             // Formatear líder
             const leaderInfo = `👑 *Líder:* @${leader.split('@')[0]} • ${conn.getName(leader) || 'Líder'}\n`;
             
-            // Limitar a 5 miembros normales mostrados
+            // Limitar a 5 miembros mostrados (incluyendo cálculo correcto)
+            const totalNormalMembers = normalMembers.length;
             const membersToShow = normalMembers.slice(0, 5);
-            const remainingMembers = normalMembers.length - 5;
+            const remainingMembers = totalNormalMembers - 5;
             
             // Formatear miembros mostrados
             let membersList = '';
