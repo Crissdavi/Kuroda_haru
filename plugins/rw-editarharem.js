@@ -1,27 +1,31 @@
-import { loadMasters, saveMasters } from "../../harem/storage.js";
+// src/plugins/harem/editharem.js
+import { loadHarems, saveHarems } from "../../harem/storage.js";
 
 const handler = async (m, { conn, args }) => {
+  const harems = loadHarems();
   const masterId = m.sender;
-  const newName = args.join(" ");
 
-  if (!newName) {
-    return conn.reply(m.chat, "⚠️ Debes escribir un nuevo nombre para tu harén.", m);
-  }
+  const entry = Object.entries(harems).find(
+    ([, h]) => h.master === masterId && h.status === "active"
+  );
+  if (!entry) return conn.reply(m.chat, "❌ No tienes un harén activo.", m);
 
-  let masters = loadMasters();
+  const newName = args.join(" ").trim();
+  if (!newName) return conn.reply(m.chat, "⚠️ Usa: *.editharem <nuevo_nombre>*", m);
 
-  if (!masters[masterId] || masters[masterId].status !== "active") {
-    return conn.reply(m.chat, "❌ No eres maestro de ningún harén activo.", m);
-  }
+  const nameUsed = Object.values(harems).some(h => (h.name || "").toLowerCase() === newName.toLowerCase());
+  if (nameUsed) return conn.reply(m.chat, "❌ Ese nombre ya está en uso por otro harén.", m);
 
-  masters[masterId].name = newName;
+  const [haremId, harem] = entry;
+  const oldName = harem.name;
 
-  saveMasters(masters);
+  harem.name = newName;
+  saveHarems(harems);
 
-  conn.reply(m.chat, `✅ Tu harén ahora se llama: *${newName}*`, m);
+  conn.reply(m.chat, `✏️ Harén renombrado: *${oldName}* → *${newName}*`, m);
 };
 
-handler.help = ["editharem <nombre>"];
+handler.help = ["editharem <nuevo_nombre>"];
 handler.tags = ["harem"];
 handler.command = /^editharem$/i;
 
