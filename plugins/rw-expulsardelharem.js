@@ -1,28 +1,40 @@
-// plugins/harem/expulsardelharem.js
-import fs from "fs"
-import path from "path"
+import { loadHarem, saveHarem, loadMasters, saveMasters } from "../../harem/storage.js";
 
-const haremFile = "./src/database/harem.json";
-const mastersFile = "./src/database/harem_masters.json";
+const handler = async (m, { conn, args }) => {
+  const masterId = m.sender;
+  const mentionedUser = m.mentionedJid?.[0] || (m.quoted && m.quoted.sender);
 
-function loadJSON(file) { if (!fs.existsSync(file)) fs.writeFileSync(file, "{}"); return JSON.parse(fs.readFileSync(file, "utf8")) }
-function saveJSON(file, data) { fs.writeFileSync(file, JSON.stringify(data, null, 2)) }
+  if (!mentionedUser) {
+    return conn.reply(m.chat, "⚠️ Debes mencionar o responder al usuario que quieres expulsar.", m);
+  }
 
-let handler = async (m, { conn, args }) => {
-  let harem = loadJSON(haremFile)
-  let masters = loadJSON(mastersFile)
-  const user = m.sender
-  const target = m.mentionedJid[0] || args[0]
+  let harems = loadHarem();
+  let masters = loadMasters();
 
-  if (!masters[user]) return conn.reply(m.chat, "⚠️ No eres maestro de ningún harén.", m)
-  if (!target || !harem[target]) return conn.reply(m.chat, "⚠️ Ese usuario no está en tu harén.", m)
-  if (harem[target].haremId !== masters[user].haremId) return conn.reply(m.chat, "⚠️ Ese usuario no pertenece a tu harén.", m)
+  if (!masters[masterId] || masters[masterId].status !== "active") {
+    return conn.reply(m.chat, "❌ No eres maestro de ningún harén activo.", m);
+  }
 
-  delete harem[target]
-  saveJSON(haremFile, harem)
+  if (!harems[mentionedUser] || harems[mentionedUser].master !== masterId) {
+    return conn.reply(m.chat, "⚠️ Ese usuario no está en tu harén.", m);
+  }
 
-  conn.reply(m.chat, `🚪 Expulsaste a @${target.split("@")[0]} de tu harén.`, m, { mentions: [target] })
-}
+  delete harems[mentionedUser];
+  masters[masterId].memberCount = Math.max((masters[masterId].memberCount || 1) - 1, 0);
 
-handler.command = /^expulsardelharem$/i
-export default handler
+  saveHarem(harems);
+  saveMasters(masters);
+
+  conn.reply(
+    m.chat,
+    `🛑 @${mentionedUser.split("@")[0]} fue expulsado del harén de @${masterId.split("@")[0]}.`,
+    m,
+    { mentions: [mentionedUser, masterId] }
+  );
+};
+
+handler.help = ["expulsardelharem @user"];
+handler.tags = ["harem"];
+handler.command = /^expulsardelharem$/i;
+
+export default handler;
