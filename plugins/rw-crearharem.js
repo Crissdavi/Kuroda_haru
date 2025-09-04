@@ -43,7 +43,7 @@ const handler = async (m, { conn, command, text }) => {
             harems[creator] = newHarem;
             saveHarems();
 
-            await conn.reply(m.chat, `♡ ¡Harem creado exitosamente! •(=^●ω●^=)•\n\n*Nombre:* ${haremName}\n*Líder:* ${conn.getName(creator)}\n*ID:* ${newHarem.id}`, m);
+            await conn.reply(m.chat, `🙀 ¡Harem creado exitosamente!\n\n*Nombre:* ${haremName}\n*Líder:* ${conn.getName(creator)}\n*ID:* ${newHarem.id}`, m);
         }
     } catch (error) {
         await conn.reply(m.chat, `《✧》 ${error.message}`, m);
