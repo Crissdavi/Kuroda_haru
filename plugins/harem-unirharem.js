@@ -24,7 +24,7 @@ const handler = async (m, { conn }) => {
     harems[maestro].miembros.push(miembro);
     saveHarems();
     await conn.sendMessage(m.chat, {
-      text: `✩ ¡${conn.getName(miembro)} ahora tu amo es @${maestro.split('@')[0]}!`,
+      text: `🔒 ** Dominio establecido ** 🔒\n@${miembro.split('@')[0]} ahora pertenece a @${maestro.split('@')[0]}\n** La obediencia es clave **`,
       mentions: [maestro, miembro],
     });
   }
