@@ -32,7 +32,7 @@ const handler = async (m, { conn }) => {
 
   // Verificar si hay una confirmación pendiente
   if (pendingDeletions.has(usuario)) {
-        const isPropose = /^marry$/i.test(command);
+        const isHarem = /^confirmar$/i.test(command);
  {
       // CONFIRMAR eliminación
       const haremInfo = pendingDeletions.get(usuario);
@@ -45,7 +45,8 @@ const handler = async (m, { conn }) => {
         m
       );
     }
-    else if (texto === 'negar') {
+    const isHarem = /^negar$/i.test(command);
+ {
       // NEGAR eliminación
       pendingDeletions.delete(usuario);
       return await conn.reply(m.chat, '❌ Eliminación cancelada. Tu harem sigue activo.', m);
