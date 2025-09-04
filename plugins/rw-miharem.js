@@ -1,20 +1,41 @@
-// plugins/harem/miharem.js
-import fs from "fs"
-import path from "path"
+import { loadHarem, loadMasters } from "../../harem/storage.js";
 
-const haremFile = "./src/database/harem.json";
+const handler = async (m, { conn }) => {
+  const userId = m.sender;
+  let harems = loadHarem();
+  let masters = loadMasters();
 
-function loadJSON(file) { if (!fs.existsSync(file)) fs.writeFileSync(file, "{}"); return JSON.parse(fs.readFileSync(file, "utf8")) }
+  const haremData = harems[userId];
+  const masterData = masters[userId];
 
-let handler = async (m, { conn }) => {
-  let harem = loadJSON(haremFile)
-  const user = m.sender
+  if (!haremData && !masterData) {
+    return conn.reply(m.chat, "❌ No perteneces a ningún harén.", m);
+  }
 
-  if (!harem[user]) return conn.reply(m.chat, "⚠️ No perteneces a ningún harén.", m)
+  let text = "📖 *Información de tu harén*\n\n";
 
-  const { haremId, role } = harem[user]
-  conn.reply(m.chat, `📖 Estás en el harén con ID: ${haremId}\nRol: ${role}`, m)
-}
+  if (masterData && masterData.status === "active") {
+    const members = Object.values(harems).filter(
+      (m) => m.haremId === masterData.haremId && m.status === "active"
+    );
+    text += `👑 Eres maestro del harén:\n- ID: ${masterData.haremId}\n- Nombre: ${
+      masterData.name || masterData.haremId
+    }\n- Miembros: ${members.length}\n`;
+  } else {
+    const master = haremData.master;
+    const masterInfo = masters[master];
+    text += `👥 Eres miembro del harén:\n- ID: ${haremData.haremId}\n- Maestro: @${
+      master.split("@")[0]
+    }\n- Nombre: ${masterInfo?.name || haremData.haremId}\n`;
+  }
 
-handler.command = /^miharem$/i
-export default handler
+  conn.reply(m.chat, text.trim(), m, {
+    mentions: [haremData?.master || userId],
+  });
+};
+
+handler.help = ["mihareminfo"];
+handler.tags = ["harem"];
+handler.command = /^mihareminfo$/i;
+
+export default handler;
