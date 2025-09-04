@@ -32,7 +32,8 @@ const handler = async (m, { conn }) => {
 
   // Verificar si hay una confirmación pendiente
   if (pendingDeletions.has(usuario)) {
-    if (texto === 'confirmar') {
+        const isPropose = /^marry$/i.test(command);
+ {
       // CONFIRMAR eliminación
       const haremInfo = pendingDeletions.get(usuario);
       delete harems[usuario];
