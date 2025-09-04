@@ -1,41 +1,57 @@
-// src/plugins/harem/crearharem.js
-import { loadHarems, saveHarems } from "../../harem/storage.js";
+import fs from 'fs';
+import path from 'path';
 
-const handler = async (m, { conn, args }) => {
-  const harems = loadHarems();
-  const masterId = m.sender;
+const haremFile = path.resolve('src/database/harem.json');
+let harems = loadHarems();
 
-  // Ya es maestro de un harem activo
-  const hasHarem = Object.entries(harems).find(
-    ([, h]) => h.master === masterId && h.status === "active"
-  );
-  if (hasHarem) return conn.reply(m.chat, "❌ Ya tienes un harén activo.", m);
+function loadHarems() {
+    return fs.existsSync(haremFile) ? JSON.parse(fs.readFileSync(haremFile, 'utf8')) : {};
+}
 
-  const name = args.join(" ").trim();
-  if (!name) return conn.reply(m.chat, "⚠️ Usa: *.crearharem <nombre_del_harén>*", m);
+function saveHarems() {
+    fs.writeFileSync(haremFile, JSON.stringify(harems, null, 2));
+}
 
-  // Nombre único (en todo el archivo, activos o no)
-  const nameUsed = Object.values(harems).some(h => (h.name || "").toLowerCase() === name.toLowerCase());
-  if (nameUsed) return conn.reply(m.chat, "❌ Ese nombre de harén ya está en uso.", m);
+const handler = async (m, { conn, command, text }) => {
+    const isCreate = /^crearharem$/i.test(command);
 
-  const haremId = "harem_" + Math.random().toString(36).slice(2, 10);
+    try {
+        if (isCreate) {
+            const haremName = text.trim();
+            const creator = m.sender;
 
-  harems[haremId] = {
-    name,
-    master: masterId,
-    status: "active",
-    createdAt: new Date().toISOString(),
-    members: {
-      [masterId]: { role: "maestro", joinDate: new Date().toISOString(), status: "active" }
+            if (!haremName) {
+                throw new Error('Debes poner un nombre para tu harem.\n> Ejemplo » *#crearharem MiGrupoDeAmigos*');
+            }
+
+            // Verificar si ya es creador de algún harem
+            const existingHarem = Object.values(harems).find(harem => harem.creator === creator);
+            if (existingHarem) {
+                return await conn.reply(m.chat, `《✧》 Ya eres el líder del harem *${existingHarem.name}*\n> Solo puedes crear un harem como líder`, m);
+            }
+
+            // Crear nuevo harem
+            const newHarem = {
+                id: Date.now().toString(),
+                name: haremName,
+                creator: creator,
+                members: [creator],
+                createdAt: new Date().toISOString(),
+                address: ''
+            };
+
+            harems[creator] = newHarem;
+            saveHarems();
+
+            await conn.reply(m.chat, `♡ ¡Harem creado exitosamente! •(=^●ω●^=)•\n\n*Nombre:* ${haremName}\n*Líder:* ${conn.getName(creator)}\n*ID:* ${newHarem.id}`, m);
+        }
+    } catch (error) {
+        await conn.reply(m.chat, `《✧》 ${error.message}`, m);
     }
-  };
+}
 
-  saveHarems(harems);
-  conn.reply(m.chat, `✅ Harén *${name}* creado.`, m);
-};
-
-handler.help = ['crearharem @tag'];
-handler.tags = ['harem'];
+handler.tags = ['group'];
+handler.help = ['crearharem *nombre*'];
 handler.command = ['crearharem'];
 handler.group = true;
 
