@@ -1,4 +1,4 @@
-import fs from 'fs';
+//import fs from 'fs';
 import path from 'path';
 
 const haremsFile = path.resolve('src/database/harems.json');
@@ -34,4 +34,4 @@ handler.tags = ['harem'];
 handler.help = ['unirharem'];
 handler.command = ['unirharem'];
 
-export default handler;
+export default handler;//
