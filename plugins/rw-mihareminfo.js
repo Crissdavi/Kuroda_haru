@@ -35,8 +35,8 @@ const handler = async (m, { conn }) => {
   conn.reply(m.chat, text.trim(), m);
 };
 
-handler.help = ["mihareminfo"];
+handler.help = ["miharem"];
 handler.tags = ["harem"];
-handler.command = /^mihareminfo$/i;
+handler.command = /^miharem$/i;
 
 export default handler;
