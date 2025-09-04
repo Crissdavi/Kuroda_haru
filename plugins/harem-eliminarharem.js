@@ -32,7 +32,7 @@ const handler = async (m, { conn }) => {
 
   // Verificar si hay una confirmación pendiente
   if (pendingDeletions.has(usuario)) {
-        const isHarem = /^confirmar$/i.test(command);
+        const isHarems = /^confirmar$/i.test(command);
  {
       // CONFIRMAR eliminación
       const haremInfo = pendingDeletions.get(usuario);
@@ -45,7 +45,7 @@ const handler = async (m, { conn }) => {
         m
       );
     }
-    const isHarem = /^negar$/i.test(command);
+    const isHarems = /^negar$/i.test(command);
  {
       // NEGAR eliminación
       pendingDeletions.delete(usuario);
