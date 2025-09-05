@@ -1,9 +1,30 @@
+import fs from 'fs';
+import path from 'path';
+
+const haremsFile = path.resolve('src/database/harems.json');
+
+function loadHarems() {
+  try {
+    return fs.existsSync(haremsFile) ? JSON.parse(fs.readFileSync(haremsFile, 'utf8')) : {};
+  } catch (error) {
+    console.error('Error loading harems:', error);
+    return {};
+  }
+}
+
+function saveHarems() {
+  try {
+    fs.writeFileSync(haremsFile, JSON.stringify(harems, null, 2));
+  } catch (error) {
+    console.error('Error saving harems:', error);
+  }
+}
+
 const handler = async (m, { conn }) => {
+  let harems = loadHarems();
   const donador = m.sender;
   const receptor = m.mentionedJid?.[0];
   const miembro = m.mentionedJid?.[1]; // Segunda mención
-
-  harems = loadHarems();
 
   if (!receptor || !miembro) {
     return await conn.reply(m.chat, 
@@ -46,7 +67,8 @@ const handler = async (m, { conn }) => {
     text: `🎁 *DONACIÓN EXITOSA* 🎁\n\n` +
           `✧ @${donador.split('@')[0]} donó a @${miembro.split('@')[0]}\n` +
           `✧ Para: @${receptor.split('@')[0]}\n\n` +
-          `✅ Miembro transferido correctamente`,
+          `✅ Miembro transferido correctamente\n` +
+          `📊 Ahora tienes: ${harems[donador].miembros.length}/20 miembros`,
     mentions: [donador, receptor, miembro]
   });
 };
@@ -54,3 +76,5 @@ const handler = async (m, { conn }) => {
 handler.tags = ['harem'];
 handler.help = ['donar @receptor @miembro'];
 handler.command = ['donar', 'donarmiembro'];
+
+export default handler;
