@@ -352,8 +352,8 @@ const isBotAdmin = bot?.admin === 'admin' || bot?.admin === 'superadmin'
                     m.reply('chirrido -_-') // Hehehe
                 else
                     m.exp += xp
-                if (!isPrems && plugin.diamond && global.db.data.users[m.chat][m.sender].diamond < plugin.diamond * 1) {
-                    this.reply(m.chat, `💴 Tus zenis se agotaron\nuse el siguiente comando para comprar más diamantes \n*buy* <cantidad> \n*buyall*`, m)
+                if (!isPrems && plugin.zenis && global.db.data.users[m.chat][m.sender].zenis < plugin.zenis * 1) {
+                    this.reply(m.chat, `💴 Tus zenis se agotaron\nuse el siguiente comando para comprar más zenis \n*buy* <cantidad> \n*buyall*`, m)
                     continue // Limit habis
                 }
                 if (plugin.level > _user.level) {
@@ -406,7 +406,7 @@ const isBotAdmin = bot?.admin === 'admin' || bot?.admin === 'superadmin'
                             console.error(e)
                         }
                     }
-                    if (m.diamond)
+                    if (m.zenis)
                         m.reply(`Utilizaste *${+m.zenis}* 💴`)
                 }
                 break
