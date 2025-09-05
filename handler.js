@@ -425,7 +425,7 @@ const isBotAdmin = bot?.admin === 'admin' || bot?.admin === 'superadmin'
         if (m) {
             if (m.sender && (user = global.db.data.users[m.chat][m.sender])) {
                 user.exp += m.exp
-                user.diamond -= m.diamond * 1
+                user.zenis -= m.zenis * 1
             }
 
             let stat
