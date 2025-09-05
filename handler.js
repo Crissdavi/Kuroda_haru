@@ -386,7 +386,7 @@ const isBotAdmin = bot?.admin === 'admin' || bot?.admin === 'superadmin'
                 try {
                     await plugin.call(this, m, extra)
                     if (!isPrems)
-                        m.diamond = m.diamond || plugin.diamond || false
+                        m.zenis = m.zenis || plugin.zenis || false
                 } catch (e) {
                     // Error occured
                     m.error = e
