@@ -1,8 +1,29 @@
+import fs from 'fs';
+import path from 'path';
+
+const haremsFile = path.resolve('src/database/harems.json');
+
+function loadHarems() {
+  try {
+    return fs.existsSync(haremsFile) ? JSON.parse(fs.readFileSync(haremsFile, 'utf8')) : {};
+  } catch (error) {
+    console.error('Error loading harems:', error);
+    return {};
+  }
+}
+
+function saveHarems() {
+  try {
+    fs.writeFileSync(haremsFile, JSON.stringify(harems, null, 2));
+  } catch (error) {
+    console.error('Error saving harems:', error);
+  }
+}
+
 const handler = async (m, { conn }) => {
+  let harems = loadHarems();
   const retador = m.sender;
   const oponente = m.mentionedJid?.[0];
-
-  harems = loadHarems();
 
   if (!oponente) {
     return await conn.reply(m.chat, '✧ Debes mencionar al maestro que quieres desafiar.', m);
@@ -28,30 +49,35 @@ const handler = async (m, { conn }) => {
 
   // 30% de chance de robar miembro
   let miembroRobado = null;
-  if (Math.random() < 0.3 && harems[perdedor].miembros.length > 0) {
+  let mensajeBotin = '';
+  
+  if (Math.random() < 0.3 && harems[perdedor].miembros.length > 0 && harems[ganador].miembros.length < 20) {
     miembroRobado = harems[perdedor].miembros[Math.floor(Math.random() * harems[perdedor].miembros.length)];
     harems[perdedor].miembros = harems[perdedor].miembros.filter(m => m !== miembroRobado);
     harems[ganador].miembros.push(miembroRobado);
     saveHarems();
+    mensajeBotin = `🎁 @${ganador.split('@')[0]} robó a @${miembroRobado.split('@')[0]} del harem perdedor!`;
+  } else {
+    mensajeBotin = `✨ Victoria honorable, sin botín.`;
   }
 
   let mensajeResultado = `⚔️ *BATALLA DE HAREMS* ⚔️\n\n` +
                         `🎯 @${retador.split('@')[0]} vs @${oponente.split('@')[0]}\n\n` +
-                        `🏆 *GANADOR:* @${ganador.split('@')[0]}\n` +
-                        `💥 Poder: ${Math.max(poderRetador, poderOponente).toFixed(1)} vs ${Math.min(poderRetador, poderOponente).toFixed(1)}\n\n`;
+                        `⚡ Poder: ${poderRetador.toFixed(1)} vs ${poderOponente.toFixed(1)}\n` +
+                        `🏆 *GANADOR:* @${ganador.split('@')[0]}\n\n` +
+                        `${mensajeBotin}`;
 
-  if (miembroRobado) {
-    mensajeResultado += `🎁 @${ganador.split('@')[0]} robó a @${miembroRobado.split('@')[0]} del harem perdedor!`;
-  } else {
-    mensajeResultado += `✨ Victoria honorable, sin botín.`;
-  }
+  const mentions = [retador, oponente];
+  if (miembroRobado) mentions.push(miembroRobado);
 
   await conn.sendMessage(m.chat, {
     text: mensajeResultado,
-    mentions: [retador, oponente, ...(miembroRobado ? [miembroRobado] : [])]
+    mentions: mentions
   });
 };
 
 handler.tags = ['harem', 'fun'];
 handler.help = ['desafiar @maestro'];
-handler.command = ['desafiar', 'desafioharem'];
+handler.command = ['desafiar', 'desafioharem', 'batallaharem'];
+
+export default handler;
