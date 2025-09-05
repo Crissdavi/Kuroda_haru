@@ -2,7 +2,6 @@ import fs from 'fs';
 import path from 'path';
 
 const haremsFile = path.resolve('src/database/harems.json');
-let harems = loadHarems();
 
 function loadHarems() {
   try {
@@ -15,11 +14,8 @@ function loadHarems() {
 
 const handler = async (m, { conn }) => {
   const usuario = m.sender;
-  
-  // Cargar datos frescos
-  harems = loadHarems();
+  const harems = loadHarems();
 
-  // Verificar si el usuario tiene un harem
   if (!harems[usuario]) {
     return await conn.reply(m.chat, '✧ No tienes un harem creado. Usa *crearharem* para iniciar uno.', m);
   }
@@ -42,16 +38,17 @@ const handler = async (m, { conn }) => {
     : '✦ No hay miembros aún';
 
   // Crear mensaje con formato
-  const mensaje = `🎌 *INFORMACIÓN DE HAREM* 🎌
+  const mensaje = `🎌 *TU HAREM* 🎌
 
 ✦ *Líder:* @${maestro.split('@')[0]}
 ✦ *Creado:* ${fechaCreacion}
 ✦ *Miembros:* ${miembros.length}/20
 
-👥 *LISTA DE INTEGRANTES:*
+👥 *TUS INTEGRANTES:*
 ${miembrosTexto}
 
-⚡ *ESTADO:* ${miembros.length >= 20 ? '🔴 Lleno' : '🟢 Disponible'}`;
+⚡ *ESTADO:* ${miembros.length >= 20 ? '🔴 Lleno' : '🟢 Disponible'}
+💡 Usa *verharem @usuario* para ver otros harems`;
 
   // Enviar mensaje con menciones
   await conn.sendMessage(m.chat, {
@@ -61,7 +58,7 @@ ${miembrosTexto}
 };
 
 handler.tags = ['harem'];
-handler.help = ['infoharem'];
-handler.command = ['infoharem', 'miharem', 'verharem'];
+handler.help = ['miharem'];
+handler.command = ['miharem', 'myharem', 'meharem'];
 
 export default handler;
