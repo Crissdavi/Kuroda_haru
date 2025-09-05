@@ -27,7 +27,7 @@ export async function handler(chatUpdate) {
         if (!m)
             return
         m.exp = 0
-        m.diamond = false
+        m.zenis = false
         try {
             //global.db.data.users[m.chat] = global.db.data.users[m.chat] || {}
 global.db.data.users[m.chat] ??= {}
