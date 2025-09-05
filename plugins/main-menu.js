@@ -60,7 +60,7 @@ const defaultMenu = {
 \t\t\t*L I S T A  -  M E N Ú S*
 `.trimStart(),
   header: '╭───═[ `MENÚ メ %category` ]═────⛀ ⛁\n│╭───────────────···⛂ ⛃',
-  body: '♔%cmd %islimit %isPremium\n',
+  body: '♔%cmd %isZenis %isPremium\n',
   footer: '│╰────────────────···⛂ ⛃\n╰───────────═┅═──────────⛀ ⛁\n',
   after: `> 🚩 ${textbot}`,
 }
@@ -108,7 +108,7 @@ let handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
         help: Array.isArray(plugin.tags) ? plugin.help : [plugin.help],
         tags: Array.isArray(plugin.tags) ? plugin.tags : [plugin.tags],
         prefix: 'customPrefix' in plugin,
-        limit: plugin.limit,
+        zenis: plugin.zenis,
         premium: plugin.premium,
         enabled: !plugin.disabled,
       }
@@ -130,7 +130,7 @@ let handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
           ...help.filter(menu => menu.tags && menu.tags.includes(tag) && menu.help).map(menu => {
             return menu.help.map(help => {
               return body.replace(/%cmd/g, menu.prefix ? help : '%p' + help)
-                .replace(/%islimit/g, menu.limit ? '◜🌊◞' : '')
+                .replace(/%isZenis/g, menu.zenis ? '◜🌊◞' : '')
                 .replace(/%isPremium/g, menu.premium ? '◜🪪◞' : '')
                 .trim()
             }).join('\n')
@@ -158,7 +158,7 @@ let handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
       totalexp: exp,
       xp4levelup: max - exp,
       github: _package.homepage ? _package.homepage.url || _package.homepage : '[unknown github url]',
-      greeting, level, limit, name, weton, week, date, dateIslamic, time, totalreg, rtotalreg,
+      greeting, level, zenis, name, weton, week, date, dateIslamic, time, totalreg, rtotalreg,
       readmore: readMore
     }
     text = text.replace(new RegExp(`%(${Object.keys(replace).sort((a, b) => b.length - a.length).join`|`})`, 'g'), (_, name) => '' + replace[name])
