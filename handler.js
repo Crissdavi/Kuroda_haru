@@ -36,7 +36,7 @@ if (typeof user !== 'object') {
     user = global.db.data.users[m.sender] = {
         exp: 0,
         zenis: 10,
-        bank: 50,
+        bank: 0,
         lastmiming: 0,
         lastclaim: 0,
         registered: false,
