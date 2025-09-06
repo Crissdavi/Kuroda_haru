@@ -33,6 +33,16 @@ function guardarAlimentos(alimentos) {
     fs.writeFileSync(alimentosPath, JSON.stringify(alimentos, null, 2));
 }
 
+// Stats por defecto para asegurar que existan
+const defaultStats = {
+    hp: 0,
+    attack: 0,
+    defense: 0,
+    'special-attack': 0,
+    'special-defense': 0,
+    speed: 0
+};
+
 let handler = async (m, { conn, args }) => {
     try {
         const sender = m.sender;
@@ -98,40 +108,64 @@ let handler = async (m, { conn, args }) => {
         const alimento = alimentosUsuarios[sender].inventario[numeroAlimento];
         const pokemon = usuarios[sender].pokemons[numeroPokemon];
 
+        // Asegurar que el Pokémon tenga todas las stats
+        if (!pokemon.stats) {
+            pokemon.stats = { ...defaultStats };
+        } else {
+            // Asegurar que todas las stats existan
+            pokemon.stats = { ...defaultStats, ...pokemon.stats };
+        }
+
         // Aplicar efecto del alimento
         let mensajeEfecto = `🎯 *ALIMENTANDO A ${pokemon.name.toUpperCase()}*\n\n`;
         mensajeEfecto += `🍎 *Alimento usado:* ${alimento.nombre}\n`;
         mensajeEfecto += `💫 *Efecto:* ${alimento.efecto}\n\n`;
 
+        let statsMejoradas = [];
+
         // Aplicar mejoras según el tipo de alimento
         if (alimento.stat === 'hp') {
             pokemon.stats.hp = (pokemon.stats.hp || 0) + alimento.valor;
-            mensajeEfecto += `❤️ *HP aumentó:* +${alimento.valor} (Total: ${pokemon.stats.hp})`;
+            statsMejoradas.push(`❤️ HP: +${alimento.valor} → ${pokemon.stats.hp}`);
         }
         else if (alimento.stat === 'attack') {
             pokemon.stats.attack = (pokemon.stats.attack || 0) + alimento.valor;
-            mensajeEfecto += `⚔️ *Ataque aumentó:* +${alimento.valor} (Total: ${pokemon.stats.attack})`;
+            statsMejoradas.push(`⚔️ Ataque: +${alimento.valor} → ${pokemon.stats.attack}`);
         }
         else if (alimento.stat === 'defense') {
             pokemon.stats.defense = (pokemon.stats.defense || 0) + alimento.valor;
-            mensajeEfecto += `🛡️ *Defensa aumentó:* +${alimento.valor} (Total: ${pokemon.stats.defense})`;
+            statsMejoradas.push(`🛡️ Defensa: +${alimento.valor} → ${pokemon.stats.defense}`);
         }
         else if (alimento.stat === 'speed') {
             pokemon.stats.speed = (pokemon.stats.speed || 0) + alimento.valor;
-            mensajeEfecto += `💨 *Velocidad aumentó:* +${alimento.valor} (Total: ${pokemon.stats.speed})`;
+            statsMejoradas.push(`⚡ Velocidad: +${alimento.valor} → ${pokemon.stats.speed}`);
         }
         else if (alimento.stat === 'all') {
             Object.keys(pokemon.stats).forEach(stat => {
-                pokemon.stats[stat] = (pokemon.stats[stat] || 0) + alimento.valor;
+                const valorAnterior = pokemon.stats[stat] || 0;
+                pokemon.stats[stat] = valorAnterior + alimento.valor;
+                statsMejoradas.push(`${getEmojiStat(stat)} ${stat}: +${alimento.valor} → ${pokemon.stats[stat]}`);
             });
-            mensajeEfecto += `✨ *Todos los stats aumentaron:* +${alimento.valor}`;
         }
-        else if (alimento.stat === 'mixed') {
+        else if (alimento.stat === 'mixed' && alimento.valor) {
             Object.keys(alimento.valor).forEach(stat => {
-                pokemon.stats[stat] = (pokemon.stats[stat] || 0) + alimento.valor[stat];
+                const valorAnterior = pokemon.stats[stat] || 0;
+                pokemon.stats[stat] = valorAnterior + alimento.valor[stat];
+                statsMejoradas.push(`${getEmojiStat(stat)} ${stat}: +${alimento.valor[stat]} → ${pokemon.stats[stat]}`);
             });
-            mensajeEfecto += `⚡ *Mejora múltiple aplicada*`;
         }
+
+        // Agregar stats mejoradas al mensaje
+        if (statsMejoradas.length > 0) {
+            mensajeEfecto += `📈 *Mejoras aplicadas:*\n`;
+            statsMejoradas.forEach(mejora => {
+                mensajeEfecto += `➤ ${mejora}\n`;
+            });
+        }
+
+        // Calcular nuevas stats totales
+        const nuevasStatsTotales = Object.values(pokemon.stats).reduce((a, b) => a + b, 0);
+        mensajeEfecto += `\n📊 *Nuevas stats totales:* ${nuevasStatsTotales}`;
 
         // Remover alimento usado del inventario
         alimentosUsuarios[sender].inventario.splice(numeroAlimento, 1);
@@ -154,6 +188,19 @@ let handler = async (m, { conn, args }) => {
         }, { quoted: m });
     }
 };
+
+// Función auxiliar para obtener emojis de stats
+function getEmojiStat(stat) {
+    const emojis = {
+        'hp': '❤️',
+        'attack': '⚔️',
+        'defense': '🛡️',
+        'special-attack': '💨',
+        'special-defense': '🛡️',
+        'speed': '⚡'
+    };
+    return emojis[stat] || '📊';
+}
 
 handler.tags = ['pokemon', 'economy'];
 handler.help = ['usaralimento', 'usaralimento [número] [pokémon]'];
