@@ -3,7 +3,6 @@ import fs from 'fs';
 
 const usuariosPath = './src/database/usuarios.json';
 
-// Función para leer usuarios
 function leerUsuarios() {
   try {
     const data = fs.readFileSync(usuariosPath, 'utf8');
@@ -22,7 +21,6 @@ let handler = async (m, { conn }) => {
     const sender = m.sender;
     const usuarios = leerUsuarios();
     
-    // Si el usuario no existe en la DB, crearlo
     if (!usuarios[sender]) {
       usuarios[sender] = {
         pokemons: [],
