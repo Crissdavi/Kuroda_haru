@@ -21,7 +21,6 @@ let handler = async (m, { conn }) => {
     const sender = m.sender;
     const usuarios = leerUsuarios();
     
-    // Si el usuario no existe en la DB, crearlo
     if (!usuarios[sender]) {
       usuarios[sender] = {
         pokemons: [],
@@ -30,22 +29,13 @@ let handler = async (m, { conn }) => {
     }
 
     await m.reply('🎣 *Lanzando Pokébola...*');
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    await new Promise(resolve => setTimeout(resolve, 2000));
     
     await m.reply('⚡ *¡Pokébola en movimiento!*');
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    await m.reply('✨ *La Pokébola se está agitando...*');
     await new Promise(resolve => setTimeout(resolve, 2000));
-
-    const captureMessages = [
-      '✨ *La Pokébola se está agitando...*',
-      '🌟 *¡Parece que quiere escapar!*',
-      '💫 *¡Un poco más...!*',
-      '🎉 *¡Casi atrapado!*'
-    ];
-
-    for (const msg of captureMessages) {
-      await m.reply(msg);
-      await new Promise(resolve => setTimeout(resolve, 1000));
-    }
 
     const response = await axios.get('https://pokeapi.co/api/v2/pokemon?limit=1000');
     const pokemons = response.data.results;
@@ -56,7 +46,6 @@ let handler = async (m, { conn }) => {
     const pokemonImage = pokemonData.data.sprites.other['official-artwork']?.front_default || 
                          pokemonData.data.sprites.front_default;
 
-    // Guardar el Pokémon capturado
     const pokemonCapturado = {
       id: pokemonData.data.id,
       name: pokemonName,
