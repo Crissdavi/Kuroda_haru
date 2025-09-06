@@ -1,46 +1,94 @@
 import fs from 'fs';
-import axios from 'axios';
 
 const usuariosPath = './src/database/usuarios.json';
 
-function cargarJSON(ruta, valorDefault = {}) {
+function leerUsuarios() {
   try {
-    if (!fs.existsSync(ruta)) fs.writeFileSync(ruta, JSON.stringify(valorDefault, null, 2));
-    const data = fs.readFileSync(ruta, 'utf-8').trim();
-    return data ? JSON.parse(data) : valorDefault;
-  } catch (e) {
-    return valorDefault;
+    const data = fs.readFileSync(usuariosPath, 'utf8');
+    return JSON.parse(data) || {};
+  } catch (error) {
+    return {};
   }
 }
 
-function guardarJSON(ruta, data) {
-  fs.writeFileSync(ruta, JSON.stringify(data, null, 2));
-}
-
-let handler = async (m, { conn }) => {
-  const userId = m.sender.replace(/[^0-9]/g, '');
-  const usuarios = cargarJSON(usuariosPath);
-
+let handler = async (m, { conn, args }) => {
   try {
-    if (!usuarios[userId] || !usuarios[userId].pokemones || usuarios[userId].pokemones.length === 0) {
-      await conn.reply(m.chat, 'No has capturado ningún Pokémon', m);
+    const sender = m.sender;
+    const usuarios = leerUsuarios();
+    
+    // Verificar si no tiene Pokémon
+    if (!usuarios[sender] || usuarios[sender].pokemons.length === 0) {
+      return await conn.sendMessage(m.chat, {
+        text: '❌ *No has capturado ningún Pokémon todavía.*\n\n🎯 Usa *.pokemon* para empezar tu aventura Pokémon!',
+        contextInfo: { mentionedJid: [sender] }
+      }, { quoted: m });
+    }
+
+    const userPokemons = usuarios[sender].pokemons;
+    const numeroPokemon = parseInt(args[0]);
+
+    if (!isNaN(numeroPokemon) && numeroPokemon > 0 && numeroPokemon <= userPokemons.length) {
+      const pokemon = userPokemons[numeroPokemon - 1];
+      const stats = pokemon.stats || {};
+      const totalStats = Object.values(stats).reduce((a, b) => a + b, 0);
+      
+      let rareza = '⭐ Común';
+      if (totalStats > 400) rareza = '🌟🌟 Raro';
+      if (totalStats > 500) rareza = '🌟🌟🌟 Épico';
+      if (totalStats > 600) rareza = '💎💎💎 Legendario';
+
+      const caption = `📋 *POKÉMON #${numeroPokemon}*\n\n` +
+        `🎯 *Nombre:* ${pokemon.name}\n` +
+        `📊 *Rareza:* ${rareza}\n` +
+        `📏 *Altura:* ${pokemon.height}m\n` +
+        `⚖️ *Peso:* ${pokemon.weight}kg\n` +
+        `🌀 *Tipo:* ${pokemon.types.join(' / ').toUpperCase()}\n` +
+        `📅 *Capturado:* ${pokemon.captured}`;
+
+      if (pokemon.image) {
+        await conn.sendFile(m.chat, pokemon.image, 'pokemon-detail.png', caption, m);
+      } else {
+        await m.reply(caption);
+      }
       return;
     }
 
-    let texto = 'Tus Pokémon capturados:\n\n';
-    usuarios[userId].pokemones.forEach((pokemon, index) => {
-      texto += `${index + 1}. ${pokemon.nombre} (Nivel ${pokemon.nivel})\n`;
+    await m.reply('📊 *Cargando tu Pokédex...* 🌟');
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    let message = `📖 *POKÉDEX - ${userPokemons.length} POKÉMON*\n\n`;
+    
+    userPokemons.forEach((pokemon, index) => {
+      const stats = pokemon.stats || {};
+      const totalStats = Object.values(stats).reduce((a, b) => a + b, 0);
+      
+      let rareza = '⭐';
+      if (totalStats > 400) rareza = '🌟🌟';
+      if (totalStats > 500) rareza = '🌟🌟🌟';
+      if (totalStats > 600) rareza = '💎💎💎';
+
+      message += `${index + 1}. ${rareza} *${pokemon.name}*\n`;
     });
 
-    await conn.reply(m.chat, texto, m);
+    message += `\n${'═'.repeat(35)}\n`;
+    message += `🔍 *Usa .verpokemon [número] para ver detalles*\n`;
+    message += `📋 *Ejemplo:* .verpokemon 1`;
+
+    await conn.sendMessage(m.chat, { 
+      text: message,
+      contextInfo: { mentionedJid: [sender] }
+    }, { quoted: m });
+
   } catch (error) {
-    console.error(error);
-    await conn.reply(m.chat, `Error al mostrar Pokémon: ${error.message}`, m);
+    console.error('Error en comando verpokemon:', error);
+    await conn.sendMessage(m.chat, {
+      text: '❌ *Error al cargar tu Pokédex*\n\n⚠️ Intenta de nuevo más tarde.',
+      contextInfo: { mentionedJid: [m.sender] }
+    }, { quoted: m });
   }
 };
 
-handler.tags = ['pokemon'];
-handler.help = ['verpokemones'];
-handler.command = ['verpokemones', 'mipokemon'];
-
+handler.tags = ['game', 'pokemon'];
+handler.help = ['verpokemon', 'verpokemon [número]'];
+handler.command = ['verpokemon', 'mispokemons', 'pokedex', 'mispokes'];
 export default handler;
