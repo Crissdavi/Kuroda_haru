@@ -16,7 +16,6 @@ let handler = async (m, { conn, args }) => {
     const sender = m.sender;
     const usuarios = leerUsuarios();
     
-    // Verificar si no tiene Pokémon
     if (!usuarios[sender] || usuarios[sender].pokemons.length === 0) {
       return await conn.sendMessage(m.chat, {
         text: '❌ *No has capturado ningún Pokémon todavía.*\n\n🎯 Usa *.pokemon* para empezar tu aventura Pokémon!',
