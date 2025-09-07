@@ -63,15 +63,13 @@ let handler = async (m, { conn, args }) => {
             return await m.reply('❌ *No puedes comprar tu propio Pokémon.*\n\n😅 Eso sería bastante tonto...');
         }
 
-        let user = global.db.data.users[sender];
+        let user = global.db.data.users[m.sender];
         if (user.zenis < venta.precio) {
             return await m.reply(`❌ *No tienes suficientes zenis.*\n\n💰 Necesitas: ${venta.precio} zenis\n💳 Tienes: ${user.zenis} zenis`);
         }
 
-        global.db.data.users[m.sender].zenis -= venta.precio;
-        if (usuarios[venta.vendedor]) {
+global.db.data.users[m.sender].zenis -= venta.precio;
 global.db.data.users[venta.vendedor].zenis += venta.precio;
-        }
 
         usuarios[sender].pokemons.push(venta.pokemon);
         mercado.ventas = mercado.ventas.filter(v => v.numero !== numeroVenta);
@@ -85,7 +83,7 @@ global.db.data.users[venta.vendedor].zenis += venta.precio;
                              `💰 *Precio:* ${venta.precio} zenis\n` +
                              `👤 *Vendedor:* ${venta.vendedorNombre}\n\n` +
                              `💳 *Zenis gastados:* ${venta.precio}\n` +
-                             `💰 *Zenis restantes:* ${usuarios[sender].zenis}\n\n` +
+                             `💰 *Zenis restantes:* ${global.db.data.users[m.sender].zenis}\n\n` +
                              `🎉 ¡Disfruta de tu nuevo Pokémon!`;
 
         await m.reply(mensajeCompra);
