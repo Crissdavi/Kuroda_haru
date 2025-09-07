@@ -1,81 +1,57 @@
 import fetch from 'node-fetch';
 
 let handler = async (m, { conn, command, text, usedPrefix }) => {
-    if (!text) return conn.reply(m.chat, `❀ Ingresa el texto de lo que quieras buscar en Spotify`, m);
+    if (!text) return conn.reply(m.chat, `❀ Ingresa el nombre de la canción o artista que quieres buscar`, m);
     
     try {
-        // Primero intentamos con la API original
-        let apiSearch = await fetch(`https://api.vreden.web.id/api/spotifysearch?query=${encodeURIComponent(text)}`);
+        // Mensaje de espera
+        await conn.reply(m.chat, '🔍 *Buscando en Spotify...*', m);
         
-        if (apiSearch.status !== 200) {
-            throw new Error('API principal no disponible');
+        // Usar una API alternativa funcional
+        const searchUrl = `https://api.spotify.com/v1/search?q=${encodeURIComponent(text)}&type=track&limit=1`;
+        
+        // Necesitarías un token de acceso para la API oficial de Spotify
+        // Como alternativa, usemos una API pública que no requiera autenticación
+        try {
+            // Primero intentamos con una API pública alternativa
+            const publicApiResponse = await fetch(`https://api.downloads.live/spotify/search?q=${encodeURIComponent(text)}`);
+            
+            if (publicApiResponse.status !== 200) {
+                throw new Error('API pública no disponible');
+            }
+            
+            const data = await publicApiResponse.json();
+            
+            if (!data || !data.tracks || data.tracks.length === 0) {
+                return conn.reply(m.chat, `❀ No se encontraron resultados para "${text}"`, m);
+            }
+            
+            const track = data.tracks[0];
+            const HS = `❀ *Resultado de Spotify:*\n\n- *Título:* ${track.name}\n- *Artista:* ${track.artists}\n- *Duración:* ${track.duration}\n- *Enlace:* ${track.url}`;
+            
+            // Enviar información de la canción
+            await conn.sendFile(m.chat, track.thumbnail, 'spotify.jpg', HS, m);
+            
+            // Para descargar la canción, necesitaríamos otro endpoint
+            conn.reply(m.chat, '⚠️ La descarga directa requiere configuración adicional. Usa /spotifydl para descargar.', m);
+            
+        } catch (publicApiError) {
+            console.error('Error con API pública:', publicApiError);
+            
+            // Fallback: mostrar información básica sin descarga
+            const fallbackMessage = `🎵 *Resultado para:* ${text}\n\nℹ️ El servicio de descarga temporalmente no está disponible.\n📋 Puedes buscar manualmente en: https://open.spotify.com/search/${encodeURIComponent(text)}`;
+            await conn.reply(m.chat, fallbackMessage, m);
         }
-        
-        let jsonSearch = await apiSearch.json();
-        
-        // Verificar si hay resultados
-        if (!jsonSearch.result || jsonSearch.result.length === 0) {
-            return conn.reply(m.chat, `❀ No se encontraron resultados para "${text}"`, m);
-        }
-        
-        let { popularity, url } = jsonSearch.result[0];
-        let apiDL = await fetch(`https://api.vreden.web.id/api/spotify?url=${encodeURIComponent(url)}`);
-        let jsonDL = await apiDL.json();
-        
-        // Verificar respuesta de la API
-        if (!jsonDL.result || !jsonDL.result.result) {
-            return conn.reply(m.chat, `❀ Error al obtener los detalles de la canción`, m);
-        }
-        
-        let { title, artists, cover, music } = jsonDL.result.result;
-        
-        // Crear mensaje
-        let HS = `❀ *Resultado de Spotify:*\n\n- *Título:* ${title}\n- *Artista:* ${artists}\n- *Popularidad:* ${popularity}\n- *Enlace:* ${url}`;
-        
-        // Enviar imagen de portada
-        await conn.sendFile(m.chat, cover, 'spotify_cover.jpg', HS, m);
-        
-        // Enviar audio
-        await conn.sendFile(m.chat, music, `${title}.mp3`, null, m, null, { mimetype: 'audio/mp4' });
         
     } catch (error) {
-        console.error('Error con API principal:', error);
-        // Si falla la API principal, intentamos con API alternativa
-        await tryAlternativeAPI(m, conn, text);
+        console.error(error);
+        conn.reply(m.chat, `❀ Ocurrió un error al buscar. Intenta con otro nombre o más tarde.`, m);
     }
 }
 
-// Función para intentar con API alternativa
-async function tryAlternativeAPI(m, conn, text) {
-    try {
-        conn.reply(m.chat, 'Buscando en API alternativa...', m);
-        
-        // API alternativa - ejemplo con otra API de búsqueda de música
-        // NOTA: Necesitarías conseguir una API key para muchos de estos servicios
-        let alternativeSearch = await fetch(`https://api.deezer.com/search?q=${encodeURIComponent(text)}&limit=1`);
-        let jsonAlt = await alternativeSearch.json();
-        
-        if (!jsonAlt.data || jsonAlt.data.length === 0) {
-            return conn.reply(m.chat, `❀ No se encontraron resultados para "${text}" en la API alternativa`, m);
-        }
-        
-        let track = jsonAlt.data[0];
-        let HS = `❀ *Resultado alternativo:*\n\n- *Título:* ${track.title}\n- *Artista:* ${track.artist.name}\n- *Álbum:* ${track.album.title}\n- *Enlace:* ${track.link}`;
-        
-        // Enviar imagen de portada
-        await conn.sendFile(m.chat, track.album.cover_big, 'album_cover.jpg', HS, m);
-        
-        // Para Deezer necesitarías otra API para descargar el audio
-        conn.reply(m.chat, 'ℹ️ Para descargar la canción, necesitas configurar una API de descarga compatible', m);
-        
-    } catch (altError) {
-        console.error('Error con API alternativa:', altError);
-        conn.reply(m.chat, `❀ Ocurrió un error al procesar tu solicitud. Por favor, intenta nuevamente más tarde.`, m);
-    }
-}
-
-handler.command = /^(spotify|music)$/i;
-handler.help = ['spotify <búsqueda>'];
+handler.command = /^(spotify|spotifysearch)$/i;
+handler.help = ['spotify <búsqueda>', 'spotifysearch <búsqueda>'];
 handler.tags = ['music'];
+handler.premium = false;
 
 export default handler;
