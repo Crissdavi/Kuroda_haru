@@ -1,57 +1,75 @@
 import fetch from 'node-fetch';
 
 let handler = async (m, { conn, command, text, usedPrefix }) => {
-    if (!text) return conn.reply(m.chat, `❀ Ingresa el nombre de la canción o artista que quieres buscar`, m);
+    if (!text) return conn.reply(m.chat, `❀ Ingresa el nombre de la canción o artista`, m);
     
     try {
-        // Mensaje de espera
-        await conn.reply(m.chat, '🔍 *Buscando en Spotify...*', m);
+        await conn.reply(m.chat, '🔍 *Buscando tu música...*', m);
         
-        // Usar una API alternativa funcional
-        const searchUrl = `https://api.spotify.com/v1/search?q=${encodeURIComponent(text)}&type=track&limit=1`;
+        // Intentar con varias APIs alternativas
+        const APIs = [
+            `https://api.downloads.live/spotify/search?q=${encodeURIComponent(text)}`,
+            `https://spotify-downloader-api.vercel.app/api/search?q=${encodeURIComponent(text)}`,
+            `https://spotify23.p.rapidapi.com/search/?q=${encodeURIComponent(text)}&type=tracks&offset=0&limit=1`
+        ];
         
-        // Necesitarías un token de acceso para la API oficial de Spotify
-        // Como alternativa, usemos una API pública que no requiera autenticación
-        try {
-            // Primero intentamos con una API pública alternativa
-            const publicApiResponse = await fetch(`https://api.downloads.live/spotify/search?q=${encodeURIComponent(text)}`);
-            
-            if (publicApiResponse.status !== 200) {
-                throw new Error('API pública no disponible');
+        let success = false;
+        
+        for (let apiUrl of APIs) {
+            try {
+                const response = await fetch(apiUrl, {
+                    headers: {
+                        // Algunas APIs可能需要 headers
+                        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+                    }
+                });
+                
+                if (response.status === 200) {
+                    const data = await response.json();
+                    
+                    // Diferentes APIs tienen diferentes estructuras de respuesta
+                    let trackInfo;
+                    if (data.tracks && data.tracks.length > 0) {
+                        trackInfo = data.tracks[0];
+                    } else if (data.result && data.result.length > 0) {
+                        trackInfo = data.result[0];
+                    } else if (data.tracks && data.tracks.items && data.tracks.items.length > 0) {
+                        trackInfo = data.tracks.items[0];
+                    } else {
+                        continue; // Intentar con la siguiente API
+                    }
+                    
+                    const artists = trackInfo.artists ? trackInfo.artists.map(artist => artist.name).join(', ') : (trackInfo.artists || 'N/A');
+                    
+                    const HS = `🎵 *Resultado encontrado:*\n\n- *Título:* ${trackInfo.name || trackInfo.title}\n- *Artista:* ${artists}\n- *Duración:* ${trackInfo.duration || 'N/A'}\n- *Popularidad:* ${trackInfo.popularity || 'N/A'}`;
+                    
+                    if (trackInfo.thumbnail || trackInfo.album?.images?.[0]?.url) {
+                        await conn.sendFile(m.chat, trackInfo.thumbnail || trackInfo.album.images[0].url, 'spotify.jpg', HS, m);
+                    } else {
+                        await conn.reply(m.chat, HS, m);
+                    }
+                    
+                    success = true;
+                    break;
+                }
+            } catch (apiError) {
+                console.error(`Error con API: ${apiUrl}`, apiError);
+                continue;
             }
-            
-            const data = await publicApiResponse.json();
-            
-            if (!data || !data.tracks || data.tracks.length === 0) {
-                return conn.reply(m.chat, `❀ No se encontraron resultados para "${text}"`, m);
-            }
-            
-            const track = data.tracks[0];
-            const HS = `❀ *Resultado de Spotify:*\n\n- *Título:* ${track.name}\n- *Artista:* ${track.artists}\n- *Duración:* ${track.duration}\n- *Enlace:* ${track.url}`;
-            
-            // Enviar información de la canción
-            await conn.sendFile(m.chat, track.thumbnail, 'spotify.jpg', HS, m);
-            
-            // Para descargar la canción, necesitaríamos otro endpoint
-            conn.reply(m.chat, '⚠️ La descarga directa requiere configuración adicional. Usa /spotifydl para descargar.', m);
-            
-        } catch (publicApiError) {
-            console.error('Error con API pública:', publicApiError);
-            
-            // Fallback: mostrar información básica sin descarga
-            const fallbackMessage = `🎵 *Resultado para:* ${text}\n\nℹ️ El servicio de descarga temporalmente no está disponible.\n📋 Puedes buscar manualmente en: https://open.spotify.com/search/${encodeURIComponent(text)}`;
-            await conn.reply(m.chat, fallbackMessage, m);
+        }
+        
+        if (!success) {
+            await conn.reply(m.chat, `❀ No se pudo conectar con los servicios de música. Intenta más tarde.\n🔗 Busca manualmente: https://open.spotify.com/search/${encodeURIComponent(text)}`, m);
         }
         
     } catch (error) {
         console.error(error);
-        conn.reply(m.chat, `❀ Ocurrió un error al buscar. Intenta con otro nombre o más tarde.`, m);
+        conn.reply(m.chat, `❀ Error al procesar tu solicitud. Intenta con otro nombre.`, m);
     }
 }
 
-handler.command = /^(spotify|spotifysearch)$/i;
-handler.help = ['spotify <búsqueda>', 'spotifysearch <búsqueda>'];
+handler.command = /^(spotify|music)$/i;
+handler.help = ['spotify <búsqueda>'];
 handler.tags = ['music'];
-handler.premium = false;
 
 export default handler;
