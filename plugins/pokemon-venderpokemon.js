@@ -44,7 +44,16 @@ let handler = async (m, { conn, args }) => {
         }
 
         if (args.length < 2) {
-            return await m.reply('❌ *Faltan argumentos.*\n\n📋 Ejemplo: .venderpokemon 1 500\n• 1 = Número de Pokémon\n• 500 = Precio en zenis');
+            let mensaje = '❌ *Faltan argumentos.*\n\n📋 Ejemplo: .venderpokemon 1 500\n';
+            mensaje += '• 1 = Número de tu Pokémon (usa .verpokemon para ver números)\n';
+            mensaje += '• 500 = Precio en zenis\n\n';
+            mensaje += '📋 *Tus Pokémon:*\n';
+            
+            usuarios[sender].pokemons.forEach((poke, index) => {
+                mensaje += `${index + 1}. ${poke.name}\n`;
+            });
+            
+            return await m.reply(mensaje);
         }
 
         const numeroPokemon = parseInt(args[0]);
@@ -64,28 +73,28 @@ let handler = async (m, { conn, args }) => {
 
         const pokemonAVender = usuarios[sender].pokemons[numeroPokemon - 1];
 
-        // Crear venta
+        // Crear venta (sin ID complicada)
         const venta = {
-            id: Date.now().toString(),
+            numero: mercado.ventas.length + 1, // Número simple 1, 2, 3...
             vendedor: sender,
             vendedorNombre: usuarios[sender].nombre || 'Usuario',
             pokemon: pokemonAVender,
             precio: precio,
-            fecha: new Date().toLocaleString(),
-            vendido: false
+            fecha: new Date().toLocaleString()
         };
 
         mercado.ventas.push(venta);
         guardarMercado(mercado);
 
         const mensajeVenta = `🏪 *¡POKÉMON EN VENTA!*\n\n` +
+                            `🔢 *Número de venta:* #${venta.numero}\n` +
                             `🎯 *Pokémon:* ${pokemonAVender.name}\n` +
                             `💰 *Precio:* ${precio} zenis\n` +
                             `👤 *Vendedor:* ${usuarios[sender].nombre || 'Tú'}\n\n` +
                             `📊 *Stats totales:* ${Object.values(pokemonAVender.stats || {}).reduce((a, b) => a + b, 0)}\n` +
                             `📅 *Publicado:* ${new Date().toLocaleString()}\n\n` +
                             `🔍 *Usa .mercado para ver todas las ventas*\n` +
-                            `💳 *Usa .comprar [id] para comprar*`;
+                            `💳 *Usa .comprar [número] para comprar*`;
 
         await m.reply(mensajeVenta);
 
@@ -95,7 +104,7 @@ let handler = async (m, { conn, args }) => {
     }
 };
 
-handler.tags = ['pokemon'];
+handler.tags = ['pokemon', 'economy'];
 handler.help = ['venderpokemon [número] [precio]'];
 handler.command = ['venderpokemon', 'venderpoke', 'vender'];
 export default handler;
