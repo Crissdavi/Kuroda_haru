@@ -9,10 +9,13 @@ function leerUsuarios() {
         if (!data.trim()) return {};
         const usuarios = JSON.parse(data);
         
-        // Asegurar que todos los usuarios tengan zenis
+        // Asegurar que todos los usuarios tengan zenis y estructura correcta
         Object.keys(usuarios).forEach(userId => {
             if (typeof usuarios[userId].zenis !== 'number') {
-                usuarios[userId].zenis = 1000;
+                usuarios[userId].zenis = 1000; // Asignar zenis si no existen
+            }
+            if (!Array.isArray(usuarios[userId].pokemons)) {
+                usuarios[userId].pokemons = []; // Asegurar que pokemons sea array
             }
         });
         
@@ -55,10 +58,7 @@ let handler = async (m, { conn, args }) => {
         let usuarios = leerUsuarios();
         let mercado = leerMercado();
 
-        // DEBUG: Ver estructura del usuario
-        console.log('Usuario comprador:', usuarios[sender]);
-
-        // Asegurar que el usuario comprador existe
+        // Asegurar que el usuario comprador existe con zenis
         if (!usuarios[sender]) {
             usuarios[sender] = {
                 pokemons: [],
@@ -69,10 +69,13 @@ let handler = async (m, { conn, args }) => {
 
         const comprador = usuarios[sender];
         
-        // Asegurar propiedades del comprador
-        if (!comprador.pokemons) comprador.pokemons = [];
-        if (typeof comprador.zenis !== 'number') comprador.zenis = 1000;
-        if (!comprador.nombre) comprador.nombre = m.pushName || 'Usuario';
+        // CORREGIR: Si el usuario existe pero no tiene zenis
+        if (typeof comprador.zenis !== 'number') {
+            comprador.zenis = 1000; // Asignar zenis por defecto
+        }
+        if (!Array.isArray(comprador.pokemons)) {
+            comprador.pokemons = []; // Asegurar que sea array
+        }
 
         // Mostrar ventas si no hay argumentos
         if (args.length === 0) {
@@ -101,10 +104,7 @@ let handler = async (m, { conn, args }) => {
             return await m.reply('❌ *No puedes comprar tu propio Pokémon.*');
         }
 
-        // VERIFICAR ZENIS CORRECTAMENTE
-        console.log('Zenis del comprador:', comprador.zenis);
-        console.log('Precio de venta:', venta.precio);
-        
+        // VERIFICAR ZENIS
         if (comprador.zenis < venta.precio) {
             return await m.reply(
                 `❌ *Zenis insuficientes.*\n\n` +
@@ -118,7 +118,7 @@ let handler = async (m, { conn, args }) => {
         comprador.zenis -= venta.precio;
         comprador.pokemons.push(venta.pokemon);
 
-        // Pagar al vendedor
+        // Pagar al vendedor (asegurar que tenga zenis)
         if (usuarios[venta.vendedor]) {
             if (typeof usuarios[venta.vendedor].zenis !== 'number') {
                 usuarios[venta.vendedor].zenis = 1000;
