@@ -8,7 +8,6 @@ function leerUsuarios() {
         const data = fs.readFileSync(usuariosPath, 'utf8');
         const usuarios = JSON.parse(data) || {};
         
-        // Asegurar que todos los usuarios tengan la estructura correcta
         Object.keys(usuarios).forEach(userId => {
             if (!usuarios[userId].pokemons) {
                 usuarios[userId].pokemons = [];
