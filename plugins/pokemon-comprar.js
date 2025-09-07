@@ -40,14 +40,23 @@ let handler = async (m, { conn, args }) => {
         }
 
         if (args.length === 0) {
-            return await m.reply('❌ *Debes especificar un ID.*\n\n📋 Ejemplo: .comprar 123456789\n🔍 Usa *.mercado* para ver los IDs disponibles');
+            let mensaje = '❌ *Debes especificar un número.*\n\n';
+            mensaje += '📋 Ejemplo: .comprar 1\n';
+            mensaje += '🔍 Usa *.mercado* para ver los números disponibles\n\n';
+            mensaje += '🏪 *Ventas activas:*\n';
+            
+            mercado.ventas.forEach(venta => {
+                mensaje += `#${venta.numero} - ${venta.pokemon.name} - ${venta.precio} zenis\n`;
+            });
+            
+            return await m.reply(mensaje);
         }
 
-        const idVenta = args[0];
-        const venta = mercado.ventas.find(v => v.id === idVenta && !v.vendido);
+        const numeroVenta = parseInt(args[0]);
+        const venta = mercado.ventas.find(v => v.numero === numeroVenta);
 
         if (!venta) {
-            return await m.reply('❌ *Venta no encontrada.*\n\n🔍 Verifica el ID o quizás ya fue vendido\n📋 Usa *.mercado* para ver ventas disponibles');
+            return await m.reply('❌ *Venta no encontrada.*\n\n🔍 Verifica el número o quizás ya fue vendida\n📋 Usa *.mercado* para ver ventas disponibles');
         }
 
         if (venta.vendedor === sender) {
@@ -60,28 +69,26 @@ let handler = async (m, { conn, args }) => {
             return await m.reply(`❌ *No tienes suficientes zenis.*\n\n💰 Necesitas: ${venta.precio} zenis\n💳 Tienes: ${zenisComprador} zenis\n\n💸 Consigue más zenis!`);
         }
 
-        // Verificar si el vendedor todavía existe y tiene zenis
-        if (!usuarios[venta.vendedor]) {
-            usuarios[venta.vendedor] = {
-                pokemons: [],
-                nombre: 'Usuario Inactivo',
-                zenis: 0
-            };
-        }
-
         // REALIZAR LA COMPRA
         usuarios[sender].zenis = zenisComprador - venta.precio;
-        usuarios[venta.vendedor].zenis = (usuarios[venta.vendedor].zenis || 0) + venta.precio;
+        
+        // Dar zenis al vendedor si todavía existe
+        if (usuarios[venta.vendedor]) {
+            usuarios[venta.vendedor].zenis = (usuarios[venta.vendedor].zenis || 0) + venta.precio;
+        }
         
         // Transferir Pokémon
         usuarios[sender].pokemons.push(venta.pokemon);
-        venta.vendido = true;
+        
+        // Eliminar la venta del mercado
+        mercado.ventas = mercado.ventas.filter(v => v.numero !== numeroVenta);
 
         // Guardar cambios
         guardarUsuarios(usuarios);
         guardarMercado(mercado);
 
         const mensajeCompra = `✅ *¡COMPRA EXITOSA!*\n\n` +
+                             `🔢 *Venta #:* ${venta.numero}\n` +
                              `🎯 *Pokémon:* ${venta.pokemon.name}\n` +
                              `💰 *Precio:* ${venta.precio} zenis\n` +
                              `👤 *Vendedor:* ${venta.vendedorNombre}\n\n` +
@@ -97,7 +104,7 @@ let handler = async (m, { conn, args }) => {
     }
 };
 
-handler.tags = ['pokemon'];
-handler.help = ['comprar [id]'];
-handler.command = ['comprar'];
+handler.tags = ['pokemon', 'economy'];
+handler.help = ['comprar [número]'];
+handler.command = ['comprar', 'buy'];
 export default handler;
