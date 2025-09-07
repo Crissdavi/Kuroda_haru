@@ -203,8 +203,8 @@ let handler = async (m, { conn, args, mentionedJid }) => {
     }
 };
 
-handler.tags = ['pokemon'];
-handler.help = ['desafiar [@usuario] [tu-pokémon] [su-pokémon]'];
-handler.command = ['robarpokemon', 'desafiar'];
-handler.command = ['robarpokemon', 'desafiar'];
+handler.tags = ['pokemon', 'game'];
+handler.help = ['robar', 'robar [@usuario] [tu-pokémon] [su-pokémon]'];
+handler.command = ['robar', 'robarpokemon', 'desafiar'];
+handler.command = ['robar', 'robarpokemon', 'desafiar'];
 export default handler;
