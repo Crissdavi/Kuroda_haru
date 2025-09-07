@@ -82,7 +82,7 @@ let handler = async (m, { conn, args }) => {
             return await m.reply(`❌ *Número inválido.*\n\nTienes ${user.pokemons.length} Pokémon. Usa .verpokemon`);
         }
 
-        if (isNaN(precio) || precio < 1 || precio > 100000) {
+        if (isNaN(zenis) || zenis < 1 || zenis > 100000) {
             return await m.reply('❌ *Precio inválido.*\n\n💰 Debe ser entre 1 y 100,000 zenis');
         }
 
@@ -105,7 +105,7 @@ let handler = async (m, { conn, args }) => {
             `🏪 *¡Pokémon en Venta!*\n\n` +
             `🔢 #${nuevaVenta.numero}\n` +
             `🎯 ${pokemon.name}\n` +
-            `💰 ${precio} zenis\n` +
+            `💰 ${user.zenis} zenis\n` +
             `👤 ${user.nombre}\n\n` +
             `💳 Usa: .comprar ${nuevaVenta.numero}`
         );
