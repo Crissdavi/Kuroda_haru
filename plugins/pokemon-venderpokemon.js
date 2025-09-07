@@ -6,7 +6,19 @@ const mercadoPath = './src/database/mercado.json';
 function leerUsuarios() {
     try {
         const data = fs.readFileSync(usuariosPath, 'utf8');
-        return JSON.parse(data) || {};
+        const usuarios = JSON.parse(data) || {};
+        
+        // Asegurar que todos los usuarios tengan la estructura correcta
+        Object.keys(usuarios).forEach(userId => {
+            if (!usuarios[userId].pokemons) {
+                usuarios[userId].pokemons = [];
+            }
+            if (usuarios[userId].zenis === undefined) {
+                usuarios[userId].zenis = 1000;
+            }
+        });
+        
+        return usuarios;
     } catch (error) {
         return {};
     }
@@ -36,10 +48,18 @@ let handler = async (m, { conn, args }) => {
         const mercado = leerMercado();
         
         if (!usuarios[sender]) {
-            return await m.reply('❌ *No tienes cuenta en el sistema.*\n\n🎯 Usa *.pokemon* para empezar!');
+            usuarios[sender] = {
+                pokemons: [],
+                nombre: m.pushName || 'Usuario',
+                zenis: 1000
+            };
         }
 
-        if (!usuarios[sender].pokemons || usuarios[sender].pokemons.length === 0) {
+        if (!Array.isArray(usuarios[sender].pokemons)) {
+            usuarios[sender].pokemons = [];
+        }
+
+        if (usuarios[sender].pokemons.length === 0) {
             return await m.reply('❌ *No tienes Pokémon para vender.*\n\n🎯 Captura algunos con *.pokemon* primero!');
         }
 
@@ -73,9 +93,8 @@ let handler = async (m, { conn, args }) => {
 
         const pokemonAVender = usuarios[sender].pokemons[numeroPokemon - 1];
 
-        // Crear venta (sin ID complicada)
         const venta = {
-            numero: mercado.ventas.length + 1, // Número simple 1, 2, 3...
+            numero: mercado.ventas.length + 1,
             vendedor: sender,
             vendedorNombre: usuarios[sender].nombre || 'Usuario',
             pokemon: pokemonAVender,
@@ -84,6 +103,8 @@ let handler = async (m, { conn, args }) => {
         };
 
         mercado.ventas.push(venta);
+        
+        guardarUsuarios(usuarios);
         guardarMercado(mercado);
 
         const mensajeVenta = `🏪 *¡POKÉMON EN VENTA!*\n\n` +
@@ -100,7 +121,7 @@ let handler = async (m, { conn, args }) => {
 
     } catch (error) {
         console.error('Error en venderpokemon:', error);
-        await m.reply('❌ *Error al vender el Pokémon*');
+        await m.reply('❌ *Error al vender el Pokémon*\n\n⚠️ ' + error.message);
     }
 };
 
