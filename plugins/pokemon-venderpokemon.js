@@ -3,53 +3,51 @@ import fs from 'fs';
 const usuariosPath = './src/database/usuarios.json';
 const mercadoPath = './src/database/mercado.json';
 
-// Función segura para leer usuarios
 function leerUsuarios() {
     try {
         const data = fs.readFileSync(usuariosPath, 'utf8');
-        if (!data.trim()) return {};
-        return JSON.parse(data);
+        const usuarios = JSON.parse(data) || {};
+        
+        // Asegurar que todos los usuarios tengan la estructura correcta
+        Object.keys(usuarios).forEach(userId => {
+            if (!usuarios[userId].pokemons) {
+                usuarios[userId].pokemons = [];
+            }
+            if (usuarios[userId].zenis === undefined) {
+                usuarios[userId].zenis = 1000;
+            }
+        });
+        
+        return usuarios;
     } catch (error) {
         return {};
     }
 }
 
-// Función segura para leer mercado
 function leerMercado() {
     try {
         const data = fs.readFileSync(mercadoPath, 'utf8');
-        if (!data.trim()) return { ventas: [] };
-        const parsed = JSON.parse(data);
-        return { ventas: parsed.ventas || [] };
+        return JSON.parse(data) || { ventas: [] };
     } catch (error) {
         return { ventas: [] };
     }
 }
 
-// Función segura para guardar
 function guardarUsuarios(usuarios) {
-    try {
-        fs.writeFileSync(usuariosPath, JSON.stringify(usuarios, null, 2));
-    } catch (error) {
-        console.error('Error guardando usuarios:', error);
-    }
+    fs.writeFileSync(usuariosPath, JSON.stringify(usuarios, null, 2));
 }
 
 function guardarMercado(mercado) {
-    try {
-        fs.writeFileSync(mercadoPath, JSON.stringify(mercado, null, 2));
-    } catch (error) {
-        console.error('Error guardando mercado:', error);
-    }
+    fs.writeFileSync(mercadoPath, JSON.stringify(mercado, null, 2));
 }
 
 let handler = async (m, { conn, args }) => {
     try {
         const sender = m.sender;
-        let usuarios = leerUsuarios();
-        let mercado = leerMercado();
-
-        // Asegurar que el usuario existe con estructura correcta
+        const usuarios = leerUsuarios();
+        const mercado = leerMercado();
+        
+        // Asegurar que el usuario existe y tiene la estructura correcta
         if (!usuarios[sender]) {
             usuarios[sender] = {
                 pokemons: [],
@@ -58,66 +56,80 @@ let handler = async (m, { conn, args }) => {
             };
         }
 
-        const user = usuarios[sender];
-        if (!user.pokemons) user.pokemons = [];
-        if (!user.zenis) user.zenis = 1000;
+        // Asegurar que pokemons existe y es un array
+        if (!Array.isArray(usuarios[sender].pokemons)) {
+            usuarios[sender].pokemons = [];
+        }
 
-        // Verificar si tiene Pokémon
-        if (user.pokemons.length === 0) {
-            return await m.reply('❌ *No tienes Pokémon para vender.*\n\n🎯 Usa *.pokemon* para capturar primero!');
+        if (usuarios[sender].pokemons.length === 0) {
+            return await m.reply('❌ *No tienes Pokémon para vender.*\n\n🎯 Captura algunos con *.pokemon* primero!');
         }
 
         if (args.length < 2) {
-            let lista = '📋 *Tus Pokémon:*\n';
-            user.pokemons.forEach((p, i) => {
-                lista += `${i + 1}. ${p.name}\n`;
+            let mensaje = '❌ *Faltan argumentos.*\n\n📋 Ejemplo: .venderpokemon 1 500\n';
+            mensaje += '• 1 = Número de tu Pokémon (usa .verpokemon para ver números)\n';
+            mensaje += '• 500 = Precio en zenis\n\n';
+            mensaje += '📋 *Tus Pokémon:*\n';
+            
+            usuarios[sender].pokemons.forEach((poke, index) => {
+                mensaje += `${index + 1}. ${poke.name}\n`;
             });
-            return await m.reply(`❌ *Usa:* .venderpokemon [número] [precio]\n\n${lista}`);
+            
+            return await m.reply(mensaje);
         }
 
-        const num = parseInt(args[0]);
+        const numeroPokemon = parseInt(args[0]);
         const precio = parseInt(args[1]);
 
-        if (isNaN(num) || num < 1 || num > user.pokemons.length) {
-            return await m.reply(`❌ *Número inválido.*\n\nTienes ${user.pokemons.length} Pokémon. Usa .verpokemon`);
+        if (isNaN(numeroPokemon) || isNaN(precio) || numeroPokemon < 1 || precio < 1) {
+            return await m.reply('❌ *Números inválidos.*\n\n💰 El precio mínimo es 1 zeni');
         }
 
-        if (isNaN(zenis) || zenis < 1 || zenis > 100000) {
-            return await m.reply('❌ *Precio inválido.*\n\n💰 Debe ser entre 1 y 100,000 zenis');
+        if (numeroPokemon > usuarios[sender].pokemons.length) {
+            return await m.reply(`❌ *No tienes ese Pokémon.*\n\n📋 Solo tienes ${usuarios[sender].pokemons.length} Pokémon\n🔍 Usa *.verpokemon* para ver tu lista`);
         }
 
-        const pokemon = user.pokemons[num - 1];
-        
+        if (precio > 100000) {
+            return await m.reply('❌ *Precio muy alto.*\n\n💰 El precio máximo es 100,000 zenis');
+        }
+
+        const pokemonAVender = usuarios[sender].pokemons[numeroPokemon - 1];
+
         // Crear venta
-        const nuevaVenta = {
+        const venta = {
             numero: mercado.ventas.length + 1,
             vendedor: sender,
-            vendedorNombre: user.nombre,
-            pokemon: pokemon,
+            vendedorNombre: usuarios[sender].nombre || 'Usuario',
+            pokemon: pokemonAVender,
             precio: precio,
             fecha: new Date().toLocaleString()
         };
 
-        mercado.ventas.push(nuevaVenta);
+        mercado.ventas.push(venta);
+        
+        // Guardar cambios
+        guardarUsuarios(usuarios);
         guardarMercado(mercado);
 
-        await m.reply(
-            `🏪 *¡Pokémon en Venta!*\n\n` +
-            `🔢 #${nuevaVenta.numero}\n` +
-            `🎯 ${pokemon.name}\n` +
-            `💰 ${user.zenis} zenis\n` +
-            `👤 ${user.nombre}\n\n` +
-            `💳 Usa: .comprar ${nuevaVenta.numero}`
-        );
+        const mensajeVenta = `🏪 *¡POKÉMON EN VENTA!*\n\n` +
+                            `🔢 *Número de venta:* #${venta.numero}\n` +
+                            `🎯 *Pokémon:* ${pokemonAVender.name}\n` +
+                            `💰 *Precio:* ${precio} zenis\n` +
+                            `👤 *Vendedor:* ${usuarios[sender].nombre || 'Tú'}\n\n` +
+                            `📊 *Stats totales:* ${Object.values(pokemonAVender.stats || {}).reduce((a, b) => a + b, 0)}\n` +
+                            `📅 *Publicado:* ${new Date().toLocaleString()}\n\n` +
+                            `🔍 *Usa .mercado para ver todas las ventas*\n` +
+                            `💳 *Usa .comprar [número] para comprar*`;
+
+        await m.reply(mensajeVenta);
 
     } catch (error) {
-        console.error('Error en vender:', error);
-        await m.reply('❌ *Error al vender Pokémon*');
+        console.error('Error en venderpokemon:', error);
+        await m.reply('❌ *Error al vender el Pokémon*\n\n⚠️ ' + error.message);
     }
 };
 
 handler.tags = ['pokemon', 'economy'];
 handler.help = ['venderpokemon [número] [precio]'];
-handler.command = ['venderpokemon', 'vender'];
+handler.command = ['venderpokemon', 'venderpoke', 'vender'];
 export default handler;
-        
