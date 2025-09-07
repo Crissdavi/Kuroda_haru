@@ -45,7 +45,7 @@ let handler = async (m, { conn }) => {
     }
 };
 
-handler.tags = ['pokemon', 'economy'];
+handler.tags = ['pokemon'];
 handler.help = ['mercado'];
 handler.command = ['mercado', 'tienda', 'market'];
 export default handler;
