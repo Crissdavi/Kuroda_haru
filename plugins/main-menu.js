@@ -12,7 +12,7 @@ let tags = {
   'rw': 'RW',
   'rg': 'REGISTRO',
   'sticker': 'STICKER',
-  'img': 'IMAGE',
+  'img': 'IMAGE', 
   'group': 'GROUPS',
 //  'logo': 'MAKER',
   'nable': 'ON / OFF', 
