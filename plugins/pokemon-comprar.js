@@ -34,7 +34,7 @@ let handler = async (m, { conn, args }) => {
         const sender = m.sender;
         const usuarios = leerUsuarios();
         const mercado = leerMercado();
-        
+
         if (!usuarios[sender]) {
             return await m.reply('❌ *No tienes cuenta en el sistema.*\n\n🎯 Usa *.pokemon* para empezar!');
         }
@@ -44,11 +44,11 @@ let handler = async (m, { conn, args }) => {
             mensaje += '📋 Ejemplo: .comprar 1\n';
             mensaje += '🔍 Usa *.mercado* para ver los números disponibles\n\n';
             mensaje += '🏪 *Ventas activas:*\n';
-            
+
             mercado.ventas.forEach(venta => {
                 mensaje += `#${venta.numero} - ${venta.pokemon.name} - ${venta.precio} zenis\n`;
             });
-            
+
             return await m.reply(mensaje);
         }
 
@@ -63,27 +63,19 @@ let handler = async (m, { conn, args }) => {
             return await m.reply('❌ *No puedes comprar tu propio Pokémon.*\n\n😅 Eso sería bastante tonto...');
         }
 
-        // Verificar zenis del comprador
-        const zenisComprador = usuarios[sender].zenis || 0;
-        if (zenisComprador < venta.precio) {
-            return await m.reply(`❌ *No tienes suficientes zenis.*\n\n💰 Necesitas: ${venta.precio} zenis\n💳 Tienes: ${zenisComprador} zenis\n\n💸 Consigue más zenis!`);
+        let user = usuarios[sender];
+        if ((user.zenis || 0) < venta.precio) {
+            return await m.reply(`❌ *No tienes suficientes zenis.*\n\n💰 Necesitas: ${venta.precio} zenis\n💳 Tienes: ${user.zenis || 0} zenis`);
         }
 
-        // REALIZAR LA COMPRA
-        usuarios[sender].zenis = zenisComprador - venta.precio;
-        
-        // Dar zenis al vendedor si todavía existe
+        usuarios[sender].zenis -= venta.precio;
         if (usuarios[venta.vendedor]) {
             usuarios[venta.vendedor].zenis = (usuarios[venta.vendedor].zenis || 0) + venta.precio;
         }
-        
-        // Transferir Pokémon
+
         usuarios[sender].pokemons.push(venta.pokemon);
-        
-        // Eliminar la venta del mercado
         mercado.ventas = mercado.ventas.filter(v => v.numero !== numeroVenta);
 
-        // Guardar cambios
         guardarUsuarios(usuarios);
         guardarMercado(mercado);
 
