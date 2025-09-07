@@ -15,39 +15,28 @@ function guardarUsuarios(usuarios) {
     fs.writeFileSync(usuariosPath, JSON.stringify(usuarios, null, 2));
 }
 
-// Función para calcular poder total de un Pokémon
 function calcularPoderTotal(pokemon) {
     const stats = pokemon.stats || {};
     return (stats.hp || 0) + (stats.attack || 0) + (stats.defense || 0) + 
            (stats.speed || 0) + (stats['special-attack'] || 0) + (stats['special-defense'] || 0);
 }
 
-// Función para determinar ventaja de tipos
 function calcularVentajaTipos(tiposAtacante, tiposDefensor) {
     let ventaja = 0;
-    
-    // Tabla simple de ventajas (puedes expandirla)
     const ventajas = {
-        'fire': ['grass', 'bug', 'ice'],
-        'water': ['fire', 'ground', 'rock'],
-        'grass': ['water', 'ground', 'rock'],
-        'electric': ['water', 'flying'],
-        'ice': ['grass', 'ground', 'flying'],
-        'fighting': ['normal', 'ice', 'rock'],
-        'poison': ['grass'],
-        'ground': ['fire', 'electric', 'poison', 'rock'],
-        'flying': ['grass', 'fighting', 'bug'],
-        'psychic': ['fighting', 'poison'],
-        'bug': ['grass', 'psychic'],
-        'rock': ['fire', 'ice', 'flying', 'bug'],
-        'ghost': ['psychic', 'ghost'],
-        'dragon': ['dragon']
+        'fire': ['grass', 'bug', 'ice'], 'water': ['fire', 'ground', 'rock'],
+        'grass': ['water', 'ground', 'rock'], 'electric': ['water', 'flying'],
+        'ice': ['grass', 'ground', 'flying'], 'fighting': ['normal', 'ice', 'rock'],
+        'poison': ['grass'], 'ground': ['fire', 'electric', 'poison', 'rock'],
+        'flying': ['grass', 'fighting', 'bug'], 'psychic': ['fighting', 'poison'],
+        'bug': ['grass', 'psychic'], 'rock': ['fire', 'ice', 'flying', 'bug'],
+        'ghost': ['psychic', 'ghost'], 'dragon': ['dragon']
     };
 
     tiposAtacante.forEach(tipoAtacante => {
         tiposDefensor.forEach(tipoDefensor => {
             if (ventajas[tipoAtacante] && ventajas[tipoAtacante].includes(tipoDefensor)) {
-                ventaja += 0.2; // 20% de ventaja por tipo
+                ventaja += 0.2;
             }
         });
     });
@@ -55,22 +44,40 @@ function calcularVentajaTipos(tiposAtacante, tiposDefensor) {
     return ventaja;
 }
 
-let handler = async (m, { conn, args, mentionedJid }) => {
+let handler = async (m, { conn, args }) => {
     try {
         const sender = m.sender;
         const usuarios = leerUsuarios();
         
-        // Verificar si mencionaron a alguien
-        if (!mentionedJid || mentionedJid.length === 0) {
+        // DETECTAR OPONENTE AUTOMÁTICAMENTE AL RESPONDER
+        let oponenteId = null;
+        
+        // Si es una respuesta a otro mensaje
+        if (m.quoted) {
+            oponenteId = m.quoted.sender;
+        }
+        // Si se mencionó con @
+        else if (m.mentionedJid && m.mentionedJid.length > 0) {
+            oponenteId = m.mentionedJid[0];
+        }
+        // Si se pasó un número como argumento
+        else if (args.length > 0) {
+            oponenteId = args[0].replace('@', '');
+        }
+
+        // VERIFICAR SI SE DETECTÓ UN OPONENTE
+        if (!oponenteId) {
             return await conn.sendMessage(m.chat, {
-                text: '❌ *Debes mencionar a un usuario para retarle.*\n\n📋 Ejemplo: .robar @usuario',
+                text: '❌ *Debes responder al mensaje de quien quieres retar.*\n\n' +
+                      '📋 *Cómo usar:*\n' +
+                      '• Responde a un mensaje con `.robar`\n' +
+                      '• O menciona con `.robar @usuario`\n\n' +
+                      '🎯 *Ejemplo:* Responde a un mensaje de Elrian y escribe `.robar`',
                 contextInfo: { mentionedJid: [sender] }
             }, { quoted: m });
         }
 
-        const oponenteId = mentionedJid[0];
-        
-        // Verificaciones básicas
+        // VERIFICACIONES BÁSICAS
         if (oponenteId === sender) {
             return await conn.sendMessage(m.chat, {
                 text: '❌ *No puedes robarte a ti mismo.*\n\n😅 Eso sería bastante tonto...',
@@ -92,23 +99,23 @@ let handler = async (m, { conn, args, mentionedJid }) => {
             }, { quoted: m });
         }
 
-        // Verificar si se especificó Pokémon
+        // OBTENER POKÉMON (usar primeros por defecto o los especificados)
         let numeroPokemonAtacante = 1;
         let numeroPokemonDefensor = 1;
 
-        if (args.length >= 2) {
-            numeroPokemonAtacante = parseInt(args[0]) || 1;
-            numeroPokemonDefensor = parseInt(args[1]) || 1;
+        if (args.length >= 3) {
+            numeroPokemonAtacante = parseInt(args[1]) || 1;
+            numeroPokemonDefensor = parseInt(args[2]) || 1;
         }
 
-        // Validar números de Pokémon
+        // VALIDAR NÚMEROS DE POKÉMON
         if (numeroPokemonAtacante < 1 || numeroPokemonAtacante > usuarios[sender].pokemons.length ||
             numeroPokemonDefensor < 1 || numeroPokemonDefensor > usuarios[oponenteId].pokemons.length) {
             
             return await conn.sendMessage(m.chat, {
                 text: `❌ *Números de Pokémon inválidos.*\n\n` +
                       `📋 Tú tienes ${usuarios[sender].pokemons.length} Pokémon\n` +
-                      `📋 ${usuarios[oponenteId].nombre} tiene ${usuarios[oponenteId].pokemons.length} Pokémon\n\n` +
+                      `📋 Oponente tiene ${usuarios[oponenteId].pokemons.length} Pokémon\n\n` +
                       `🔍 Usa .verpokemon para ver los números correctos`,
                 contextInfo: { mentionedJid: [sender, oponenteId] }
             }, { quoted: m });
@@ -117,9 +124,9 @@ let handler = async (m, { conn, args, mentionedJid }) => {
         const pokemonAtacante = usuarios[sender].pokemons[numeroPokemonAtacante - 1];
         const pokemonDefensor = usuarios[oponenteId].pokemons[numeroPokemonDefensor - 1];
 
-        // Mensaje de inicio de batalla
+        // MENSAJE DE INICIO DE BATALLA
         await conn.sendMessage(m.chat, {
-            text: `⚔️ *¡DESAFÍO DE ROBOT INICIADO!*\n\n` +
+            text: `⚔️ *¡DESAFÍO DE ROBO INICIADO!*\n\n` +
                   `🗡️ *Retador:* ${usuarios[sender].nombre || 'Tú'} con ${pokemonAtacante.name}\n` +
                   `🛡️ *Oponente:* ${usuarios[oponenteId].nombre || 'Usuario'} con ${pokemonDefensor.name}\n\n` +
                   `🔍 *Analizando combate...*`,
@@ -128,25 +135,18 @@ let handler = async (m, { conn, args, mentionedJid }) => {
 
         await new Promise(resolve => setTimeout(resolve, 2000));
 
-        // Calcular poderes
+        // CALCULAR PODER Y VENTAJAS
         const poderAtacante = calcularPoderTotal(pokemonAtacante);
         const poderDefensor = calcularPoderTotal(pokemonDefensor);
-        
-        // Calcular ventaja de tipos
         const ventajaTipos = calcularVentajaTipos(
             pokemonAtacante.types.map(t => t.toLowerCase()),
             pokemonDefensor.types.map(t => t.toLowerCase())
         );
-
-        // Calcular poder total con ventajas
         const poderTotalAtacante = poderAtacante * (1 + ventajaTipos);
-        const poderTotalDefensor = poderDefensor;
+        const diferencia = Math.abs(poderTotalAtacante - poderDefensor);
+        const atacanteGana = poderTotalAtacante > poderDefensor;
 
-        // Determinar ganador
-        const atacanteGana = poderTotalAtacante > poderTotalDefensor;
-        const diferencia = Math.abs(poderTotalAtacante - poderTotalDefensor);
-
-        // Mensaje de análisis
+        // MENSAJE DE ANÁLISIS
         let mensajeAnalisis = `📊 *ANÁLISIS DEL COMBATE*\n\n` +
                              `⭐ *${pokemonAtacante.name}:* ${poderAtacante} puntos de poder\n` +
                              `⭐ *${pokemonDefensor.name}:* ${poderDefensor} puntos de poder\n`;
@@ -164,29 +164,23 @@ let handler = async (m, { conn, args, mentionedJid }) => {
 
         await new Promise(resolve => setTimeout(resolve, 2000));
 
-        // Mensaje de resultado
+        // MENSAJE DE RESULTADO
         let mensajeResultado = `🎯 *RESULTADO FINAL*\n\n`;
 
         if (atacanteGana) {
-            // Robar Pokémon
             const pokemonRobado = usuarios[oponenteId].pokemons.splice(numeroPokemonDefensor - 1, 1)[0];
             usuarios[sender].pokemons.push(pokemonRobado);
+            guardarUsuarios(usuarios);
 
             mensajeResultado += `✅ *¡VICTORIA!* 🎉\n` +
                                `🗡️ *${pokemonAtacante.name}* venció a *${pokemonDefensor.name}*\n` +
                                `💰 *Has robado:* ${pokemonRobado.name}\n\n` +
                                `🎯 ¡${pokemonRobado.name} ahora es tuyo!`;
-
         } else {
             mensajeResultado += `❌ *¡DERROTA!* 💔\n` +
                                `🛡️ *${pokemonDefensor.name}* es más fuerte que *${pokemonAtacante.name}*\n` +
                                `📉 No has podido robar ningún Pokémon\n\n` +
                                `💪 Mejora tus Pokémon con .cosecha y .usaralimento`;
-        }
-
-        // Guardar cambios si hubo robo
-        if (atacanteGana) {
-            guardarUsuarios(usuarios);
         }
 
         await conn.sendMessage(m.chat, {
@@ -203,8 +197,7 @@ let handler = async (m, { conn, args, mentionedJid }) => {
     }
 };
 
-handler.tags = ['pokemon', 'game'];
-handler.help = ['robar', 'robar [@usuario] [tu-pokémon] [su-pokémon]'];
-handler.command = ['robar', 'robarpokemon', 'desafiar'];
-handler.command = ['robar', 'robarpokemon', 'desafiar'];
+handler.tags = ['pokemon'];
+handler.help = ['robar', 'robar [@usuario]', 'robar [@usuario] [tu-pokémon] [su-pokémon]'];
+handler.command = ['robar', 'robarpokemon', 'desafiar', 'robarpoke'];
 export default handler;
