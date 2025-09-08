@@ -7,15 +7,20 @@ function calcularPoderPokemon(pokemon) {
            (stats.speed || 0) + (stats['special-attack'] || 0) + (stats['special-defense'] || 0);
 }
 
-let handler = async (m, { conn, args, mentionedJid }) => {
+let handler = async (m, { conn, args }) => {
     try {
         const sender = m.sender;
         
-        if (!mentionedJid || mentionedJid.length === 0) {
-            return await m.reply('❌ *Debes mencionar a quien quieres robar.*\n\n📋 Ejemplo: .robar @usuario');
+        // DETECTAR OPONENTE AL RESPONDER MENSAJE
+        let victimaId = null;
+        
+        if (m.quoted && m.quoted.sender) {
+            victimaId = m.quoted.sender; // Usar ID de quien envió el mensaje respondido
+        } else if (m.mentionedJid && m.mentionedJid.length > 0) {
+            victimaId = m.mentionedJid[0]; // Usar mención tradicional
+        } else {
+            return await m.reply('❌ *Debes responder al mensaje de quien quieres robar.*\n\n📋 Ejemplo: Responde a un mensaje y escribe .robar');
         }
-
-        const victimaId = mentionedJid[0];
         
         if (victimaId === sender) {
             return await m.reply('❌ *No puedes robarte a ti mismo.*');
@@ -33,7 +38,7 @@ let handler = async (m, { conn, args, mentionedJid }) => {
         let miPokemonIndex = 0; // Por defecto el primero
         let suPokemonIndex = 0; // Por defecto el primero
 
-        // Si se especificaron Pokémon: .robar @usuario 2 3
+        // Si se especificaron Pokémon: .robar 2 3 (respondiendo)
         if (args.length >= 2) {
             miPokemonIndex = parseInt(args[0]) - 1;
             suPokemonIndex = parseInt(args[1]) - 1;
@@ -93,6 +98,6 @@ let handler = async (m, { conn, args, mentionedJid }) => {
 };
 
 handler.tags = ['pokemon', 'game'];
-handler.help = ['robar @usuario', 'robar @usuario [tu-pokémon] [su-pokémon]'];
+handler.help = ['robar [tu-pokémon] [su-pokémon]', 'robar 2 3 (respondiendo a mensaje)'];
 handler.command = ['robar', 'robarpokemon', 'robarpoke'];
 export default handler;
