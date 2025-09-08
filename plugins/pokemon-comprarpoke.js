@@ -125,6 +125,6 @@ let handler = async (m, { conn, args }) => {
 };
 
 handler.tags = ['pokemon', 'economy'];
-handler.help = ['comprarbot [número]'];
-handler.command = ['comprarbot', 'comprartienda', 'buybot'];
+handler.help = ['comprarpoke [número]'];
+handler.command = ['comprarpoke'];
 export default handler; 
