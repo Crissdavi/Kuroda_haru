@@ -198,31 +198,32 @@ function clockString(ms) {
 }
 
   var ase = new Date();
-  var hour = ase.getHours();
-switch(hour){
-  case 0: hour = 'una linda noche 🌙'; break;
-  case 1: hour = 'una linda noche 💤'; break;
-  case 2: hour = 'una linda noche 🦉'; break;
-  case 3: hour = 'una linda mañana ✨'; break;
-  case 4: hour = 'una linda mañana 💫'; break;
-  case 5: hour = 'una linda mañana 🌅'; break;
-  case 6: hour = 'una linda mañana 🌄'; break;
-  case 7: hour = 'una linda mañana 🌅'; break;
-  case 8: hour = 'una linda mañana 💫'; break;
-  case 9: hour = 'una linda mañana ✨'; break;
-  case 10: hour = 'un lindo mañana 🌞'; break;
-  case 11: hour = 'un lindo dia 🌨'; break;
-  case 12: hour = 'un lindo dia ❄'; break;
-  case 13: hour = 'una linda tarde 🌄'; break;
-  case 14: hour = 'una linda tarde 🌇'; break;
-  case 15: hour = 'una linda tarde 🥀'; break;
-  case 16: hour = 'una linda tarde 🌹'; break;
-  case 17: hour = 'una linda tarde 🌆'; break;
-  case 18: hour = 'una linda tarde ☀️'; break;
-  case 19: hour = 'una linda noche 🌃'; break;
-  case 20: hour = 'una linda noche 🌌'; break;
-  case 21: hour = 'una linda noche 🌃'; break;
-  case 22: hour = 'una linda noche 🌙'; break;
-  case 23: hour = 'una linda noche 🌃'; break;
+var h = ase.getHours();
+var saludo;
+switch(h){
+  case 0: saludo = 'una linda noche 🌙'; break;
+  case 1: saludo = 'una linda noche 💤'; break;
+  case 2: saludo = 'una linda noche 🦉'; break;
+  case 3: saludo = 'una linda mañana ✨'; break;
+  case 4: saludo = 'una linda mañana 💫'; break;
+  case 5: saludo = 'una linda mañana 🌅'; break;
+  case 6: saludo = 'una linda mañana 🌄'; break;
+  case 7: saludo = 'una linda mañana 🌅'; break;
+  case 8: saludo = 'una linda mañana 💫'; break;
+  case 9: saludo = 'una linda mañana ✨'; break;
+  case 10: saludo = 'un lindo mañana 🌞'; break;
+  case 11: saludo = 'un lindo día 🌨'; break;
+  case 12: saludo = 'un lindo día ❄'; break;
+  case 13: saludo = 'una linda tarde 🌄'; break;
+  case 14: saludo = 'una linda tarde 🌇'; break;
+  case 15: saludo = 'una linda tarde 🥀'; break;
+  case 16: saludo = 'una linda tarde 🌹'; break;
+  case 17: saludo = 'una linda tarde 🌆'; break;
+  case 18: saludo = 'una linda tarde ☀️'; break;
+  case 19: saludo = 'una linda noche 🌃'; break;
+  case 20: saludo = 'una linda noche 🌌'; break;
+  case 21: saludo = 'una linda noche 🌃'; break;
+  case 22: saludo = 'una linda noche 🌙'; break;
+  case 23: saludo = 'una linda noche 🌃'; break;
 }
-  var greeting = "espero que tengas " + hour;
+var greeting = "espero que tengas " + saludo;
