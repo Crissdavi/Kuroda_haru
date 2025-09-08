@@ -122,7 +122,7 @@ let handler = async (m, { conn }) => {
         });
 
         message += `═`.repeat(35) + `\n`;
-        message += `💳 *Para comprar:* .comprarbot [número]\n`;
+        message += `💳 *Para comprar:* .comprarpoke [número]\n`;
         message += `🎯 *Ejemplo:* .comprarbot 1\n`;
         message += `⏰ *Se actualiza:* Cada 24 horas\n`;
         message += `🎲 *Rareza:* Aleatoria con suerte`;
