@@ -43,7 +43,7 @@ before: `
 %readmore
 〔 🜲 I N F O  U S E R 🜲 〕
 🏷️ Nombre : %name
-💴 Zenis : %limit
+💴 Zenis : %zenis
 🏦 Banco : %bank
 %readmore
 🜲 L I S T A  D E  M E N Ú S 🜲
