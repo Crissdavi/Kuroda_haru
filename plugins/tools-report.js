@@ -43,46 +43,54 @@ let handler = async (m, { conn, args }) => {
     const sender = m.sender;
     const senderNumber = sender.split('@')[0];
     const fullText = parseTextFromMessage(m, args);
-    
+
+    const replyTo = async (jid, txt) => {
+      try {
+        await conn.sendMessage(jid, { text: txt });
+      } catch (e) {
+        console.error('Error al enviar mensaje con conn.sendMessage:', e);
+      }
+    };
+
     if (!fullText) {
-      await conn.sendMessage(m.chat, { text: 'Uso: .report [tipo] mensaje\n> Ejemplo: `.report bug el bot no funciona`' }, { quoted: m });
+      await replyTo(sender, 'Uso: .report [tipo] mensaje\n> Ejemplo: `.report hola w`');
       return;
     }
-    
+
     if (fullText === '--list' || (args && args[0] === '--list')) {
       if (senderNumber !== RECEIVER_NUMBER) {
-        await conn.sendMessage(m.chat, { text: '❌ No autorizado. Solo el owner puede ver la lista de reportes.' }, { quoted: m });
+        await replyTo(sender, 'No autorizado. Solo el owner puede ver la lista de reportes.');
         return;
       }
-      
       const reports = leerReports();
       if (!reports.length) {
-        await conn.sendMessage(m.chat, { text: '📝 No hay reportes guardados.' }, { quoted: m });
+        await replyTo(sender, 'No hay reportes guardados.');
         return;
       }
-      
       const latest = reports.slice(-100).reverse();
-      let listText = '📋 Lista de reportes 📋\n\n';
+      let listText = '---- Lista de reportes ----\n\n';
       latest.forEach((r, i) => {
-        listText += `🔸 ${i + 1}. Desde: ${r.from}\n   Tipo: ${r.type}\n   Texto: ${r.text}\n   Fecha: ${r.time}\n\n`;
+        listText += `${i + 1}. Desde: ${r.from}\n   Tipo: ${r.type}\n   Texto: ${r.text}\n   Fecha: ${r.time}\n\n`;
       });
-      
+
       if (listText.length > 6000) {
         const tmpPath = path.join(DATA_DIR, `reportes_${Date.now()}.txt`);
-        fs.writeFileSync(tmpPath, listText);
-        await conn.sendMessage(m.chat, { 
-          document: fs.readFileSync(tmpPath), 
-          fileName: 'reportes.txt', 
-          mimetype: 'text/plain',
-          caption: '📁 Lista de reportes'
-        }, { quoted: m });
-        try { fs.unlinkSync(tmpPath); } catch (e) {}
+        try {
+          fs.writeFileSync(tmpPath, listText);
+          const docBuffer = fs.readFileSync(tmpPath);
+          await conn.sendMessage(sender, { document: docBuffer, fileName: 'reportes.txt', mimetype: 'text/plain' });
+        } catch (e) {
+          console.error('Error al crear/enviar archivo de reportes:', e);
+          await replyTo(sender, 'Hubo un error al preparar el archivo de reportes.');
+        } finally {
+          try { fs.unlinkSync(tmpPath); } catch (e) {}
+        }
       } else {
-        await conn.sendMessage(m.chat, { text: listText }, { quoted: m });
+        await replyTo(sender, listText);
       }
       return;
     }
-    
+
     let type = 'general';
     let text = fullText;
     const tokens = fullText.split(/\s+/);
@@ -90,10 +98,9 @@ let handler = async (m, { conn, args }) => {
       type = tokens[0];
       text = tokens.slice(1).join(' ');
     }
-    
-    const time = new Date().toLocaleString();
+
+    const time = new Date().toISOString();
     const reports = leerReports();
-    
     reports.push({
       id: `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
       from: senderNumber,
@@ -101,36 +108,33 @@ let handler = async (m, { conn, args }) => {
       text,
       time
     });
-    
     guardarReports(reports);
-    
-    const forwardText = `🚨 *Nuevo reporte recibido* 🚨
-    
-📞 Desde: ${senderNumber}
-📊 Tipo: ${type}
-📅 Fecha: ${time}
 
-📝 *Contenido:*
-${text}`;
+    const forwardText =
+      'Nuevo reporte recibido\n' +
+      'Desde: ' + senderNumber + '\n' +
+      'Tipo: ' + type + '\n' +
+      'Fecha: ' + time + '\n\n' +
+      'Contenido:\n' + text;
 
-    // Enviar al administrador
-    await conn.sendMessage(RECEIVER_JID, { text: forwardText });
-    
-    // Confirmar al usuario
-    await conn.sendMessage(m.chat, { 
-      text: `✅ *Reporte enviado exitosamente*\n\nEl administrador revisará tu reporte pronto.`
-    }, { quoted: m });
-    
+    try {
+      await conn.sendMessage(RECEIVER_JID, { text: forwardText });
+    } catch (e) {
+      console.error('Error al enviar reporte al owner:', e);
+    }
+
+    await replyTo(sender, 'Reporte enviado.');
   } catch (error) {
     console.error('Error en report:', error);
-    await conn.sendMessage(m.chat, { 
-      text: '❌ *Error al procesar el reporte*\nPor favor intenta nuevamente.' 
-    }, { quoted: m });
+    try {
+      await conn.sendMessage(m.sender, { text: 'ola ,revisa tu consola w.' });
+    } catch (e) {
+      console.error('No se pudo notificar al usuario del error:', e);
+    }
   }
 };
 
 handler.tags = ['admin', 'utils'];
 handler.help = ['report [tipo] texto', 'report --list'];
 handler.command = ['report'];
-handler.category = 'admin';
 export default handler;
