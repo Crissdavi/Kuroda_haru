@@ -53,6 +53,7 @@ let handler = async (m, { conn, args }) => {
 
     const userPokemons = usuarioObjetivo.pokemons;
     const numeroPokemon = parseInt(args[0]);
+    const pagina = parseInt(args[1]) || 1; // Nueva: sistema de páginas
 
     // Si se especifica un número, mostrar ese Pokémon específico
     if (!isNaN(numeroPokemon) && numeroPokemon > 0 && numeroPokemon <= userPokemons.length) {
@@ -89,13 +90,22 @@ let handler = async (m, { conn, args }) => {
       return;
     }
 
-    // Mostrar lista completa de Pokémon
+    // SISTEMA DE PÁGINAS - Mostrar lista de Pokémon
+    const pokemonsPorPagina = 10;
+    const totalPaginas = Math.ceil(userPokemons.length / pokemonsPorPagina);
+    const paginaActual = Math.max(1, Math.min(pagina, totalPaginas));
+    const inicio = (paginaActual - 1) * pokemonsPorPagina;
+    const fin = inicio + pokemonsPorPagina;
+    const pokemonsPagina = userPokemons.slice(inicio, fin);
+
     let message = `📖 *POKÉDEX ${esPropio ? 'PERSONAL' : 'DE ' + (usuarioObjetivo.nombre || 'ENTRENADOR')}*\n`;
     message += `👤 *Entrenador:* ${usuarioObjetivo.nombre || 'Usuario'}\n`;
-    message += `📊 *Total Pokémon:* ${userPokemons.length}\n\n`;
+    message += `📊 *Total Pokémon:* ${userPokemons.length}\n`;
+    message += `📑 *Página:* ${paginaActual}/${totalPaginas}\n\n`;
     
-    // Mostrar solo los primeros 10 Pokémon para no saturar
-    userPokemons.slice(0, 10).forEach((pokemon, index) => {
+    // Mostrar Pokémon de la página actual
+    pokemonsPagina.forEach((pokemon, index) => {
+      const numeroReal = inicio + index + 1;
       const stats = pokemon.stats || {};
       const totalStats = Object.values(stats).reduce((a, b) => a + b, 0);
       
@@ -104,23 +114,27 @@ let handler = async (m, { conn, args }) => {
       if (totalStats > 500) rareza = '🌟🌟🌟';
       if (totalStats > 600) rareza = '💎💎💎';
 
-      message += `${index + 1}. ${rareza} *${pokemon.name}*\n` +
-                 `   ❤️ ${stats.hp || 0}  ⚔️ ${stats.attack || 0}  🛡️ ${stats.defense || 0}\n\n`;
+      message += `${numeroReal}. ${rareza} *${pokemon.name}*\n`;
+      message += `   ❤️ ${stats.hp || 0}  ⚔️ ${stats.attack || 0}  🛡️ ${stats.defense || 0}\n\n`;
     });
 
-    if (userPokemons.length > 10) {
-      message += `📋 ...y ${userPokemons.length - 10} Pokémon más\n\n`;
-    }
-
+    // Pie de página con navegación
     message += `═`.repeat(40) + `\n`;
     
+    if (totalPaginas > 1) {
+      message += `📑 *Navegación:*\n`;
+      if (paginaActual > 1) {
+        message += `◀️ .verpokemon p${paginaActual - 1}  |  `;
+      }
+      if (paginaActual < totalPaginas) {
+        message += `▶️ .verpokemon p${paginaActual + 1}\n`;
+      }
+      message += `🔢 .verpokemon [número] (ver detalles)\n`;
+    }
+    
     if (esPropio) {
-      message += `🔍 *Usa .verpokemon [número] para ver stats completas*\n`;
-      message += `🌿 *Usa .cosecha para mejorar tus Pokémon*\n`;
-      message += `📋 *Ejemplo:* .verpokemon 1`;
+      message += `🌿 *Usa .cosecha para mejorar tus Pokémon*`;
     } else {
-      message += `🔍 *Usa .verpokemon [número] para ver stats completas*\n`;
-      message += `📋 *Ejemplo:* .verpokemon 1\n\n`;
       message += `⚔️ *¿Quieres retarle?* Responde con .robar`;
     }
 
@@ -139,6 +153,6 @@ let handler = async (m, { conn, args }) => {
 };
 
 handler.tags = ['pokemon', 'info'];
-handler.help = ['verpokemon', 'verpokemon [número]'];
+handler.help = ['verpokemon', 'verpokemon [número]', 'verpokemon p[página]'];
 handler.command = ['verpokemon', 'mispokemons', 'pokedex', 'verpokes'];
 export default handler;
