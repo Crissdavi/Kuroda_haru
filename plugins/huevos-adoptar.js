@@ -10,7 +10,7 @@ const TIPOS_MASCOTAS = {
     cat: { emoji: '🐱', nombre: 'Gato', rareza: 'Común' },
     dog: { emoji: '🐶', nombre: 'Perro', rareza: 'Común' },
     rabbit: { emoji: '🐰', nombre: 'Conejo', rareza: 'Común' },
-    phoenix: { emoji: '🔥', nombre: 'Fénix', rareza: 'Mítico' },
+    phoenix: { emoji: '🐦‍🔥', nombre: 'Fénix', rareza: 'Mítico' },
     wolf: { emoji: '🐺', nombre: 'Lobo', rareza: 'Raro' },
     panda: { emoji: '🐼', nombre: 'Panda', rareza: 'Raro' },
     unicorn: { emoji: '🦄', nombre: 'Unicornio', rareza: 'Legendario' },
