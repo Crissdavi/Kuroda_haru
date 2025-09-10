@@ -11,7 +11,7 @@ const STICKERS_MASCOTAS = {
     cat: { pack: 'Cat Pack', author: 'Mascotas RPG', emoji: '🐱' },
     dog: { pack: 'Dog Pack', author: 'Mascotas RPG', emoji: '🐶' },
     rabbit: { pack: 'Rabbit Pack', author: 'Mascotas RPG', emoji: '🐰' },
-    phoenix: { pack: 'Phoenix Pack', author: 'Mascotas RPG', emoji: '🔥' },
+    phoenix: { pack: 'Phoenix Pack', author: 'Mascotas RPG', emoji: '🐦‍🔥' },
     wolf: { pack: 'Wolf Pack', author: 'Mascotas RPG', emoji: '🐺' },
     panda: { pack: 'Panda Pack', author: 'Mascotas RPG', emoji: '🐼' },
     unicorn: { pack: 'Unicorn Pack', author: 'Mascotas RPG', emoji: '🦄' },
