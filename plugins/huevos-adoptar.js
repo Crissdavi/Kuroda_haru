@@ -72,54 +72,35 @@ function obtenerMascotaDeHuevo(tipoHuevo) {
     return mascotaAleatoria;
 }
 
-async function enviarAnimacionUnicoMensaje(conn, chat, usuario, huevo, mascotaInfo) {
+async function enviarAnimacionEclosion(conn, chat, usuario, huevo, mascotaInfo) {
     const nombreUsuario = usuario.split('@')[0];
-    let mensaje = `🥚 *${nombreUsuario}* ha encontrado un ${huevo.emoji} *${huevo.nombre}*...\n\n`;
     
-    // Enviar mensaje inicial
-    const msg = await conn.sendMessage(chat, { text: mensaje });
-    
-    // Animación paso a paso editando el mismo mensaje
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    mensaje += `🔮 El huevo comienza a brillar suavemente...\n`;
-    await conn.relayMessage(chat, {
-        protocolMessage: {
-            key: msg.key,
-            type: 14,
-            editedMessage: {
-                conversation: mensaje
-            }
-        }
+    // Paso 1: Mensaje inicial
+    let msg = await conn.sendMessage(chat, { 
+        text: `🥚 *${nombreUsuario}* ha encontrado un ${huevo.emoji} *${huevo.nombre}*...\n¿Qué criatura habrá dentro?` 
     });
     
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    mensaje += `💫 Se escuchan ruidos dentro del huevo...\n`;
-    await conn.relayMessage(chat, {
-        protocolMessage: {
-            key: msg.key,
-            type: 14,
-            editedMessage: {
-                conversation: mensaje
-            }
-        }
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    // Paso 2: Huevo brillando (editamos el mensaje anterior)
+    await conn.sendMessage(chat, {
+        text: `🔮 El huevo comienza a brillar suavemente...\n¡Algo está pasando!`,
+        edit: msg.key
     });
     
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    mensaje += `✨ *CRACK!* El huevo se agrieta...\n`;
-    await conn.relayMessage(chat, {
-        protocolMessage: {
-            key: msg.key,
-            type: 14,
-            editedMessage: {
-                conversation: mensaje
-            }
-        }
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    
+    // Paso 3: Eclosionando
+    await conn.sendMessage(chat, {
+        text: `💫 *CRACK!* ¡El huevo se está abriendo!\n¡Prepárate para lo que viene!`,
+        edit: msg.key
     });
     
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise(resolve => setTimeout(resolve, 2000));
     
-    // Mensaje final de eclosión
-    mensaje = `🎉 *¡FELICIDADES ${nombreUsuario}!*\n\n` +
+    // Paso 4: Revelación final
+    await conn.sendMessage(chat, {
+        text: `🎉 *¡FELICIDADES ${nombreUsuario}!*\n\n` +
               `✨ El ${huevo.emoji} *${huevo.nombre}* ha eclosionado y...\n\n` +
               `🐾 *¡HA NACIDO UN ${mascotaInfo.nombre.toUpperCase()}!* ${mascotaInfo.emoji}\n\n` +
               `✧ **Rareza:** ${mascotaInfo.rareza}\n` +
@@ -129,19 +110,9 @@ async function enviarAnimacionUnicoMensaje(conn, chat, usuario, huevo, mascotaIn
               `• Usa *!mascota* para ver su estado\n` +
               `• *!alimentar* para darle comida\n` +
               `• *!jugar* para divertirte con él\n\n` +
-              `🎊 ¡${mascotaInfo.emoji.repeat(3)} FELICIDADES ${mascotaInfo.emoji.repeat(3)}`;
-    
-    await conn.relayMessage(chat, {
-        protocolMessage: {
-            key: msg.key,
-            type: 14,
-            editedMessage: {
-                conversation: mensaje
-            }
-        }
+              `🎊 ¡${mascotaInfo.emoji.repeat(3)} FELICIDADES ${mascotaInfo.emoji.repeat(3)}`,
+        edit: msg.key
     });
-    
-    return msg;
 }
 
 const handler = async (m, { conn, usedPrefix, command, args }) => {
@@ -153,7 +124,7 @@ const handler = async (m, { conn, usedPrefix, command, args }) => {
         return await conn.reply(m.chat, 
             `✧ Ya tienes una mascota.\n` +
             `✧ Usa *${usedPrefix}mascota* para verla.\n` +
-            `✧ Usa *${usedPrefix}liberarmascota* si quieres adoptar otra.`, m);
+            `✧ Usa *${usedPrefix}liberar* si quieres adoptar otra.`, m);
     }
 
     // Obtener tipo de huevo
@@ -174,12 +145,11 @@ const handler = async (m, { conn, usedPrefix, command, args }) => {
     const tipoMascota = obtenerMascotaDeHuevo(tipoHuevo);
     const mascotaInfo = TIPOS_MASCOTAS[tipoMascota];
 
-    // Enviar animación en un solo mensaje
-    await enviarAnimacionUnicoMensaje(conn, chat, userId, huevo, mascotaInfo);
+    // Enviar animación de eclosión
+    await enviarAnimacionEclosion(conn, chat, userId, huevo, mascotaInfo);
 
-    // Crear la mascota directamente (eclosionada)
+    // Crear la mascota
     mascotas[userId] = {
-        estado: 'mascota',
         nombre: mascotaInfo.nombre,
         tipo: tipoMascota,
         nivel: 1,
@@ -208,7 +178,7 @@ const handler = async (m, { conn, usedPrefix, command, args }) => {
 };
 
 handler.tags = ['rpg', 'mascotas'];
-handler.help = ['adoptar [tipo-huevo] - Adoptar un huevo que eclosionará al instante'];
+handler.help = ['adoptar [tipo-huevo] - Adoptar un huevo que eclosionará'];
 handler.command = ['adoptar', 'gethuevo', 'obtenerhuevo'];
 
 export default handler;
