@@ -75,4 +75,4 @@ handler.tags = ['rpg', 'mascotas'];
 handler.help = ['alimentar - Alimentar a tu mascota'];
 handler.command = ['alimentar', 'feed', 'comida'];
 
-export default handler;
+export default handler; 
