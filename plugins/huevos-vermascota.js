@@ -28,16 +28,14 @@ const STICKERS_MASCOTAS = {
     frog: { pack: 'Frog Pack', author: 'Mascotas RPG', emoji: '🐸' }
 };
 
-// Stickers por etapa/estado
+// Stickers por estado de salud
 const STICKERS_ESTADO = {
-    bebe: '👶',
-    joven: '👦',
-    adulto: '👨',
-    legendario: '👑',
-    feliz: '😊',
+    saludable: '😊',
     hambriento: '😋',
     cansado: '😴',
-    enfermo: '🤒'
+    enfermo: '😷',
+    grave: '🤒',
+    triste: '😢'
 };
 
 function loadMascotas() {
@@ -62,12 +60,22 @@ function getBarraProgreso(progreso, largo = 10) {
     return '█'.repeat(completado) + '░'.repeat(vacio);
 }
 
+function obtenerEstadoMascota(mascota) {
+    if (mascota.salud < 30) return { emoji: '🤒', estado: 'Gravemente enfermo', necesita: 'curar urgentemente' };
+    if (mascota.salud < 50) return { emoji: '😷', estado: 'Enfermo', necesita: 'medicina' };
+    if (mascota.hambre < 20) return { emoji: '😵', estado: 'Hambriento', necesita: 'comida' };
+    if (mascota.felicidad < 20) return { emoji: '😢', estado: 'Triste', necesita: 'jugar' };
+    if (mascota.energia < 20) return { emoji: '😴', estado: 'Agotado', necesita: 'descansar' };
+    return { emoji: '😊', estado: 'Saludable', necesita: 'seguir cuidándome' };
+}
+
 function obtenerEmojiEstado(mascota) {
-    if (mascota.hambre < 30) return '😋'; // Hambriento
-    if (mascota.felicidad < 30) return '😢'; // Triste
-    if (mascota.energia < 30) return '😴'; // Cansado
-    if (mascota.salud < 50) return '🤒'; // Enfermo
-    return '😊'; // Feliz
+    if (mascota.salud < 30) return '🤒';
+    if (mascota.salud < 50) return '😷';
+    if (mascota.hambre < 20) return '😵';
+    if (mascota.felicidad < 20) return '😢';
+    if (mascota.energia < 20) return '😴';
+    return '😊';
 }
 
 function actualizarEstadoMascota(userId, mascotas) {
@@ -77,9 +85,23 @@ function actualizarEstadoMascota(userId, mascotas) {
     const ahora = Date.now();
     const tiempoTranscurrido = (ahora - mascota.ultimaActualizacion) / 60000;
     
+    // Reducir stats normales
     mascota.hambre = Math.max(0, mascota.hambre - (tiempoTranscurrido * 0.5));
     mascota.felicidad = Math.max(0, mascota.felicidad - (tiempoTranscurrido * 0.3));
     mascota.energia = Math.max(0, mascota.energia - (tiempoTranscurrido * 0.2));
+    
+    // Sistema de enfermedades
+    if (mascota.hambre < 10) {
+        mascota.salud = Math.max(0, mascota.salud - (tiempoTranscurrido * 0.2)); // Desnutrición
+    }
+    
+    if (mascota.felicidad < 10) {
+        mascota.salud = Math.max(0, mascota.salud - (tiempoTranscurrido * 0.1)); // Depresión
+    }
+    
+    if (mascota.energia < 5) {
+        mascota.salud = Math.max(0, mascota.salud - (tiempoTranscurrido * 0.15)); // Agotamiento
+    }
     
     mascota.etapa = obtenerEtapa(mascota.nivel);
     mascota.ultimaActualizacion = ahora;
@@ -97,7 +119,7 @@ async function crearStickerMascota(mascota) {
         `Estado: ${emojiEstado}`;
 
     try {
-        // Crear sticker con texto (puedes personalizar más)
+        // Crear sticker con texto
         const sticker = new Sticker(textoSticker, {
             pack: stickerConfig.pack,
             author: stickerConfig.author,
@@ -122,30 +144,34 @@ const handler = async (m, { conn, usedPrefix }) => {
     if (!mascotas[userId]) {
         return await conn.reply(m.chat, 
             `✧ No tienes una mascota.\n` +
-            `✧ Usa *${usedPrefix}adoptar* para obtener un huevo.`, m);
+            `✧ Usa *${usedPrefix}adoptar* para obtener una.`, m);
     }
 
     const mascota = actualizarEstadoMascota(userId, mascotas);
+    const estado = obtenerEstadoMascota(mascota);
     const stickerConfig = STICKERS_MASCOTAS[mascota.tipo] || STICKERS_MASCOTAS.cat;
     
     // Crear sticker de la mascota
     const stickerBuffer = await crearStickerMascota(mascota);
     
     // Mensaje de estado
-    const estado = 
+    const mensaje = 
         `🐾 *${mascota.nombre}* ${stickerConfig.emoji} (${mascota.etapa.toUpperCase()})\n` +
+        `✧ **Estado:** ${estado.estado} ${estado.emoji}\n` +
         `✧ **Nivel:** ${mascota.nivel}\n` +
         `✧ **Rareza:** ${mascota.rareza}\n` +
         `✧ **EXP:** ${mascota.experiencia}/${mascota.nivel * 100}\n` +
         `${getBarraProgreso((mascota.experiencia / (mascota.nivel * 100)) * 100)}\n\n` +
-        `❤️  Salud: ${Math.round(mascota.salud)}%\n` +
-        `🍖 Hambre: ${Math.round(mascota.hambre)}%\n` +
-        `🎭 Felicidad: ${Math.round(mascota.felicidad)}%\n` +
-        `⚡ Energía: ${Math.round(mascota.energia)}%\n\n` +
+        `❤️  Salud: ${Math.round(mascota.salud)}% ${mascota.salud < 50 ? '⚠️' : ''}\n` +
+        `🍖 Hambre: ${Math.round(mascota.hambre)}% ${mascota.hambre < 30 ? '⚠️' : ''}\n` +
+        `🎭 Felicidad: ${Math.round(mascota.felicidad)}% ${mascota.felicidad < 30 ? '⚠️' : ''}\n` +
+        `⚡ Energía: ${Math.round(mascota.energia)}% ${mascota.energia < 30 ? '⚠️' : ''}\n\n` +
+        `💡 **Necesita:** ${estado.necesita}\n\n` +
         `📊 **Estadísticas:**\n` +
-        `• Alimentado: ${mascota.estadisticas.alimentado} veces\n` +
-        `• Jugado: ${mascota.estadisticas.jugado} veces\n` +
-        `• Entrenado: ${mascota.estadisticas.entrenado} veces\n\n` +
+        `• Alimentado: ${mascota.estadisticas.alimentado || 0} veces\n` +
+        `• Jugado: ${mascota.estadisticas.jugado || 0} veces\n` +
+        `• Entrenado: ${mascota.estadisticas.entrenado || 0} veces\n` +
+        `• Curado: ${mascota.estadisticas.curado || 0} veces\n\n` +
         `📅 Adoptada: ${new Date(mascota.adoptada).toLocaleDateString()}`;
 
     // Enviar sticker primero
@@ -156,7 +182,7 @@ const handler = async (m, { conn, usedPrefix }) => {
     }
 
     // Enviar estado después
-    await conn.reply(m.chat, estado, m);
+    await conn.reply(m.chat, mensaje, m);
 };
 
 handler.tags = ['rpg', 'mascotas'];
