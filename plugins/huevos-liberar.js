@@ -20,34 +20,9 @@ function saveMascotas(data) {
     }
 }
 
-// Variable global para almacenar confirmaciones pendientes
-const confirmacionesLiberar = new Map();
-
 const handler = async (m, { conn, usedPrefix }) => {
     const userId = m.sender;
     let mascotas = loadMascotas();
-
-    // Si ya hay una confirmación pendiente
-    if (confirmacionesLiberar.has(userId)) {
-        const respuesta = m.text.toLowerCase();
-        const mascota = confirmacionesLiberar.get(userId);
-        
-        if (respuesta.includes('sí') || respuesta.includes('si') || respuesta.includes('yes')) {
-            // Confirmar liberación
-            delete mascotas[userId];
-            saveMascotas(mascotas);
-            confirmacionesLiberar.delete(userId);
-            
-            return await conn.reply(m.chat, 
-                `😢 *${mascota.nombre} ha sido liberado...*\n` +
-                `✧ Esperamos que sea feliz en su nuevo hogar.`, m);
-        } else {
-            // Cancelar liberación
-            confirmacionesLiberar.delete(userId);
-            return await conn.reply(m.chat, 
-                `✧ Liberación de ${mascota.nombre} cancelada.`, m);
-        }
-    }
 
     if (!mascotas[userId]) {
         return await conn.reply(m.chat, 
@@ -57,32 +32,20 @@ const handler = async (m, { conn, usedPrefix }) => {
 
     const mascota = mascotas[userId];
     
-    // Guardar confirmación pendiente
-    confirmacionesLiberar.set(userId, mascota);
+    // Liberar mascota directamente
+    delete mascotas[userId];
+    saveMascotas(mascotas);
     
-    // Configurar timeout para limpiar la confirmación después de 30 segundos
-    setTimeout(() => {
-        if (confirmacionesLiberar.has(userId)) {
-            confirmacionesLiberar.delete(userId);
-        }
-    }, 30000);
-
     await conn.reply(m.chat, 
-        `⚠️ *¿Estás seguro de liberar a ${mascota.nombre}?*\n\n` +
-        `✧ **Nivel:** ${mascota.nivel}\n` +
-        `✧ **Rareza:** ${mascota.rareza}\n\n` +
-        `✅ *Responde "sí" para confirmar*\n` +
-        `❌ *Responde "no" para cancelar*\n\n` +
-        `✧ Tienes 30 segundos para responder.`, m);
+        `😢 *${mascota.nombre} ha sido liberado...*\n` +
+        `✧ Nivel: ${mascota.nivel}\n` +
+        `✧ Rareza: ${mascota.rareza}\n` +
+        `✧ Esperamos que sea feliz en su nuevo hogar.\n\n` +
+        `✨ Puedes adoptar otra mascota con *${usedPrefix}adoptar*`, m);
 };
 
-// Limpiar confirmaciones antiguas cada minuto
-setInterval(() => {
-    // Esto mantiene el Map limpio automáticamente
-}, 60000);
-
-handler.tags = ['rpg', 'mascotas'];
-handler.help = ['liberar - Liberar a tu mascota actual'];
+handler.tags = ['mascotas'];
+handler.help = ['liberar - Liberar a tu mascota actual (sin confirmación)'];
 handler.command = ['liberar', 'release', 'liberarmascota'];
 
 export default handler;
