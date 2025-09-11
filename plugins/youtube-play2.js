@@ -93,7 +93,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
 
 
 async function processDownload(conn, m, url, title, option) {
-  await conn.reply(m.chat, `⏳ Procesando descarga...`, m);
+  await conn.reply(m.chat, `⏳ Procesando descarga...`, m, null, rcanal);
 
   try {
     let downloadUrl;
