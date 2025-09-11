@@ -202,7 +202,7 @@ function getEmojiStat(stat) {
     return emojis[stat] || '📊';
 }
 
-handler.tags = ['pokemon', 'economy'];
+handler.tags = ['pokemon'];
 handler.help = ['usaralimento', 'usaralimento [número] [pokémon]'];
-handler.command = ['usaralimento', 'darcomida', 'alimentar'];
+handler.command = ['usaralimento', 'darcomida'];
 export default handler;
