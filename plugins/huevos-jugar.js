@@ -51,7 +51,7 @@ const handler = async (m, { conn, usedPrefix }) => {
             `✧ Usa *${usedPrefix}dormir* para que descanse.`, m);
     }
 
-    // Jugar con mascota
+    // Jugar
     mascota.felicidad = Math.min(100, mascota.felicidad + 25);
     mascota.energia = Math.max(0, mascota.energia - 15);
     mascota.experiencia += 20;
@@ -65,16 +65,15 @@ const handler = async (m, { conn, usedPrefix }) => {
                  `✧ EXP: +20`;
     
     if (subioNivel) {
-        mensaje += `\n\n🎉 *¡NIVEL SUBIDO!* ${subioNivel} → ${mascota.nivel}\n` +
-                  `✨ ¡${mascota.nombre} está más feliz!`;
+        mensaje += `\n\n🎉 *¡NIVEL SUBIDO!* ${subioNivel} → ${mascota.nivel}`;
     }
 
     saveMascotas(mascotas);
     await conn.reply(m.chat, mensaje, m);
 };
 
-handler.tags = ['mascotas'];
+handler.tags = ['rpg', 'mascotas'];
 handler.help = ['jugar - Jugar con tu mascota'];
-handler.command = ['jugar', 'play', 'game'];
+handler.command = ['jugar', 'play'];
 
 export default handler;
