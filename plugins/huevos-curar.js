@@ -32,25 +32,24 @@ const handler = async (m, { conn, usedPrefix }) => {
 
     const mascota = mascotas[userId];
 
-    // Verificar si la mascota está enferma
-    if (mascota.salud >= 80) {
+    if (mascota.salud >= 100) {
         return await conn.reply(m.chat, 
-            `✧ ${mascota.nombre} está saludable! ❤️\n` +
+            `✧ ${mascota.nombre} está completamente saludable! ❤️\n` +
             `✧ Salud: ${Math.round(mascota.salud)}%`, m);
     }
 
-    // Curar a la mascota
+    // Curar
     const curacion = 30;
+    const saludAnterior = mascota.salud;
     mascota.salud = Math.min(100, mascota.salud + curacion);
-    mascota.estadisticas.curado = (mascota.estadisticas.curado || 0) + 1;
-
+    mascota.estadisticas.curado++;
+    
     let mensaje = `💊 *${mascota.nombre} ha sido curado!*\n` +
                  `✧ Salud: +${curacion}%\n` +
                  `✧ Ahora tiene: ${Math.round(mascota.salud)}% de salud`;
 
-    // Mensaje especial si estaba muy enfermo
-    if (mascota.salud < 50) {
-        mensaje += `\n\n⚠️ *¡Cuidado!* ${mascota.nombre} aún necesita más cuidados.`;
+    if (saludAnterior < 30) {
+        mensaje += `\n\n🚑 *¡Uf! Era urgente!* ${mascota.nombre} estaba gravemente enfermo.`;
     }
 
     saveMascotas(mascotas);
@@ -58,7 +57,7 @@ const handler = async (m, { conn, usedPrefix }) => {
 };
 
 handler.tags = ['rpg', 'mascotas'];
-handler.help = ['curar - Curar a tu mascota si está enferma'];
-handler.command = ['curar', 'heal', 'medicina'];
+handler.help = ['curar - Curar a tu mascota'];
+handler.command = ['curar', 'heal'];
 
 export default handler;
