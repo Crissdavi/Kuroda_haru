@@ -3,177 +3,144 @@ import path from 'path';
 
 const mascotasFile = path.resolve('src/database/mascotas.json');
 
-// 🎁 Tipos de huevos con rareza
 const TIPOS_HUEVOS = {
-    comun: { emoji: '🥚', nombre: 'Huevo Común', rareza: 'Común', mascotas: ['cat', 'dog', 'rabbit', 'hamster', 'turtle'] },
-    raro: { emoji: '🔮', nombre: 'Huevo Raro', rareza: 'Raro', mascotas: ['fox', 'wolf', 'panda', 'owl'] },
-    epico: { emoji: '💎', nombre: 'Huevo Épico', rareza: 'Épico', mascotas: ['dragon', 'phoenix', 'unicorn', 'dinosaur'] },
-    legendario: { emoji: '🌟', nombre: 'Huevo Legendario', rareza: 'Legendario', mascotas: ['phoenix', 'dragon', 'unicorn'] },
-    misterioso: { emoji: '❓', nombre: 'Huevo Misterioso', rareza: 'Misterioso', mascotas: ['cat', 'dog', 'fox', 'dragon', 'phoenix', 'unicorn', 'wolf'] }
+  comun: { emoji: '🥚', nombre: 'Huevo Común', mascotas: ['cat','dog','rabbit','hamster','turtle'] },
+  raro: { emoji: '🔮', nombre: 'Huevo Raro', mascotas: ['fox','wolf','panda','owl'] },
+  epico: { emoji: '💎', nombre: 'Huevo Épico', mascotas: ['dragon','unicorn','dinosaur','phoenix'] },
+  legendario: { emoji: '🌟', nombre: 'Huevo Legendario', mascotas: ['dragon','unicorn','phoenix'] },
+  misterioso: { emoji: '❓', nombre: 'Huevo Misterioso', mascotas: ['cat','dog','fox','dragon','phoenix','unicorn','wolf'] }
 };
 
-// 🐾 Tipos de mascotas disponibles
 const TIPOS_MASCOTAS = {
-    dragon: { emoji: '🐉', nombre: 'Dragón', rareza: 'Legendario' },
-    fox: { emoji: '🦊', nombre: 'Zorro', rareza: 'Raro' },
-    cat: { emoji: '🐱', nombre: 'Gato', rareza: 'Común' },
-    dog: { emoji: '🐶', nombre: 'Perro', rareza: 'Común' },
-    rabbit: { emoji: '🐰', nombre: 'Conejo', rareza: 'Común' },
-    phoenix: { emoji: '🔥', nombre: 'Fénix', rareza: 'Mítico' },
-    wolf: { emoji: '🐺', nombre: 'Lobo', rareza: 'Raro' },
-    panda: { emoji: '🐼', nombre: 'Panda', rareza: 'Raro' },
-    unicorn: { emoji: '🦄', nombre: 'Unicornio', rareza: 'Legendario' },
-    hamster: { emoji: '🐹', nombre: 'Hámster', rareza: 'Común' },
-    turtle: { emoji: '🐢', nombre: 'Tortuga', rareza: 'Común' },
-    owl: { emoji: '🦉', nombre: 'Búho', rareza: 'Raro' },
-    dinosaur: { emoji: '🦖', nombre: 'Dinosaurio', rareza: 'Legendario' }
+  dragon: { emoji: '🐉', nombre: 'Dragón', rareza: 'Legendario' },
+  fox: { emoji: '🦊', nombre: 'Zorro', rareza: 'Raro' },
+  cat: { emoji: '🐱', nombre: 'Gato', rareza: 'Común' },
+  dog: { emoji: '🐶', nombre: 'Perro', rareza: 'Común' },
+  rabbit: { emoji: '🐰', nombre: 'Conejo', rareza: 'Común' },
+  phoenix: { emoji: '🔥', nombre: 'Fénix', rareza: 'Legendario' },
+  wolf: { emoji: '🐺', nombre: 'Lobo', rareza: 'Raro' },
+  panda: { emoji: '🐼', nombre: 'Panda', rareza: 'Raro' },
+  unicorn: { emoji: '🦄', nombre: 'Unicornio', rareza: 'Legendario' },
+  hamster: { emoji: '🐹', nombre: 'Hámster', rareza: 'Común' },
+  turtle: { emoji: '🐢', nombre: 'Tortuga', rareza: 'Común' },
+  owl: { emoji: '🦉', nombre: 'Búho', rareza: 'Raro' },
+  dinosaur: { emoji: '🦖', nombre: 'Dinosaurio', rareza: 'Legendario' }
 };
 
-// 📂 Manejo de base de datos
 function loadMascotas() {
-    try {
-        return fs.existsSync(mascotasFile) ? JSON.parse(fs.readFileSync(mascotasFile, 'utf8')) : {};
-    } catch (error) {
-        console.error('Error loading mascotas:', error);
-        return {};
-    }
+  try {
+    if (!fs.existsSync(mascotasFile)) return {};
+    return JSON.parse(fs.readFileSync(mascotasFile, 'utf8'));
+  } catch (e) {
+    console.error('Error loading mascotas.json', e);
+    return {};
+  }
 }
 
 function saveMascotas(data) {
-    try {
-        fs.writeFileSync(mascotasFile, JSON.stringify(data, null, 2));
-    } catch (error) {
-        console.error('Error saving mascotas:', error);
-    }
+  try {
+    fs.writeFileSync(mascotasFile, JSON.stringify(data, null, 2));
+  } catch (e) {
+    console.error('Error saving mascotas.json', e);
+  }
 }
 
-// 🎲 Probabilidad de obtener un huevo
 function obtenerHuevoAleatorio() {
-    const probabilidades = [
-        { tipo: 'comun', prob: 60 },
-        { tipo: 'raro', prob: 25 },
-        { tipo: 'epico', prob: 10 },
-        { tipo: 'legendario', prob: 4 },
-        { tipo: 'misterioso', prob: 1 }
-    ];
-
-    const random = Math.random() * 100;
-    let acumulado = 0;
-
-    for (const huevo of probabilidades) {
-        acumulado += huevo.prob;
-        if (random <= acumulado) {
-            return huevo.tipo;
-        }
-    }
-    return 'comun';
+  const probabilidades = [
+    { tipo: 'comun', prob: 60 },
+    { tipo: 'raro', prob: 25 },
+    { tipo: 'epico', prob: 10 },
+    { tipo: 'legendario', prob: 4 },
+    { tipo: 'misterioso', prob: 1 }
+  ];
+  const rnd = Math.random() * 100;
+  let acum = 0;
+  for (const p of probabilidades) {
+    acum += p.prob;
+    if (rnd <= acum) return p.tipo;
+  }
+  return 'comun';
 }
 
-// 🐣 Mascota que nace del huevo
-function obtenerMascotaDeHuevo(tipoHuevo) {
-    const huevo = TIPOS_HUEVOS[tipoHuevo];
-    const mascotasPosibles = huevo.mascotas;
-    const mascotaAleatoria = mascotasPosibles[Math.floor(Math.random() * mascotasPosibles.length)];
-    return mascotaAleatoria;
+function obtenerMascotaDeHuevo(tipo) {
+  const huevo = TIPOS_HUEVOS[tipo];
+  return huevo.mascotas[Math.floor(Math.random() * huevo.mascotas.length)];
 }
 
-// 🎬 Animación de eclosión
 async function enviarAnimacionEclosion(conn, chat, usuario, huevo, mascotaInfo) {
-    const nombreUsuario = usuario.split('@')[0];
-
-    let msg = await conn.sendMessage(chat, { 
-        text: `🥚 *${nombreUsuario}* ha encontrado un ${huevo.emoji} *${huevo.nombre}*...\n¿Qué criatura habrá dentro?` 
-    });
-
-    await new Promise(resolve => setTimeout(resolve, 2000));
-
-    await conn.sendMessage(chat, {
-        text: `🔮 El huevo comienza a brillar suavemente...\n¡Algo está pasando!`,
-        edit: msg.key
-    });
-
-    await new Promise(resolve => setTimeout(resolve, 2000));
-
-    await conn.sendMessage(chat, {
-        text: `💫 *CRACK!* ¡El huevo se está abriendo!\n¡Prepárate para lo que viene!`,
-        edit: msg.key
-    });
-
-    await new Promise(resolve => setTimeout(resolve, 2000));
-
-    await conn.sendMessage(chat, {
-        text: `🎉 *¡FELICIDADES ${nombreUsuario}!*\n\n` +
-              `✨ El ${huevo.emoji} *${huevo.nombre}* ha eclosionado y...\n\n` +
-              `🐾 *¡HA NACIDO UN ${mascotaInfo.nombre.toUpperCase()}!* ${mascotaInfo.emoji}\n\n` +
-              `✧ **Rareza:** ${mascotaInfo.rareza}\n` +
-              `✧ **Nivel:** 1\n\n` +
-              `💫 *¡Una nueva aventura comienza!*\n` +
-              `• Usa *!mascota* para ver su estado\n` +
-              `• *!alimentar* para darle comida\n` +
-              `• *!jugar* para divertirte con él\n\n` +
-              `🎊 ¡${mascotaInfo.emoji.repeat(3)} FELICIDADES ${mascotaInfo.emoji.repeat(3)}`,
-        edit: msg.key
-    });
+  const nombreUsuario = usuario.split('@')[0];
+  // mensaje inicial
+  const initial = await conn.sendMessage(chat, { text: `🥚 *${nombreUsuario}* ha encontrado un ${huevo.emoji} *${huevo.nombre}*...\n¿Qué criatura habrá dentro?` });
+  await new Promise(r => setTimeout(r, 1800));
+  // brillo
+  await conn.sendMessage(chat, { text: `🔮 El huevo comienza a brillar...\n¡Algo está pasando!`, edit: initial.key });
+  await new Promise(r => setTimeout(r, 1800));
+  // crack
+  await conn.sendMessage(chat, { text: `💫 *CRACK!* El huevo se está abriendo...`, edit: initial.key });
+  await new Promise(r => setTimeout(r, 1800));
+  // reveal
+  await conn.sendMessage(chat, {
+    text:
+      `🎉 *¡FELICIDADES ${nombreUsuario}!*\n\n` +
+      `✨ El ${huevo.emoji} *${huevo.nombre}* ha eclosionado y...\n\n` +
+      `🐾 *¡HA NACIDO UN ${mascotaInfo.nombre.toUpperCase()}!* ${mascotaInfo.emoji}\n\n` +
+      `✧ Rareza: ${mascotaInfo.rareza}\n` +
+      `✧ Nivel: 1\n\n` +
+      `• Usa *${process.env.PREFIX || '#'}mascota* para ver su estado\n` +
+      `• *${process.env.PREFIX || '#'}alimentar* / *${process.env.PREFIX || '#'}jugar* / *${process.env.PREFIX || '#'}entrenar* / *${process.env.PREFIX || '#'}curar*`,
+    edit: initial.key
+  });
 }
 
-// 🛠️ Handler del comando
-const handler = async (m, { conn, usedPrefix, command, args }) => {
+const handler = async (m, { conn, args, usedPrefix }) => {
+  try {
     const userId = m.sender;
-    const chat = m.chat;
-    let mascotas = loadMascotas();
+    const mascotas = loadMascotas();
 
     if (mascotas[userId]) {
-        return await conn.reply(m.chat, 
-            `✧ Ya tienes una mascota.\n` +
-            `✧ Usa *${usedPrefix}mascota* para verla.\n` +
-            `✧ Usa *${usedPrefix}liberar* si quieres adoptar otra.`, m);
+      return await conn.reply(m.chat, `✧ Ya tienes una mascota.\nUsa *${usedPrefix}mascota* para verla o *${usedPrefix}liberar* para soltarla.`, m);
     }
 
-    let tipoHuevo = args[0]?.toLowerCase();
-    if (tipoHuevo && !TIPOS_HUEVOS[tipoHuevo]) {
-        const tiposDisponibles = Object.keys(TIPOS_HUEVOS).join(', ');
-        return await conn.reply(m.chat, 
-            `✧ Tipo de huevo no válido.\n` +
-            `✧ Disponibles: ${tiposDisponibles}\n` +
-            `✧ O usa *${usedPrefix}adoptar* sin tipo para uno aleatorio`, m);
+    let tipo = args[0]?.toLowerCase();
+    if (tipo && !TIPOS_HUEVOS[tipo]) {
+      return await conn.reply(m.chat, `✧ Tipo de huevo no válido.\nDisponibles: ${Object.keys(TIPOS_HUEVOS).join(', ')}\nO usa *${usedPrefix}adoptar* sin tipo para uno aleatorio.`, m);
     }
+    if (!tipo) tipo = obtenerHuevoAleatorio();
 
-    if (!tipoHuevo) {
-        tipoHuevo = obtenerHuevoAleatorio();
-    }
-
-    const huevo = TIPOS_HUEVOS[tipoHuevo];
-    const tipoMascota = obtenerMascotaDeHuevo(tipoHuevo);
+    const huevo = TIPOS_HUEVOS[tipo];
+    const tipoMascota = obtenerMascotaDeHuevo(tipo);
     const mascotaInfo = TIPOS_MASCOTAS[tipoMascota];
 
-    await enviarAnimacionEclosion(conn, chat, userId, huevo, mascotaInfo);
+    await enviarAnimacionEclosion(conn, m.chat, userId, huevo, mascotaInfo);
 
+    // crear mascota
     mascotas[userId] = {
-        nombre: mascotaInfo.nombre,
-        tipo: tipoMascota,
-        nivel: 1,
-        experiencia: 0,
-        hambre: 100,
-        felicidad: 100,
-        energia: 100,
-        salud: 100,
-        ultimaActualizacion: Date.now(),
-        adoptada: new Date().toISOString(),
-        rareza: mascotaInfo.rareza,
-        etapa: 'bebe',
-        estadisticas: { alimentado: 0, jugado: 0, entrenado: 0 },
-        procedencia: {
-            deHuevo: true,
-            tipoHuevo: tipoHuevo,
-            fechaEclosion: new Date().toISOString()
-        }
+      emoji: mascotaInfo.emoji,
+      nombre: mascotaInfo.nombre,
+      tipo: tipoMascota,
+      nivel: 1,
+      experiencia: 0,
+      experienciaMax: 100,
+      hambre: 100,
+      salud: 100,
+      felicidad: 100,
+      energia: 100,
+      rareza: mascotaInfo.rareza,
+      etapa: 'Bebé',
+      lastUpdate: Date.now(),
+      estadisticas: { alimentado: 0, jugado: 0, entrenado: 0, curado: 0 },
+      adoptada: new Date().toISOString()
     };
 
     saveMascotas(mascotas);
+  } catch (e) {
+    console.error(e);
+    await conn.reply(m.chat, 'Error interno al adoptar. Intenta nuevamente.', m);
+  }
 };
 
-handler.tags = ['mascotas'];
-handler.help = ['adoptar [tipo-huevo] - Adoptar un huevo que eclosionará'];
-handler.command = ['adoptar', 'gethuevo', 'obtenerhuevo'];
+handler.help = ['adoptar [tipo-huevo]'];
+handler.tags = ['mascotas', 'rpg'];
+handler.command = /^adoptar$/i;
 
 export default handler;
