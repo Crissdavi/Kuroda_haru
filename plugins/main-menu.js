@@ -184,7 +184,8 @@ let handler = async (m, { conn, usedPrefix: _p, __dirname }) => {
 
 handler.help = ['kuroda']
 handler.tags = ['main']
-handler.command = ['menu', 'help', 'menú'] 
+handler.customPrefix = /^(menu|help|menú)$/i
+handler.command = new RegExp
 handler.register = true
 export default handler
 
