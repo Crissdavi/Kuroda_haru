@@ -1,14 +1,11 @@
-
-                import yts from 'yt-search';
+import yts from 'yt-search';
 import fetch from 'node-fetch';
 
 let handler = async (m, { conn, text, usedPrefix, command }) => {
     if (!text) {
         return conn.reply(
             m.chat,
-            `❀ Usa el comando correctamente:\n` +
-            `• *${usedPrefix}${command} <nombre>* → descarga en audio (MP3)\n` +
-            `• *${usedPrefix}${command} video <nombre>* → descarga en video (MP4)`,
+            `❀ Ingresa el nombre de la canción.\nEjemplo: *${usedPrefix}${command} Believer*`,
             m
         );
     }
@@ -16,53 +13,32 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
     try {
         await m.react('🎵');
 
-        // Revisamos si pidió video
-        let isVideo = false;
-        let query = text;
-
-        if (text.toLowerCase().startsWith('video ')) {
-            isVideo = true;
-            query = text.slice(6).trim();
-        }
-
         // Buscar en YouTube
-        const res = await yts(query);
+        const res = await yts(text);
         const video = res.videos[0];
-        if (!video) throw `❀ No encontré resultados para *${query}*.`;
+        if (!video) throw `❀ No encontré resultados para *${text}*.`;
 
         const { title, url } = video;
 
-        // Seleccionamos endpoint según tipo
-        const endpoint = isVideo ? 'ytmp4' : 'ytmp3';
-        const apiUrl = `https://api.delirius.store/download/${endpoint}?url=${encodeURIComponent(url)}`;
+        // Llamada a la API de Delirius (ytmp3)
+        const apiUrl = `https://api.delirius.store/download/ytmp3?url=${encodeURIComponent(url)}`;
         const apiResponse = await (await fetch(apiUrl)).json();
 
         // Validar respuesta y extraer URL
         const dl_url = apiResponse?.data?.download?.url;
         if (!dl_url) throw `❀ Error en la API: ${JSON.stringify(apiResponse)}`;
 
-        // Enviar según formato
-        if (isVideo) {
-            await conn.sendMessage(
-                m.chat,
-                {
-                    video: { url: dl_url },
-                    caption: `❀ Descargado: *${title}*`
-                },
-                { quoted: m }
-            );
-        } else {
-            await conn.sendMessage(
-                m.chat,
-                {
-                    audio: { url: dl_url },
-                    mimetype: "audio/mp4",
-                    fileName: `${title}.mp3`,
-                    ptt: false
-                },
-                { quoted: m }
-            );
-        }
+        // Enviar audio
+        await conn.sendMessage(
+            m.chat,
+            {
+                audio: { url: dl_url },
+                mimetype: "audio/mp4",
+                fileName: `${title}.mp3`,
+                ptt: false
+            },
+            { quoted: m }
+        );
 
         await m.react('✅');
     } catch (error) {
@@ -71,5 +47,5 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
     }
 };
 
-handler.command = ['play'];
+handler.command = ['yt3'];
 export default handler;
