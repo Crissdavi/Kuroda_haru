@@ -1,5 +1,5 @@
 import acrcloud from 'acrcloud'
-import { youtubedl, youtubedlv2 } from '@bochilteam/scraper'
+import { youtube } from '@bochilteam/scraper-sosmed' // ✅ Cambiado aquí
 import yts from 'yt-search'
 
 let acr = new acrcloud({
@@ -19,51 +19,57 @@ let handler = async (m, { conn, usedPrefix, command }) => {
     
     try {
       let { status, metadata } = await acr.identify(buffer)
-      if (status.code !== 0) throw status.msg 
+      if (status.code !== 0) throw new Error(status.msg)
       
       let { title, artists, album, genres, release_date } = metadata.music[0]
       let res = await yts(title)
       
-      // ✅ VERIFICACIÓN CRÍTICA AÑADIDA AQUÍ
       if (!res.videos || res.videos.length === 0) {
-        throw new Error('No se encontraron videos para esta música')
+        throw new Error('No se encontraron videos para: ' + title)
       }
       
       let vid = res.videos[0]
-      let v = vid.url
       
-      // ✅ VALIDACIÓN DE LA URL
-      if (!v || typeof v !== 'string') {
-        throw new Error('URL del video no válida')
+      if (!vid || !vid.url || typeof vid.url !== 'string' || !vid.url.includes('youtube.com')) {
+        throw new Error('URL de YouTube no válida')
       }
       
-      let yt = await youtubedl(v).catch(async () => await youtubedlv2(v))
+      let v = vid.url
+      console.log('Procesando URL:', v)
+      
+      // ✅ USANDO scraper-sosmed CORRECTAMENTE
+      let yt = await youtube(v)
+      
+      if (!yt || !yt.audio || !yt.audio['128kbps']) {
+        throw new Error('No se pudo obtener el audio del video')
+      }
+      
       let url = await yt.audio['128kbps'].download()
-      let title2 = await yt.title
+      let title2 = yt.title || title
       
       let txt = '`乂  W H A T M U S I C  -  T O O L S`\n\n'
-      txt += `        ✩   *Titulo* : ${title}`
+      txt += `        ✩   *Título* : ${title}`
       if (artists) txt += `\n        ✩   *Artistas* : ${artists.map(v => v.name).join(', ')}`
       if (album) txt += `\n        ✩   *Álbum* : ${album.name}`
       if (genres) txt += `\n        ✩   *Género* : ${genres.map(v => v.name).join(', ')}`
       txt += `\n        ✩   *Fecha de lanzamiento* : ${release_date}\n\n`
-      txt += `> 🚩 *${textbot}*`
+      txt += `> 🚩 *${global.textbot || 'Bot'}*`
       
-      await conn.sendFile(m.chat, vid.thumbnail, 'thumbnail.jpg', txt, m, null, rcanal)
-      await conn.sendFile(m.chat, url, title2 + '.mp3', null, m, false, { 
+      await conn.sendFile(m.chat, vid.thumbnail, 'thumbnail.jpg', txt, m, null, global.rcanal)
+      await conn.sendFile(m.chat, url, `${title2}.mp3`, null, m, false, { 
         mimetype: 'audio/mpeg', 
-        asDocument: user.useDocument 
+        asDocument: user?.useDocument || false 
       })
       await m.react('✅')
       
     } catch (error) {
-      console.error(error)
+      console.error('Error detallado:', error)
       await m.react('❌')
-      await conn.reply(m.chat, `❌ Error al procesar la música: ${error.message}`, m, rcanal)
+      await conn.reply(m.chat, `❌ Error al procesar la música:\n${error.message}`, m, global.rcanal)
     }
     
   } else {
-    return conn.reply(m.chat, `🚩 Etiqueta un audio o video de poca duración con el comando *${usedPrefix + command}* para ver que música contiene.`, m, rcanal)
+    return conn.reply(m.chat, `🚩 Etiqueta un audio o video de poca duración con el comando *${usedPrefix + command}* para ver qué música contiene.`, m, global.rcanal)
   }
 }
 
