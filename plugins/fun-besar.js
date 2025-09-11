@@ -47,7 +47,8 @@ let handler = async (m, { conn, usedPrefix }) => {
 
 handler.help = ['beso @tag'];
 handler.tags = ['fun'];
-handler.command = ['kiss','beso','besar']
+handler.customPrefix = /^(kuroda|Kuro|bot)$/i
+handler.command = new RegExp
 handler.register = false;
 handler.group = true;
 
