@@ -52,5 +52,5 @@ ${bar}
 
 handler.help = ['mimascota'];
 handler.tags = ['mascotas'];
-handler.command = ['mimascota','mascota'];
+handler.command = ['mimascota','mascota', 'mypet'];
 export default handler;
