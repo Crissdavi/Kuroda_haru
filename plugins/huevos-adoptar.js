@@ -3,14 +3,16 @@ import path from 'path';
 
 const mascotasFile = path.resolve('src/database/mascotas.json');
 
+// 🎁 Tipos de huevos con rareza
 const TIPOS_HUEVOS = {
-    comun: { emoji: '🥚', nombre: 'Huevo Común', rareza: 'Común', mascotas: ['cat', 'dog', 'rabbit', 'hamster'] },
+    comun: { emoji: '🥚', nombre: 'Huevo Común', rareza: 'Común', mascotas: ['cat', 'dog', 'rabbit', 'hamster', 'turtle'] },
     raro: { emoji: '🔮', nombre: 'Huevo Raro', rareza: 'Raro', mascotas: ['fox', 'wolf', 'panda', 'owl'] },
     epico: { emoji: '💎', nombre: 'Huevo Épico', rareza: 'Épico', mascotas: ['dragon', 'phoenix', 'unicorn', 'dinosaur'] },
     legendario: { emoji: '🌟', nombre: 'Huevo Legendario', rareza: 'Legendario', mascotas: ['phoenix', 'dragon', 'unicorn'] },
     misterioso: { emoji: '❓', nombre: 'Huevo Misterioso', rareza: 'Misterioso', mascotas: ['cat', 'dog', 'fox', 'dragon', 'phoenix', 'unicorn', 'wolf'] }
 };
 
+// 🐾 Tipos de mascotas disponibles
 const TIPOS_MASCOTAS = {
     dragon: { emoji: '🐉', nombre: 'Dragón', rareza: 'Legendario' },
     fox: { emoji: '🦊', nombre: 'Zorro', rareza: 'Raro' },
@@ -27,6 +29,7 @@ const TIPOS_MASCOTAS = {
     dinosaur: { emoji: '🦖', nombre: 'Dinosaurio', rareza: 'Legendario' }
 };
 
+// 📂 Manejo de base de datos
 function loadMascotas() {
     try {
         return fs.existsSync(mascotasFile) ? JSON.parse(fs.readFileSync(mascotasFile, 'utf8')) : {};
@@ -44,6 +47,7 @@ function saveMascotas(data) {
     }
 }
 
+// 🎲 Probabilidad de obtener un huevo
 function obtenerHuevoAleatorio() {
     const probabilidades = [
         { tipo: 'comun', prob: 60 },
@@ -52,10 +56,10 @@ function obtenerHuevoAleatorio() {
         { tipo: 'legendario', prob: 4 },
         { tipo: 'misterioso', prob: 1 }
     ];
-    
+
     const random = Math.random() * 100;
     let acumulado = 0;
-    
+
     for (const huevo of probabilidades) {
         acumulado += huevo.prob;
         if (random <= acumulado) {
@@ -65,6 +69,7 @@ function obtenerHuevoAleatorio() {
     return 'comun';
 }
 
+// 🐣 Mascota que nace del huevo
 function obtenerMascotaDeHuevo(tipoHuevo) {
     const huevo = TIPOS_HUEVOS[tipoHuevo];
     const mascotasPosibles = huevo.mascotas;
@@ -72,39 +77,35 @@ function obtenerMascotaDeHuevo(tipoHuevo) {
     return mascotaAleatoria;
 }
 
+// 🎬 Animación de eclosión
 async function enviarAnimacionEclosion(conn, chat, usuario, huevo, mascotaInfo) {
     const nombreUsuario = usuario.split('@')[0];
-    
-    // Paso 1: Mensaje inicial
+
     let msg = await conn.sendMessage(chat, { 
         text: `🥚 *${nombreUsuario}* ha encontrado un ${huevo.emoji} *${huevo.nombre}*...\n¿Qué criatura habrá dentro?` 
     });
-    
+
     await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // Paso 2: Huevo brillando (editamos el mensaje anterior)
+
     await conn.sendMessage(chat, {
         text: `🔮 El huevo comienza a brillar suavemente...\n¡Algo está pasando!`,
         edit: msg.key
     });
-    
+
     await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // Paso 3: Eclosionando
+
     await conn.sendMessage(chat, {
         text: `💫 *CRACK!* ¡El huevo se está abriendo!\n¡Prepárate para lo que viene!`,
         edit: msg.key
     });
-    
+
     await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // Paso 4: Revelación final
+
     await conn.sendMessage(chat, {
         text: `🎉 *¡FELICIDADES ${nombreUsuario}!*\n\n` +
               `✨ El ${huevo.emoji} *${huevo.nombre}* ha eclosionado y...\n\n` +
               `🐾 *¡HA NACIDO UN ${mascotaInfo.nombre.toUpperCase()}!* ${mascotaInfo.emoji}\n\n` +
               `✧ **Rareza:** ${mascotaInfo.rareza}\n` +
-              `✧ **Tipo:** ${mascotaInfo.nombre}\n` +
               `✧ **Nivel:** 1\n\n` +
               `💫 *¡Una nueva aventura comienza!*\n` +
               `• Usa *!mascota* para ver su estado\n` +
@@ -115,6 +116,7 @@ async function enviarAnimacionEclosion(conn, chat, usuario, huevo, mascotaInfo) 
     });
 }
 
+// 🛠️ Handler del comando
 const handler = async (m, { conn, usedPrefix, command, args }) => {
     const userId = m.sender;
     const chat = m.chat;
@@ -127,7 +129,6 @@ const handler = async (m, { conn, usedPrefix, command, args }) => {
             `✧ Usa *${usedPrefix}liberar* si quieres adoptar otra.`, m);
     }
 
-    // Obtener tipo de huevo
     let tipoHuevo = args[0]?.toLowerCase();
     if (tipoHuevo && !TIPOS_HUEVOS[tipoHuevo]) {
         const tiposDisponibles = Object.keys(TIPOS_HUEVOS).join(', ');
@@ -145,10 +146,8 @@ const handler = async (m, { conn, usedPrefix, command, args }) => {
     const tipoMascota = obtenerMascotaDeHuevo(tipoHuevo);
     const mascotaInfo = TIPOS_MASCOTAS[tipoMascota];
 
-    // Enviar animación de eclosión
     await enviarAnimacionEclosion(conn, chat, userId, huevo, mascotaInfo);
 
-    // Crear la mascota
     mascotas[userId] = {
         nombre: mascotaInfo.nombre,
         tipo: tipoMascota,
@@ -162,11 +161,7 @@ const handler = async (m, { conn, usedPrefix, command, args }) => {
         adoptada: new Date().toISOString(),
         rareza: mascotaInfo.rareza,
         etapa: 'bebe',
-        estadisticas: {
-            alimentado: 0,
-            jugado: 0,
-            entrenado: 0
-        },
+        estadisticas: { alimentado: 0, jugado: 0, entrenado: 0 },
         procedencia: {
             deHuevo: true,
             tipoHuevo: tipoHuevo,
@@ -177,7 +172,7 @@ const handler = async (m, { conn, usedPrefix, command, args }) => {
     saveMascotas(mascotas);
 };
 
-handler.tags = ['rpg', 'mascotas'];
+handler.tags = ['mascotas'];
 handler.help = ['adoptar [tipo-huevo] - Adoptar un huevo que eclosionará'];
 handler.command = ['adoptar', 'gethuevo', 'obtenerhuevo'];
 
