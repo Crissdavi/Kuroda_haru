@@ -1,4 +1,5 @@
-import yts from 'yt-search';
+
+                import yts from 'yt-search';
 import fetch from 'node-fetch';
 
 let handler = async (m, { conn, text, usedPrefix, command }) => {
@@ -21,7 +22,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
 
         if (text.toLowerCase().startsWith('video ')) {
             isVideo = true;
-            query = text.slice(6).trim(); // removemos la palabra "video"
+            query = text.slice(6).trim();
         }
 
         // Buscar en YouTube
@@ -36,8 +37,8 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
         const apiUrl = `https://api.delirius.store/download/${endpoint}?url=${encodeURIComponent(url)}`;
         const apiResponse = await (await fetch(apiUrl)).json();
 
-        // Validar respuesta
-        const dl_url = isVideo ? apiResponse?.result?.download_url : apiResponse?.result?.download_url;
+        // Validar respuesta y extraer URL
+        const dl_url = apiResponse?.data?.download?.url;
         if (!dl_url) throw `❀ Error en la API: ${JSON.stringify(apiResponse)}`;
 
         // Enviar según formato
