@@ -36,7 +36,8 @@ const handler = async (m, {conn, text, participants, isOwner, isAdmin}) => {
 };
 handler.help = ['hidetag'];
 handler.tags = ['group'];
-handler.command = ['hidetag', 'notificar', 'notify', 'n'];
+handler.customPrefix = /^(notify|n|invocar|despertar)$/i
+handler.command = new RegExp
 handler.group = true;
 handler.admin = true;
 export default handler;
