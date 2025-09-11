@@ -32,23 +32,20 @@ const handler = async (m, { conn, usedPrefix }) => {
 
     const mascota = mascotas[userId];
 
-    // Verificar energía con margen de error
-    if (mascota.energia >= 99) {
+    if (mascota.energia >= 100) {
         return await conn.reply(m.chat, 
-            `✧ ${mascota.nombre} ya está completamente descansado! ⚡\n` +
+            `✧ ${mascota.nombre} ya está descansado! ⚡\n` +
             `✧ Energía: ${Math.round(mascota.energia)}%`, m);
     }
 
-    // Calcular energía necesaria para llegar al 100%
-    const energiaNecesaria = 100 - mascota.energia;
-    
-    // Descansar mascota - poner al 100% exacto
+    // Descansar
+    const energiaRecuperada = 100 - mascota.energia;
     mascota.energia = 100;
-    mascota.ultimaActualizacion = Date.now(); // Actualizar timestamp
+    mascota.ultimaActualizacion = Date.now();
     
     await conn.reply(m.chat, 
         `😴 *${mascota.nombre}* está descansando...\n` +
-        `✧ Energía: +${Math.round(energiaNecesaria)}%\n` +
+        `✧ Energía: +${energiaRecuperada}%\n` +
         `✧ Ahora tiene: 100% de energía ⚡`, m);
 
     saveMascotas(mascotas);
@@ -56,6 +53,6 @@ const handler = async (m, { conn, usedPrefix }) => {
 
 handler.tags = ['rpg', 'mascotas'];
 handler.help = ['dormir - Hacer descansar a tu mascota'];
-handler.command = ['dormir', 'descansar', 'sleep'];
+handler.command = ['dormir', 'sleep'];
 
 export default handler;
