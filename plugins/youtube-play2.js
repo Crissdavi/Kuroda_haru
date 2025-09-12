@@ -5,26 +5,22 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
   if (!text) {
     return conn.reply(
       m.chat,
-      `🎵 Ingresa el nombre o link de un video de YouTube.\n\nEjemplo:\n${usedPrefix}${command} Coldplay Viva la Vida`,
+      `🎵 Ingresa el nombre de la música o video que quieres descargar.\n\nEjemplo:\n${usedPrefix}${command} Coldplay Viva la Vida`,
       m
     )
   }
 
   try {
-    // Si el texto es un link directo
-    let url = ''
-    if (text.includes('youtube.com') || text.includes('youtu.be')) {
-      url = text
-    } else {
-      // Buscar en YouTube
-      const search = await yts(text)
-      if (!search.videos || search.videos.length === 0) {
-        return conn.reply(m.chat, '❌ No se encontraron resultados.', m)
-      }
-      url = search.videos[0].url
+    // Buscar en YouTube por nombre
+    const search = await yts(text)
+    if (!search.videos || search.videos.length === 0) {
+      return conn.reply(m.chat, '❌ No se encontraron resultados.', m)
     }
 
-    // Obtener info con la API de Starlights
+    const video = search.videos[0] // Primer resultado
+    const url = video.url
+
+    // Descargar info desde la API
     let { data: yt } = await axios.get(`https://api.starlights.uk/api/downloader/youtube?url=${encodeURIComponent(url)}`)
     if (!yt.status || !yt.result) throw '❌ No se pudo procesar el video.'
 
@@ -38,7 +34,7 @@ let handler = async (m, { conn, text, usedPrefix, command }) => {
     txt += `🔗 *Link:* ${url}\n\n`
     txt += `👉 Responde con:\n🎶 *audio* → para descargar en MP3\n🎥 *video* → para descargar en MP4`
 
-    // Guardar info en sesión para usar en la respuesta
+    // Guardar datos en memoria del usuario
     if (!global.db.data.users[m.sender]) global.db.data.users[m.sender] = {}
     global.db.data.users[m.sender].lastYT = {
       url,
@@ -63,6 +59,7 @@ handler.before = async (m, { conn }) => {
 
   const { url, title, audio, video, timestamp } = user.lastYT
 
+  // Expira después de 10 minutos
   if (Date.now() - timestamp > 10 * 60 * 1000) {
     user.lastYT = null
     return false
@@ -93,8 +90,8 @@ handler.before = async (m, { conn }) => {
   return false
 }
 
-handler.help = ['play *<texto|link>*']
+handler.help = ['play *<nombre de canción>*']
 handler.tags = ['downloader']
-handler.command = ['play', 'ytplay', 'yta', 'ytv']
+handler.command = ['play', 'ytplay']
 
 export default handler
