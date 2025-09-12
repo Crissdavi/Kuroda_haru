@@ -1,227 +1,100 @@
-import fetch from "node-fetch";
-import yts from 'yt-search';
+import axios from 'axios'
+import yts from 'yt-search'
 
-const handler = async (m, { conn, text, usedPrefix, command }) => {
-  try {
-    if (!text.trim()) {
-      return conn.reply(
-        m.chat,
-        `🎵 Ingresa el nombre de la música a descargar.\n\nEjemplo: ${usedPrefix}${command} Coldplay Viva la Vida`,
-        m
-      );
-    }
-
-    const search = await yts(text);
-    if (!search.all || search.all.length === 0) {
-      return m.reply('No se encontraron resultados para tu búsqueda.');
-    }
-
-    const videoInfo = search.all[0];
-    if (!videoInfo) {
-      return m.reply('No se pudo obtener información del video.');
-    }
-
-    const { 
-      title = 'Desconocido', 
-      thumbnail = '', 
-      timestamp = 'Desconocido', 
-      views = 0, 
-      ago = 'Desconocido', 
-      url = '', 
-      author = { name: 'Desconocido' } 
-    } = videoInfo;
-
-    if (!url) {
-      return m.reply('No se pudo obtener la URL del video.');
-    }
-
-    const vistas = formatViews(views);
-    const canal = author.name || 'Desconocido';
-
-    const infoMessage = `
-🎶 *Título:* ${title}
-⏱️ *Duración:* ${timestamp}
-👀 *Vistas:* ${vistas}
-📺 *Canal:* ${canal}
-📅 *Publicado:* ${ago}
-
-👉 Responde con:
-1️⃣ - MP3 (Audio)
-3️⃣ - MP3 Documento
-`;
-
-    try {
-      const thumb = thumbnail ? (await conn.getFile(thumbnail))?.data : null;
-
-      const JT = {
-        contextInfo: {
-          externalAdReply: {
-            title: 'YouTube Downloader',
-            body: title,
-            mediaType: 1,
-            previewType: 0,
-            mediaUrl: url,
-            sourceUrl: url,
-            thumbnail: thumb,
-            renderLargerThumbnail: true,
-          },
-        },
-      };
-
-      await conn.reply(m.chat, infoMessage, m, JT);
-
-      if (!global.db.data.users[m.sender]) {
-        global.db.data.users[m.sender] = {};
-      }
-
-      global.db.data.users[m.sender].lastYTSearch = {
-        url,
-        title,
-        messageId: m.key.id,  
-        timestamp: Date.now() 
-      };
-
-    } catch {
-      await conn.reply(m.chat, infoMessage, m);
-    }
-
-  } catch (error) {
-    console.error("Error completo:", error);
-    return m.reply(`❌ Ocurrió un error: ${error.message || 'Desconocido'}`);
+let handler = async (m, { conn, text, usedPrefix, command }) => {
+  if (!text) {
+    return conn.reply(
+      m.chat,
+      `🎵 Ingresa el nombre o link de un video de YouTube.\n\nEjemplo:\n${usedPrefix}${command} Coldplay Viva la Vida`,
+      m
+    )
   }
-};
-
-
-async function processDownload(conn, m, url, title, option) {
-  await conn.reply(m.chat, `⏳ Procesando descarga...`, m, null, rcanal);
 
   try {
-    let downloadUrl;
-    let fileName;
-    let mimeType;
-
-    if (option === 1 || option === 3) {
-      downloadUrl = await getAudioUrl(url);
-      fileName = `${title.replace(/[^\w\s]/gi, '')}.mp3`;
-      mimeType = 'audio/mpeg';
-
-      if (!downloadUrl) {
-        throw new Error("No se pudo obtener el enlace de audio desde ninguna API.");
+    // Si el texto es un link directo
+    let url = ''
+    if (text.includes('youtube.com') || text.includes('youtu.be')) {
+      url = text
+    } else {
+      // Buscar en YouTube
+      const search = await yts(text)
+      if (!search.videos || search.videos.length === 0) {
+        return conn.reply(m.chat, '❌ No se encontraron resultados.', m)
       }
-
-      if (option === 1) {
-        await conn.sendMessage(m.chat, { 
-          audio: { url: downloadUrl }, 
-          fileName, 
-          mimetype: mimeType 
-        }, { quoted: m });
-      } else {
-        await conn.sendMessage(m.chat, { 
-          document: { url: downloadUrl },
-          mimetype: mimeType,
-          fileName
-        }, { quoted: m });
-      }
+      url = search.videos[0].url
     }
 
-    return true;
-  } catch (error) {
-    console.error("Error al procesar descarga:", error);
-    conn.reply(m.chat, `❌ Error: ${error.message}`, m);
-    return false;
+    // Obtener info con la API de Starlights
+    let { data: yt } = await axios.get(`https://api.starlights.uk/api/downloader/youtube?url=${encodeURIComponent(url)}`)
+    if (!yt.status || !yt.result) throw '❌ No se pudo procesar el video.'
+
+    let info = yt.result
+
+    let txt = `*\`- Y O U T U B E - D O W N L O A D E R -\`*\n\n`
+    txt += `📌 *Título:* ${info.title}\n`
+    txt += `📺 *Canal:* ${info.channel}\n`
+    txt += `⏱️ *Duración:* ${info.duration}\n`
+    txt += `👀 *Vistas:* ${info.views}\n`
+    txt += `🔗 *Link:* ${url}\n\n`
+    txt += `👉 Responde con:\n🎶 *audio* → para descargar en MP3\n🎥 *video* → para descargar en MP4`
+
+    // Guardar info en sesión para usar en la respuesta
+    if (!global.db.data.users[m.sender]) global.db.data.users[m.sender] = {}
+    global.db.data.users[m.sender].lastYT = {
+      url,
+      title: info.title,
+      thumb: info.thumbnail,
+      audio: info.audio,
+      video: info.video,
+      timestamp: Date.now()
+    }
+
+    await conn.sendFile(m.chat, info.thumbnail, 'thumb.jpg', txt, m)
+
+  } catch (e) {
+    console.error(e)
+    conn.reply(m.chat, `❌ Error: ${e.message || e}`, m)
   }
 }
-
-
-async function getAudioUrl(videoUrl) {
-  const apis = [
-    {
-      url: `https://api.agatz.xyz/api/ytmp3?url=${encodeURIComponent(videoUrl)}`,
-      parser: (data) => data?.data?.download
-    },
-    {
-      url: `https://api.vreden.my.id/api/ytmp3?url=${encodeURIComponent(videoUrl)}`,
-      parser: (data) => data?.result?.download?.url
-    },
-    {
-      url: `https://api.botcahx.biz.id/api/dowloader/yt?url=${encodeURIComponent(videoUrl)}&apikey=Admin`,
-      parser: (data) => data?.result?.mp3
-    },
-    {
-      url: `https://api.lolhuman.xyz/api/ytaudio?apikey=GataDios&url=${encodeURIComponent(videoUrl)}`,
-      parser: (data) => data?.result?.link || data?.result?.audio?.link
-    },
-    {
-      url: `https://api.ryzendesu.vip/api/downloader/ytmp3?url=${encodeURIComponent(videoUrl)}`,
-      parser: (data) => data?.url
-    }
-  ];
-
-  for (let i = 0; i < apis.length; i++) {
-    try {
-      const response = await fetch(apis[i].url, {
-        method: 'GET',
-        headers: { 'User-Agent': 'Mozilla/5.0' },
-        timeout: 15000
-      });
-
-      if (!response.ok) continue;
-
-      const apiJson = await response.json();
-      const audioUrl = apis[i].parser(apiJson);
-
-      if (audioUrl) {
-        return audioUrl;
-      }
-
-    } catch (error) {
-      console.error(`API ${i + 1} falló:`, error.message);
-    }
-  }
-
-  return null;
-}
-
 
 handler.before = async (m, { conn }) => {
-  if (!/^[13]$/.test(m.text)) return false;
+  const user = global.db.data.users[m.sender]
+  if (!user || !user.lastYT) return false
 
-  const user = global.db.data.users[m.sender];
-  if (!user || !user.lastYTSearch) return false;
+  const { url, title, audio, video, timestamp } = user.lastYT
 
-  const currentTime = Date.now();
-  const searchTime = user.lastYTSearch.timestamp || 0;
-
-  if (currentTime - searchTime > 10 * 60 * 1000) {
-    return false; 
+  if (Date.now() - timestamp > 10 * 60 * 1000) {
+    user.lastYT = null
+    return false
   }
 
-  const option = parseInt(m.text);
-  if (isNaN(option) || (option !== 1 && option !== 3)) return false;
+  if (/^audio$/i.test(m.text)) {
+    await conn.reply(m.chat, '⏳ Descargando audio...', m)
+    await conn.sendMessage(m.chat, { 
+      audio: { url: audio }, 
+      fileName: `${title}.mp3`, 
+      mimetype: 'audio/mpeg' 
+    }, { quoted: m })
+    user.lastYT = null
+    return true
+  }
 
-  await processDownload(
-    conn, 
-    m, 
-    user.lastYTSearch.url, 
-    user.lastYTSearch.title, 
-    option
-  );
+  if (/^video$/i.test(m.text)) {
+    await conn.reply(m.chat, '⏳ Descargando video...', m)
+    await conn.sendMessage(m.chat, { 
+      video: { url: video }, 
+      fileName: `${title}.mp4`, 
+      mimetype: 'video/mp4' 
+    }, { quoted: m })
+    user.lastYT = null
+    return true
+  }
 
-  user.lastYTSearch = null;
-
-  return true;
-};
-
-function formatViews(views) {
-  if (views === undefined) return "No disponible";
-
-  if (views >= 1_000_000_000) return `${(views / 1_000_000_000).toFixed(1)}B`;
-  if (views >= 1_000_000) return `${(views / 1_000_000).toFixed(1)}M`;
-  if (views >= 1_000) return `${(views / 1_000).toFixed(1)}k`;
-  return views.toLocaleString();
+  return false
 }
 
-handler.command = ['play'];
-handler.tags = ['downloader'];
+handler.help = ['play *<texto|link>*']
+handler.tags = ['downloader']
+handler.command = ['play', 'ytplay', 'yta', 'ytv']
 
-export default handler;
+export default handler
