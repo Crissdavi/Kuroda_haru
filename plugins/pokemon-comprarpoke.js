@@ -70,10 +70,20 @@ let handler = async (m, { conn, args }) => {
             return await m.reply('❌ *Ya compraste hoy.*\n\n⏰ Solo puedes comprar 1 Pokémon por día.\n🔄 Vuelve mañana.');
         }
 
-        // Verificar zenis del comprador (de global.db)
-        if (!global.db.data.users[sender] || (global.db.data.users[sender].zenis || 0) < pokemon.precio) {
-            return await m.reply(`❌ *Zenis insuficientes.*\n\n💰 Necesitas: ${pokemon.precio} zenis\n💳 Tienes: ${global.db.data.users[sender]?.zenis || 0} zenis`);
+        // VERIFICACIÓN Y RESTA (CÓDIGO CORREGIDO)
+        // 1. Asegurarse de que el usuario existe en la DB global
+        if (!global.db.data.users[sender]) {
+            // Si no existe, inicializarlo con 0 zenis
+            global.db.data.users[sender] = { zenis: 0 };
         }
+
+        // 2. Ahora sí, verificar si tiene zenis suficientes
+        if (global.db.data.users[sender].zenis < pokemon.precio) {
+            return await m.reply(`❌ *Zenis insuficientes.*\n\n💰 Necesitas: ${pokemon.precio} zenis\n💳 Tienes: ${global.db.data.users[sender].zenis} zenis`);
+        }
+
+        // 3. Restar los zenis (AHORA es seguro hacerlo)
+        global.db.data.users[sender].zenis -= pokemon.precio;
 
         // Asegurar que el usuario existe en usuarios.json
         if (!usuarios[sender]) {
@@ -84,9 +94,6 @@ let handler = async (m, { conn, args }) => {
         }
 
         // REALIZAR COMPRA
-        // Restar zenis de global.db
-        global.db.data.users[sender].zenis -= pokemon.precio;
-        
         // Agregar Pokémon al usuario en usuarios.json
         usuarios[sender].pokemons.push({
             id: pokemon.id,
@@ -102,10 +109,10 @@ let handler = async (m, { conn, args }) => {
 
         // Marcar como comprado hoy
         mercado.comprasHoy[sender] = (mercado.comprasHoy[sender] || 0) + 1;
-        
+
         // Eliminar Pokémon del mercado
         mercado.pokemons = mercado.pokemons.filter(p => p.id !== numeroPokemon);
-        
+
         // Guardar cambios
         guardarUsuarios(usuarios);
         guardarMercadoBot(mercado);
@@ -127,4 +134,4 @@ let handler = async (m, { conn, args }) => {
 handler.tags = ['pokemon', 'economy'];
 handler.help = ['comprarpoke [número]'];
 handler.command = ['comprarpoke'];
-export default handler; 
+export default handler;
