@@ -41,8 +41,7 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
 }
 handler.help = ['sticker']
 handler.tags = ['sticker']
-handler.customPrefix = /^(sticker|s)$/i
-handler.command = new RegExp
+handler.command = /^(s|sticker|crearsticker)$/i
 export default handler
 
 const isUrl = (text) => {
