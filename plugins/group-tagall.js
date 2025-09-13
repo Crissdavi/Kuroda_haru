@@ -19,10 +19,9 @@ const handler = async (m, {isOwner, isAdmin, conn, text, participants, args, com
 > Team kuroda`;
   conn.sendMessage(m.chat, {text: teks, mentions: participants.map((a) => a.id)} );
 };
-handler.help = ['tagall <mesaje>', 'invocar <mesaje>', 'todos <mensaje>'];
+handler.help = ['invocar <mesaje>', 'todos <mensaje>'];
 handler.tags = ['group'];
-handler.customPrefix = /^(todos)$/i
-handler.command = new RegExp
+handler.command = /^(todos|invocar)$/i
 handler.admin = true;
 handler.group = true;
 export default handler;
