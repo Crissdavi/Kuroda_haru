@@ -7,8 +7,7 @@ let handler = async (m, { conn, text, participants}) => {
 
 handler.help = ['tag']
 handler.tags = ['group']
-handler.customPrefix = /^(tag)$/i
-handler.command = new RegExp
+handler.command = /^(tag)$/i
 handler.admin = true
 handler.group = true
 
