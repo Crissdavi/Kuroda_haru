@@ -10,7 +10,6 @@ let handler = async (m, { conn, command, args, usedPrefix }) => {
     const response = await axios.get(`https://api.delirius.store/search/googlesearch?query=${encodeURIComponent(text)}`);
     const data = response.data;
     
-    // Verificar si la API respondió correctamente
     if (!data.status || !data.data || !Array.isArray(data.data)) {
       return conn.reply(m.chat, '❌ Error en la respuesta de la API. Intenta nuevamente.', m);
     }
