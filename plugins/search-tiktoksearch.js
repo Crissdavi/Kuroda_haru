@@ -1,92 +1,71 @@
 
-import axios from 'axios';
-const baileys = (await import("@whiskeysockets/baileys")).default;
-const { proto } = baileys;
-const { generateWAMessageFromContent } = baileys;
-const { generateWAMessageContent } = baileys;
 
-let handler = async (message, { conn, text }) => {
+            
+const handler = async (m, { conn, text, usedPrefix, command }) => {
+  try {
     if (!text) {
-        return conn.reply(message.chat, ' *¿Qué video de TikTok quieres descargar?*', message);
+      return conn.reply(m.chat, `🌿 Ejemplo de uso: ${usedPrefix + command} Black Clover`, m);
     }
-    async function createVideoMessage(url) {
-        const { videoMessage } = await generateWAMessageContent(
-            { video: { url } },
-            { upload: conn.waUploadToServer }
-        );
-        return videoMessage;
+    m.react('🕒');
+    let old = new Date();
+    let res = await ttks(text);
+    let videos = res.data; 
+    if (!videos.length) {
+      return conn.reply(m.chat, "No se encontraron videos.", m);
     }
-    try {
-        const { data: response } = await axios.get(`https://rembotapi.vercel.app/api/tiktoksearch?text=${encodeURIComponent(text)}`);
-
-        if (!response.status) {
-            return conn.reply(message.chat, ' *No se pudo descargar el video de TikTok.*', message);
-        }
-        const videos = response.resultado; 
-        if (videos.length < 4) {
-            return conn.reply(message.chat, ' *No se encontraron suficientes videos.*', message);
-        }
-        const responseMessages = await Promise.all(videos.slice(0, 8).map(async (video) => {
-            const videoMessage = await createVideoMessage(video.videoUrl);
-            return {
-                body: proto.Message.InteractiveMessage.Body.fromObject({
-                    text: null
-                }),
-                footer: proto.Message.InteractiveMessage.Footer.fromObject({
-                    text: `𝚃𝚒𝚝𝚞𝚕𝚘: ${video.description}`
-                }),
-                header: proto.Message.InteractiveMessage.Header.fromObject({
-                    hasMediaAttachment: true,
-                    videoMessage
-                }),
-                nativeFlowMessage: proto.Message.InteractiveMessage.NativeFlowMessage.fromObject({
-                    buttons: []
-                })
-            };
-        }));
-
-        const carouselMessage = proto.Message.InteractiveMessage.CarouselMessage.fromObject({
-            cards: responseMessages
-        });
-
-        const responseMessage = generateWAMessageFromContent(
-            message.chat,
-            {
-                viewOnceMessage: {
-                    message: {
-                        messageContextInfo: {
-                            deviceListMetadata: {},
-                            deviceListMetadataVersion: 2
-                        },
-                        interactiveMessage: proto.Message.InteractiveMessage.fromObject({
-                            body: proto.Message.InteractiveMessage.Body.create({
-                                text: null
-                            }),
-                            footer: proto.Message.InteractiveMessage.Footer.create({
-                                text: ' `𝙏 𝙄 𝙆 𝙏 𝙊 𝙆  𝙎𝙀𝘼𝙍𝘾𝙃`'
-                            }),
-                            header: proto.Message.InteractiveMessage.Header.create({
-                                title: null,
-                                hasMediaAttachment: false
-                            }),
-                            carouselMessage
-                        })
-                    }
-                }
-            },
-            { quoted: message }
-        );
-
-        await conn.relayMessage(message.chat, responseMessage.message, { messageId: responseMessage.key.id });
-
-    } catch (error) {
-        await conn.reply(message.chat, error.toString(), message);
-    }
+    let cap = `*◜ TikTok - Download ◞*\n\n`
+            + `≡ 🎥 \`Título  :\` ${videos[0].title}\n`
+            + `≡ 🔗 \`Text:\` ${text}`
+            
+    let medias = videos.map((video, index) => ({
+      type: "video",
+      data: { url: video.no_wm },
+      caption: index === 0 
+        ? cap 
+        : `🌷 \`Title\` : ${video.title}\n🍟 \`Process\` : ${((new Date() - old) * 1)} ms`
+    }));
+    await conn.sendmessage(m.chat, medias, { quoted: m });
+    m.react('✅');
+  } catch (e) {
+    return conn.reply(m.chat, `Ocurrió un problema al obtener los videos:\n\n` + e, m);
+  }
 };
-
-handler.help = ['tiktokdl <url>'];
-handler.tags = ['downloader'];
-handler.command = ['tiktoksearch','tts','ttsearch'];
-handler.register = true
-
+handler.command = ["ttsesearch", "tiktoks", "tts", "ttrndm", "ttks"];
+handler.help = ["ttsearch"];
+handler.tags = ["download"];
 export default handler;
+
+async function ttks(query) {
+  try {
+    const response = await axios({
+      method: 'POST',
+      url: 'https://tikwm.com/api/feed/search',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+        'Cookie': 'current_language=en',
+        'User-Agent': 'Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Mobile Safari/537.36'
+      },
+      data: {
+        keywords: query,
+        count: 20,
+        cursor: 0,
+        HD: 1
+      }
+    });
+    const videos = response.data.data.videos;
+    if (videos.length === 0) throw new Error("⚠️ No se encontraron videos para esa búsqueda.");
+    const shuffled = videos.sort(() => 0.5 - Math.random()).slice(0, 5);
+    return {
+      status: true,
+      creator: "I'm Fz~",
+      data: shuffled.map(video => ({
+        title: video.title,
+        no_wm: video.play,
+        watermark: video.wmplay,
+        music: video.music
+      }))
+    };
+  } catch (error) {
+    throw error;
+  }
+}
