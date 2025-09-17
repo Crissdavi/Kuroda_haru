@@ -68,6 +68,7 @@ global.fetch = fetch
 global.axios = axios
 //global.moment = moment	
 
+global.jadi = "subbots"
 //*─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─⭒─ׄ─ׅ─ׄ─*
 
 global.multiplier = 69 
