@@ -12,7 +12,7 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
       mentions: [m.sender] 
     });
 
-    const apiUrl = `https://api.sylphy.xyz/tools/lyrics?q=${encodeURIComponent(text)}`;
+    const apiUrl = `https://api.sylphy.xyz/tools/lyrics?q=$&apikey=sylphy-0d75}`;
     const response = await fetch(apiUrl);
     
     if (!response.ok) {
