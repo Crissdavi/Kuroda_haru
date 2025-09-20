@@ -12,6 +12,9 @@ await conn.sendMessage(m.chat, { video: { url: download_url }, caption: video_ti
 console.error(error)
 }}
 
-HS.command = ['pornhubdl']
+handler.tags = ['nsfw'] 
+handler.help = ['pornhubdl'] 
+handler.command = /^(phdl|pornhubdl)$/i;
+export default handler;
 
 export default HS
