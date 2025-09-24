@@ -28,7 +28,7 @@ try {
 let res = await soundcloudDL(s.link)
 let thumbnail = s.imagen
 
-let aud = { audio: { url: res.download }, mimetype: 'audio/mp4', fileName: `${res.title}.mp3`, contextInfo: { externalAdReply: { showAdAttribution: true, mediaType: 2, mediaUrl: null, title: res.title, sourceUrl: null, thumbnail: await (await conn.getFile(thumbnail)).data }}}
+let aud = { audio: { url: res.download }, mimetype: 'audio/mp4', fileName: `${res.title}.mp3`: { externalAdReply: { showAdAttribution: true, mediaType: 2, mediaUrl: null, title: res.title, sourceUrl: null, thumbnail: await (await conn.getFile(thumbnail)).data }}}
 
 await conn.sendMessage(m.chat, aud, { quoted: m })
 conn.sendMessage(m.chat, { delete: key })
