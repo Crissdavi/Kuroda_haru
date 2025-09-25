@@ -11,15 +11,26 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
     await m.react('🕓')
 
     try {
-        
         let apiUrl = `https://api.sylphy.xyz/download/instagram?url=${encodeURIComponent(args[0])}&apikey=sylphy-0d75`
         let res = await fetch(apiUrl)
         let json = await res.json()
 
         if (json.status && json.result) {
             let medias = Array.isArray(json.result) ? json.result : [json.result]
+
             for (let media of medias) {
-                await conn.sendFile(m.chat, media.url, 'instagram.mp4', '✅ Aquí tienes tu video', m, null, rcanal)
+                if (media.url) {
+                    // ✅ Descargar y enviar el archivo correcto
+                    await conn.sendFile(
+                        m.chat, 
+                        media.url, 
+                        'instagram.mp4', 
+                        '✅ Aquí tienes tu video', 
+                        m, 
+                        null, 
+                        rcanal
+                    )
+                }
             }
             await m.react('✅')
         } else {
@@ -38,4 +49,4 @@ handler.tags = ['downloader']
 handler.command = /^(instagramdl|instagram|igdl|ig)$/i
 handler.register = true
 
-export default handler;
+export default handler
