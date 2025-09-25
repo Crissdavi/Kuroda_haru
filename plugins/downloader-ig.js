@@ -1,29 +1,29 @@
-import Starlights from '@StarlightsTeam/Scraper'
+import { igdl } from 'ruhend-scraper';
 
-let handler = async (m, { conn, args, usedPrefix, command }) => {
-    if (!args[0]) return conn.reply(m.chat, '🚩 Ingresa el enlace del vídeo de Instagram junto al comando.\n\n`Ejemplo:`\n' + `> *${usedPrefix + command}* https://www.instagram.com/p/C60xXk3J-sb/?igsh=YzljYTk1ODg3Zg==`, m, rcanal)
-    await m.react('🕓')
-    try {
-        let result = await Starlights.igdl(args[0])
+const handler = async (m, { args, conn }) => {
+  if (!args[0]) {
+    return conn.reply(m.chat, `Ingrese la url del vídeo porfavor`, m, null, rcanal);
+  }
 
-        if (result.length > 0) {
-            for (let i = 0; i < result.length; i++) {
-                let { dl_url } = result[i]
-                await conn.sendFile(m.chat, dl_url, `igdl.mp4`, listo, m, null, rcanal)
-            }
-            await m.react('✅')
-        } else {
-            await m.react('✖️')
-        }
-    } catch {
-        await m.react('✖️')
+  try {
+    await m.react('📼');
+    const res = await igdl(args[0]);
+    const data = res.data;
+
+    for (let media of data) {
+      await conn.sendFile(m.chat, media.url, 'instagram.mp4',`Listl`, m, null, rcanal);
+    await m.react('🐢');
     }
-}
+  } catch (e) {
+    return conn.reply(m.chat, `Perdon, ocurrio un error en la entrega de su video`, m);
+    await m.react('🫤');
+  }
+};
 
-handler.help = ['instagram *<link ig>*']
-handler.tags = ['downloader']
-handler.command = /^(instagramdl|instagram|igdl|ig|instagramdl2|instagram2|igdl2|ig2|instagramdl3|instagram3|igdl3|ig3)$/i
-//handler.limit = 1
-handler.register = true
+handler.command = ['instagram', 'ig'];
+handler.tags = ['descargas'];
+handler.help = ['instagram', 'ig'];
+handler.group = true;
+handler.zenis = 2;
 
-export default handler
+export default handler;
