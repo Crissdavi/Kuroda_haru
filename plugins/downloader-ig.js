@@ -26,4 +26,4 @@ handler.command = /^(instagramdl|instagram|igdl|ig|instagramdl2|instagram2|igdl2
 //handler.limit = 1
 handler.register = true
 
-export default handler
+export default handler;
