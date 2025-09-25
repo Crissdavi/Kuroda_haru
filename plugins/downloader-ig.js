@@ -11,7 +11,7 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
     await m.react('🕓')
 
     try {
-        // 🔹 Llamada a la API Sylphy
+        
         let apiUrl = `https://api.sylphy.xyz/download/instagram?url=${encodeURIComponent(args[0])}&apikey=sylphy-0d75`
         let res = await fetch(apiUrl)
         let json = await res.json()
