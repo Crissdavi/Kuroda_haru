@@ -22,7 +22,7 @@ let handler = async (m, { conn, args, usedPrefix, command }) => {
 
 handler.help = ['instagram *<link ig>*']
 handler.tags = ['downloader']
-handler.command = /^(instagramdl|instagram|igdl|ig|instagramdl2|instagram2|igdl2|ig2|instagramdl|instagram|igdl|ig)$/i
+handler.command = /^(instagramdl|instagram|igdl|ig)$/i
 //handler.limit = 1
 handler.register = true
 
