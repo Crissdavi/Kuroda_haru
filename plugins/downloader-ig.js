@@ -27,4 +27,3 @@ handler.command = /^(instagramdl|instagram|igdl|ig|instagramdl2|instagram2|igdl2
 handler.register = true
 
 export default handler
-[24/9, 11:09 p. m.] Haru: Login
