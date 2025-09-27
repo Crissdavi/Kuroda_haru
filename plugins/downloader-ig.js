@@ -44,7 +44,7 @@ let handler = async (m, { args, conn }) => {
       m.chat,
       media.url,
       filename,
-      '```◜Instagram - Download◞```\n\n> © Powered by Shadow Ultra\n> Contenido descargado correctamente'
+      '```◜Instagram - Download◞```\n\n> Kuroda 🐢\n> Contenido descargado correctamente'
     )
     await m.react('✅')
   } catch (e) {
