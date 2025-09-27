@@ -10,7 +10,7 @@ let handler = async (m, { args, conn }) => {
     let data = res.data
     for (let media of data) {
       await new Promise(resolve => setTimeout(resolve, 2000))
-      await conn.sendFile(m.chat, media.url, 'instagram.mp4', '\`\`\`◜Instagram - Download◞\`\`\`\n\n> © Powered by Shadow Ultra\n> Video downloaded successfully')
+      await conn.sendFile(m.chat, media.url, 'instagram.mp4', '\`\`\`◜Instagram - Download◞\`\`\`\n\n> Kuroda 🐢\n> Video downloaded successfully')
     }
   } catch {
     await m.react('❌')
