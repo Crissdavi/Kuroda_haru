@@ -1,52 +1,60 @@
-import fetch from 'node-fetch'
+/*import { igdl } from "ruhend-scraper"
 
-let handler = async (m, { conn, args, usedPrefix, command }) => {
-    if (!args[0]) return conn.reply(
-        m.chat,
-        '🚩 Ingresa el enlace del vídeo de Instagram junto al comando.\n\n' +
-        `Ejemplo:\n> *${usedPrefix + command}* https://www.instagram.com/reel/DOhw_KODFg-/`,
-        m, 
-        rcanal
-    )
-    await m.react('🕓')
-
-    try {
-        let apiUrl = `https://api.sylphy.xyz/download/instagram?url=${encodeURIComponent(args[0])}&apikey=sylphy-0d75`
-        let res = await fetch(apiUrl)
-        let json = await res.json()
-
-        if (json.status && json.result) {
-            let medias = Array.isArray(json.result) ? json.result : [json.result]
-
-            for (let media of medias) {
-                if (media.url) {
-                    // ✅ Descargar y enviar el archivo correcto
-                    await conn.sendFile(
-                        m.chat, 
-                        media.url, 
-                        'instagram.mp4', 
-                        '✅ Aquí tienes tu video', 
-                        m, 
-                        null, 
-                        rcanal
-                    )
-                }
-            }
-            await m.react('✅')
-        } else {
-            await conn.reply(m.chat, `✖️ Error: ${json.mensaje || 'No se pudo descargar el video'}`, m, rcanal)
-            await m.react('✖️')
-        }
-    } catch (e) {
-        console.error(e)
-        await m.react('✖️')
-        await conn.reply(m.chat, '⚠️ Ocurrió un error al procesar la descarga.', m, rcanal)
+let handler = async (m, { args, conn }) => {
+  if (!args[0]) {
+    return conn.reply(m.chat, `*${xdownload} Por favor, ingresa un link de Instagram.*`, m)
+  }
+  try {
+    await m.react('⏳️')
+    let res = await igdl(args[0])
+    let data = res.data
+    for (let media of data) {
+      await new Promise(resolve => setTimeout(resolve, 2000))
+      await conn.sendFile(m.chat, media.url, 'instagram.mp4', '\`\`\`◜Instagram - Download◞\`\`\`\n\n> © Powered by Shadow Ultra\n> Video downloaded successfully')
     }
+  } catch {
+    await m.react('❌')
+    conn.reply(m.chat, '*❌ Ocurrió un error.*')
+  }
 }
 
-handler.help = ['instagram *<link ig>*']
-handler.tags = ['downloader']
-handler.command = /^(instagramdl|instagram|igdl|ig)$/i
-handler.register = true
+handler.help = ['igv2']
+handler.tags = ['download']
+handler.command = ['instagram2', 'ig2', 'igv2']
+
+export default handler*/
+
+import { igdl } from "ruhend-scraper"
+
+let handler = async (m, { args, conn }) => {
+  if (!args[0]) {
+    return conn.reply(m.chat, `*${xdownload} Por favor, ingresa un link de Instagram*`, m)
+  }
+  try {
+    await m.react('⏳️')
+    let res = await igdl(args[0])
+    let data = res.data
+
+    if (!data || !data.length) throw 'Sin resultados'
+
+    let media = data[0] // Solo el primer archivo (imagen o video)
+    let filename = media.type === 'video' ? 'instagram.mp4' : 'instagram.jpg'
+
+    await conn.sendFile(
+      m.chat,
+      media.url,
+      filename,
+      '```◜Instagram - Download◞```\n\n> © Powered by Shadow Ultra\n> Contenido descargado correctamente'
+    )
+    await m.react('✅')
+  } catch (e) {
+    await m.react('❌')
+    conn.reply(m.chat, '*❌ Ocurrió un error al procesar el enlace.*')
+  }
+}
+
+handler.help = ['ig']
+handler.tags = ['download']
+handler.command = ['instagram', 'ig', 'igv']
 
 export default handler
