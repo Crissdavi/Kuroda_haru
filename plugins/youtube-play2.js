@@ -1,4 +1,4 @@
-import fetch from "node-fetch";
+/*import fetch from "node-fetch";
 import yts from 'yt-search';
 import axios from "axios";
 import fs from 'fs';
@@ -503,4 +503,4 @@ function formatViews(views) {
 handler.command = handler.help = ['play'];
 handler.tags = ['downloader'];
 
-export default handler;
+export default handler;*/
