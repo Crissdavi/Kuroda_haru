@@ -43,13 +43,6 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
     const vistas = formatViews(views);
     const canal = author.name || 'Desconocido';
 
-    const buttons = [
-      ['🪐 Audio', 'ytdl_audio_mp3'],
-      ['🐢 Video', 'ytdl_video_mp4'],
-      ['🪐 MP3 Documento', 'ytdl_audio_doc'],
-      ['🐢 MP4 Documento', 'ytdl_video_doc']
-    ];
-
     const infoText = `*🪐╭╭ִ╼࣪━ִﮩ٨ـﮩ🐢𝗦𝗮𝘁𝘂𝗿𝗻𝗼𝗬𝗧🌌ﮩ٨ـﮩ━ִ╾࣪╮╮.🪐*
 
 > 🪐 *Título:* ${title}
@@ -63,14 +56,28 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
 > 🪐 *Publicado:* ${ago}
 *⏝ּׅ︣︢ۛ۫۫۫۫۫۫ۜ⏝ּׅ︣︢ۛ۫۫۫۫۫۫ۜ⏝ּׅ︣︢ۛ۫۫۫۫۫۫ۜ⏝ּׅ︣︢ۛ۫۫۫۫۫۫ۜ⏝ּׅ︢︣ۛ۫۫۫۫۫۫ۜ⏝ּׅ︢︣ۛ۫۫۫۫۫۫ۜ⏝ּׅ︢︣ۛ۫۫۫۫۫۫ۜ⏝ּׅ︢︣ۛ۫۫۫۫۫۫ۜ⏝ּׅ︢︣ׄۛ۫۫۫۫۫۫ۜ*
 
-🪐 *Selecciona el formato para descargar:*`;
+🪐 *Selecciona el formato para descargar:*
 
-    const footer = '🐢 Saturno YT Downloader - YouTube';
+🪐 *1.* Audio MP3
+🐢 *2.* Video MP4
+🪐 *3.* MP3 Documento
+🐢 *4.* MP4 Documento
+
+*Responde con el número de la opción deseada*`;
 
     try {
       const thumb = thumbnail ? (await conn.getFile(thumbnail))?.data : null;
 
-      await conn.sendNCarousel(m.chat, infoText, footer, thumb, buttons, null, null, null, m);
+      if (thumb) {
+        await conn.sendMessage(m.chat, {
+          image: thumb,
+          caption: infoText
+        }, { quoted: m });
+      } else {
+        await conn.sendMessage(m.chat, {
+          text: infoText
+        }, { quoted: m });
+      }
 
       if (!global.db.data.users[m.sender]) {
         global.db.data.users[m.sender] = {};
@@ -84,7 +91,9 @@ const handler = async (m, { conn, text, usedPrefix, command }) => {
       };
 
     } catch (thumbError) {
-      await conn.sendNCarousel(m.chat, infoText, footer, null, buttons, null, null, null, m);
+      await conn.sendMessage(m.chat, {
+        text: infoText
+      }, { quoted: m });
 
       if (!global.db.data.users[m.sender]) {
         global.db.data.users[m.sender] = {};
@@ -233,13 +242,6 @@ async function processDownload(conn, m, url, title, option) {
           caption: title
         }, { quoted: m });
       }
-    }
-
-    const user = global.db.data.users[m.sender];
-    if (!user.monedaDeducted) {
-      user.moneda -= 2;
-      user.monedaDeducted = true;
-      conn.reply(m.chat, `🪐 Has utilizado 2 *Saturninos 🐢*`, m);
     }
 
     return true;
@@ -428,48 +430,10 @@ async function getVideoUrl(url) {
 }
 
 handler.before = async (m, { conn }) => {
-  const buttonPatterns = [
-    /^ytdl_(audio|video)_(mp3|mp4|doc)$/,
-    /ytdl_audio_mp3/,
-    /ytdl_video_mp4/,
-    /ytdl_audio_doc/,
-    /ytdl_video_doc/
-  ];
-
-  let isButtonResponse = false;
-  let matchedPattern = null;
-
-  for (const pattern of buttonPatterns) {
-    if (pattern.test(m.text)) {
-      isButtonResponse = true;
-      matchedPattern = pattern;
-      break;
-    }
-  }
-
-  const textContainsButton = m.text.includes('ytdl_') || 
-                            m.text.includes('audio_mp3') || 
-                            m.text.includes('video_mp4') ||
-                            m.text.includes('audio_doc') ||
-                            m.text.includes('video_doc');
-
-  const buttonTextPatterns = [
-    /🪐.*MP3.*Audio/i,
-    /🐢.*MP4.*Video/i,
-    /🪐.*MP3.*Documento/i,
-    /🐢.*MP4.*Documento/i
-  ];
-
-  let isButtonTextResponse = false;
-  for (const pattern of buttonTextPatterns) {
-    if (pattern.test(m.text)) {
-      isButtonTextResponse = true;
-      matchedPattern = `text: ${pattern}`;
-      break;
-    }
-  }
-
-  if (!isButtonResponse && !textContainsButton && !isButtonTextResponse) {
+  // Verificar si es una respuesta numérica (1, 2, 3, 4)
+  const numberPattern = /^[1-4]$/;
+  
+  if (!numberPattern.test(m.text)) {
     return false;
   }
 
@@ -488,37 +452,13 @@ handler.before = async (m, { conn }) => {
     return false;
   }
 
-  let option = null;
-
-  if (m.text.includes('audio_mp3') || m.text === 'ytdl_audio_mp3') {
-    option = 1;
-  } else if (m.text.includes('video_mp4') || m.text === 'ytdl_video_mp4') {
-    option = 2;
-  } else if (m.text.includes('audio_doc') || m.text === 'ytdl_audio_doc') {
-    option = 3;
-  } else if (m.text.includes('video_doc') || m.text === 'ytdl_video_doc') {
-    option = 4;
-  }
-  else if (/🪐.*MP3.*Audio/i.test(m.text)) {
-    option = 1;
-  } else if (/🐢.*MP4.*Video/i.test(m.text)) {
-    option = 2;
-  } else if (/🪐.*MP3.*Documento/i.test(m.text)) {
-    option = 3;
-  } else if (/🐢.*MP4.*Documento/i.test(m.text)) {
-    option = 4;
-  }
-
-  if (!option) {
-    return false;
-  }
+  const option = parseInt(m.text);
 
   if (user.processingDownload) {
     return false;
   }
 
   user.processingDownload = true;
-  user.cebollinesDeducted = false;
 
   try {
     await processDownload(
