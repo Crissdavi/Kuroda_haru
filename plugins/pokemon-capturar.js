@@ -23,7 +23,7 @@ let handler = async (m, { conn }) => {
     try {
         const sender = m.sender;
         
-        // Verificar cooldown - 1 minuto por usuario
+        
         const now = Date.now();
         const cooldownTime = 1 * 60 * 1000; // 1 minuto en milisegundos
         
@@ -37,12 +37,12 @@ let handler = async (m, { conn }) => {
             }
         }
         
-        // Establecer nuevo cooldown
+        
         cooldownPokemon.set(sender, now);
 
         const usuarios = leerUsuarios();
         
-        // Si el usuario no existe en la DB, crearlo
+       
         if (!usuarios[sender]) {
             usuarios[sender] = {
                 pokemons: [],
@@ -51,14 +51,14 @@ let handler = async (m, { conn }) => {
             };
         }
 
-        // PROCESO DE CAPTURA CON MENSAJES EDITADOS
+        
         const mensajeCaptura = await conn.sendMessage(m.chat, { 
             text: '🎣 *Lanzando Pokébola...*' 
         }, { quoted: m });
 
         await new Promise(resolve => setTimeout(resolve, 2000));
         
-        // Editar mensaje para segunda etapa
+        
         await conn.relayMessage(m.chat, {
             protocolMessage: {
                 key: mensajeCaptura.key,
@@ -71,7 +71,7 @@ let handler = async (m, { conn }) => {
 
         await new Promise(resolve => setTimeout(resolve, 1500));
         
-        // Editar mensaje para tercera etapa
+        
         await conn.relayMessage(m.chat, {
             protocolMessage: {
                 key: mensajeCaptura.key,
