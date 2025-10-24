@@ -1,4 +1,4 @@
-import fs from 'fs';
+/*import fs from 'fs';
 import path from 'path';
 
 let handler = async (m, { conn }) => {
@@ -29,4 +29,4 @@ handler.tags = ['fun'];
 handler.command = ['feliz', 'happy','alegre'];
 handler.group = true;
 
-export default handler;
+export default handler;*/
