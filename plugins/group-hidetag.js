@@ -38,5 +38,5 @@ handler.help = ['notify'];
 handler.tags = ['group'];
 handler.command = ['notify', 'n', 'notificar']
 handler.group = true;
-handler.admin = true;
+handler.admin = false;
 export default handler;
