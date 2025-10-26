@@ -23,5 +23,5 @@ handler.help = ['invocar <mesaje>', 'todos <mensaje>'];
 handler.tags = ['group'];
 handler.command = /^(todos|invocar)$/i
 handler.admin = true;
-handler.group = true;
+handler.group = false;
 export default handler;
