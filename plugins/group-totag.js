@@ -8,7 +8,7 @@ let handler = async (m, { conn, text, participants}) => {
 handler.help = ['tag']
 handler.tags = ['group']
 handler.command = /^(tag)$/i
-handler.admin = true
+handler.admin = false
 handler.group = true
 
 export default handler
