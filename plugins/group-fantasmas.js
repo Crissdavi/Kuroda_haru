@@ -64,6 +64,6 @@ handler.tags = ['group']
 handler.command = /^(inactivos|gcinactivos)$/i
 handler.group = true
 handler.admin = false
-handler.botAdmin = true
+handler.botAdmin = false
 
 export default handler
