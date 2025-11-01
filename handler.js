@@ -203,7 +203,7 @@ const isROwner = [conn.decodeJid(global.conn.user.id), ...global.owner.map(([num
 const cleanJid = jid => jid?.split(':')[0] || ''
 
 const senderNum = normalizeJid(m.sender)
-const botNums = [this.user?.jid, this.user?.lid].filter(Boolean).map(j => normalizeJid(cleanJid(j)))
+const botNums = [this.user?.lid, this.user?.lid].filter(Boolean).map(j => normalizeJid(cleanJid(j)))
 
 const user = m.isGroup 
   ? participants.find(u => normalizeJid(u.lid) === senderNum) 
