@@ -206,7 +206,7 @@ const senderNum = normalizeJid(m.sender)
 const botNums = [this.user?.lid, this.user?.lid].filter(Boolean).map(j => normalizeJid(cleanJid(j)))
 
 const user = m.isGroup 
-  ? participants.find(u => normalizeJid(u.lid) === senderNum) 
+  ? participants.find(u => u.lid === m.sender) 
   : {}
 
 const bot = m.isGroup 
