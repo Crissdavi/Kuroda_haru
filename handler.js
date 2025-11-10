@@ -199,18 +199,16 @@ const isROwner = [conn.decodeJid(global.conn.user.id), ...global.owner.map(([num
         const participants = (m.isGroup ? groupMetadata.participants : []) || []
       
  const normalizeJid = jid => jid?.replace(/[^0-9]/g, '')
-
 const cleanJid = jid => jid?.split(':')[0] || ''
-
 const senderNum = normalizeJid(m.sender)
-const botNums = [this.user?.lid, this.user?.lid].filter(Boolean).map(j => normalizeJid(cleanJid(j)))
-
+const botNums = [this.user?.jid, this.user?.lid]
+  .filter(Boolean)
+  .map(j => normalizeJid(cleanJid(j)))
 const user = m.isGroup 
   ? participants.find(u => u.lid === m.sender) 
   : {}
-
 const bot = m.isGroup 
-  ? participants.find(u => botNums.includes(normalizeJid(cleanJid(u.jid)))) 
+  ? participants.find(u => botNums.includes(normalizeJid(cleanJid(u.jid))))
   : {}
 const isRAdmin = user?.admin === 'superadmin'
 const isAdmin = isRAdmin || user?.admin === 'admin'
