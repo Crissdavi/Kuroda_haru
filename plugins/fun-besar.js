@@ -48,7 +48,6 @@ let handler = async (m, { conn, usedPrefix }) => {
 handler.help = ['beso @tag'];
 handler.tags = ['fun'];
 handler.command = ['kiss', 'besar'] 
-handler.command = new RegExp
 handler.register = false;
 handler.group = true;
 
