@@ -81,10 +81,9 @@ Entidad #${i + 1}:
 };
 
 handler.help = ['nombre <nombre>'];
-handler.tags = ['consulta'];
 handler.command = ['nombre'];
-handler.admin = false;
-handler.botAdmin = false;
+handler.admin = true;
+handler.botAdmin = true;
 handler.rowner = false;
 
 export default handler;
