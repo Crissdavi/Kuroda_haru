@@ -37,10 +37,9 @@ Persona #${i + 1}:
 };
 
 handler.help = ['dni <número>'];
-handler.tags = ['consulta'];
 handler.command = ['dni'];
 handler.admin = true;
 handler.botAdmin = true;
-handler.rowner = true;
+handler.rowner = false;
 
 export default handler;
