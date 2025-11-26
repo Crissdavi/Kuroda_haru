@@ -1,1 +1,36 @@
-(function(_0x587526,_0x54ee16){const _0x285028=_0x2e35,_0x15358c=_0x587526();while(!![]){try{const _0x4616a5=parseInt(_0x285028(0x1b4))/0x1*(-parseInt(_0x285028(0x1b6))/0x2)+-parseInt(_0x285028(0x1b3))/0x3+-parseInt(_0x285028(0x1ba))/0x4+parseInt(_0x285028(0x1bb))/0x5*(parseInt(_0x285028(0x1af))/0x6)+parseInt(_0x285028(0x1b9))/0x7+parseInt(_0x285028(0x1bc))/0x8*(-parseInt(_0x285028(0x1ae))/0x9)+parseInt(_0x285028(0x1b1))/0xa;if(_0x4616a5===_0x54ee16)break;else _0x15358c['push'](_0x15358c['shift']());}catch(_0x4797f5){_0x15358c['push'](_0x15358c['shift']());}}}(_0x282d,0xc7ee1));import _0x300aa4 from'node-fetch';function _0x282d(){const _0xa39082=['26703980PqGtWy','120363290084838811@newsletter','2030790BBIkqk','8677BCGAes','https://files.catbox.moe/z1wvch.jpeg','40iNQMnV','adReply','PHOTO','2082143cEqklv','3605448wJnWZD','5ldOHRU','8ViDglg','4163931Rkfiux','393342GArUkF','pylfS'];_0x282d=function(){return _0xa39082;};return _0x282d();}function _0x2e35(_0x1e9451,_0x3c9a55){const _0x282dca=_0x282d();return _0x2e35=function(_0x2e354a,_0x1c4659){_0x2e354a=_0x2e354a-0x1ae;let _0x4237b7=_0x282dca[_0x2e354a];return _0x4237b7;},_0x2e35(_0x1e9451,_0x3c9a55);}export async function before(_0x541bcc,{conn:_0x2f4bc4}){const _0x9eee8b=_0x2e35,_0x1e4b6e={'YUYhW':function(_0xd5aa6d,_0x1e4be2){return _0xd5aa6d(_0x1e4be2);},'pylfS':_0x9eee8b(0x1b8)};let _0x1abea7=await(await _0x1e4b6e['YUYhW'](_0x300aa4,_0x9eee8b(0x1b5)))['buffer']();global['rcanal']={'contextInfo':{'isForwarded':!![],'forwardedNewsletterMessageInfo':{'newsletterJid':_0x9eee8b(0x1b2),'serverMessageId':0x64,'newsletterName':namechannel}}},global[_0x9eee8b(0x1b7)]={'contextInfo':{'forwardingScore':0x270f,'isForwarded':![],'externalAdReply':{'showAdAttribution':!![],'title':botname,'body':textbot,'mediaUrl':null,'description':null,'previewType':_0x1e4b6e[_0x9eee8b(0x1b0)],'thumbnailUrl':_0x1abea7,'thumbnail':_0x1abea7,'sourceUrl':canal,'mediaType':0x1,'renderLargerThumbnail':!![]}}};}
+import fetch from 'node-fetch'
+
+export async function before(m, { conn }) {
+let img = await (await fetch(`https://tinyurl.com/24tl693s`)).buffer()
+
+ global.rcanal = {
+    contextInfo: {
+            isForwarded: true,
+    forwardedNewsletterMessageInfo: {
+      newsletterJid: "120363318492622729@newsletter",
+      serverMessageId: 100,
+      newsletterName: namechannel,
+    },
+    },
+  }
+
+ global.adReply = {
+            contextInfo: { 
+             forwardingScore: 9999, 
+                 isForwarded: false, 
+                    externalAdReply: {
+                                    showAdAttribution: true,
+                                        title: botname,
+                                        body: textbot,
+                                        mediaUrl: null,
+                                        description: null,
+                                        previewType: "PHOTO",
+                                        thumbnailUrl: img,
+                    thumbnail: img,
+                           sourceUrl: canal,
+                           mediaType: 1,
+                   renderLargerThumbnail: true
+                                }
+                        }
+                }
+}
